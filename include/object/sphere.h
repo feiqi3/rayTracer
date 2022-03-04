@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-30 11:46:53
- * @LastEditTime: 2022-02-02 11:21:57
+ * @LastEditTime: 2022-03-03 12:44:41
  * @LastEditors: feiqi3
  * @Description: |---description here---|
  * @FilePath: \rayTracer\include\object\sphere.h
@@ -13,6 +13,7 @@
 
 #include "hitable.h"
 #include "math/vector.h"
+#include <memory>
 
 class sphere : public hitable {
 private:
@@ -21,8 +22,9 @@ private:
 
 public:
   sphere() {}
-  sphere(vec3 center, double r) : cen(center), radius(r) {}
+  sphere(vec3 center, double r,std::shared_ptr<material> _material) : cen(center), radius(r),mat_ptr(_material) {}
 
+  std::shared_ptr<material> mat_ptr;
   // setter and getter
   vec3 getCenter() const { return cen; }
   double getRadius() const { return radius; }
@@ -53,6 +55,8 @@ public:
     rec.t = root;
 
     rec.p = r.at(rec.t);
+
+    rec.mat_ptr = mat_ptr;
 
     rec.normal = (rec.p - cen) / radius; // normalized
     set_face_normal(r, rec.normal, rec);

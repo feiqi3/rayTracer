@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-28 18:18:09
- * @LastEditTime: 2022-02-02 16:38:46
+ * @LastEditTime: 2022-03-03 12:36:34
  * @LastEditors: feiqi3
  * @Description: |---description here---|
  * @FilePath: \rayTracer\include\object\hitable.h
@@ -11,15 +11,18 @@
 #define _HITABLE_H_
 #include "math/vector.h"
 #include "ray.h"
+#include <memory>
 
 class hitable;
 
+class material;
           
 typedef hitable object;
 
 struct record {
   vec3 p;
   vec3 normal;
+  std::shared_ptr<material> mat_ptr;
   double t;
   bool front_face;
 };

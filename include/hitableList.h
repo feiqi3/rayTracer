@@ -1,9 +1,9 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-02-02 11:51:26
- * @LastEditTime: 2022-02-02 16:44:15
+ * @LastEditTime: 2022-03-04 00:05:49
  * @LastEditors: feiqi3
- * @Description: |---description here---|
+ * @Description: |a list of objects|
  * @FilePath: \rayTracer\include\hitableList.h
  * ->blog: feiqi3.cn <-
  */
