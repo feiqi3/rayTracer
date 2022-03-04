@@ -1,10 +1,10 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 15:27:35
- * @LastEditTime: 2022-03-01 23:32:54
+ * @LastEditTime: 2022-03-04 09:30:54
  * @LastEditors: feiqi3
  * @Description: |---description here---|
- * @FilePath: \rayTracer\include\math\vector.h
+ * @FilePath: \include\math\vector.h
  * ->blog: feiqi3.cn <-
  */
 #ifndef _VECTOR_H_
@@ -56,6 +56,12 @@ public:
 
   double operator[](int i) const { return vec[i]; }
   double &operator[](int i) { return vec[i]; }
+
+  bool is_close_to_zero()
+  {
+    const auto bias = 1e-7;
+    return (fabs(vec[0]) < bias) && (fabs(vec[1]) < bias) && (fabs(vec[2]) < bias);
+  }
 };
 
 inline std::ostream &operator<<(std::ostream &out, const vec3 &v) {
@@ -74,10 +80,9 @@ inline vec3 operator-(const vec3 &a, const vec3 &b) {
   return vec3(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 }
 
-// cross
+// return (u[0]*v[0]，u[1]*v[1],u[2]*v[2])
 inline vec3 operator*(const vec3 &u, const vec3 &v) {
-  return vec3(u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2],
-              u[0] * v[1] - u[1] * v[0]);
+  return vec3(u[0]*v[0],u[1]*v[1],u[2]*v[2]);
 }
 
 inline vec3 operator*(const vec3 &u, double b) {
@@ -117,6 +122,12 @@ inline vec3 rand_in_unit_sphere() {
     }
   }
 }
+
+inline vec3 reflection(const vec3& in,const vec3& normal)
+{
+  return in -2 * dot(in, normal) * normal;
+}
+
 
 typedef vec3 color;
 
