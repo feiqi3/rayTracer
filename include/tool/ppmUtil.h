@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 20:08:20
- * @LastEditTime: 2022-03-03 23:15:30
+ * @LastEditTime: 2022-03-04 10:33:13
  * @LastEditors: feiqi3
  * @Description: |make ppm file|
  * @FilePath: \rayTracer\include\tool\ppmUtil.h
@@ -36,12 +36,18 @@ public:
 
   ~ppmMaker() { outBuffer.close(); }
 
+  color gamma_correction(const color &in)
+  {
+    return color(InvSqrt(in.x()),InvSqrt(in.y()),InvSqrt(in.z()));
+  }
+
   void colorWrite(const color &in_color) {
-    outBuffer << static_cast<int>(256 * clamp<double>(in_color.x(), 0, 0.999))
+    color correction = gamma_correction(in_color);
+    outBuffer << static_cast<int>(256 * clamp<double>( correction.x(), 0, 0.999))
               << " "
-              << static_cast<int>(256 * clamp<double>(in_color.y(), 0, 0.999))
+              << static_cast<int>(256 * clamp<double>( correction.y(), 0, 0.999))
               << " "
-              << static_cast<int>(256 * clamp<double>(in_color.z(), 0, 0.999))
+              << static_cast<int>(256 * clamp<double>( correction.z(), 0, 0.999))
               << "\n";
   }
 

@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 20:06:53
- * @LastEditTime: 2022-03-04 09:31:27
+ * @LastEditTime: 2022-03-04 18:45:02
  * @LastEditors: feiqi3
  * @Description: |main appliancation|
  * @FilePath: \rayTracer\src\main.cpp
@@ -15,7 +15,7 @@
 #include <memory>
 constexpr int IMG_WIDTH = 1920;
 constexpr double RATIO = 16.0 / 9.0;
-constexpr int SAMPLES = 5;
+constexpr int SAMPLES = 15;
 #include "material/lambertian.h"
 #include "material/metal.h"
 #include "math/vector.h"
@@ -62,15 +62,15 @@ int main() {
 
   hitable_list world;
   shared_ptr<lambertian> ground_mat = std::make_shared<lambertian>(color(0.8,0.8,0.8));
-  shared_ptr<metal> metal_sphere_a = std::make_shared<metal>(color(0.5,0.5,0.5));
-  shared_ptr<metal> metal_sphere_b = std::make_shared<metal>(color(0.1,0.5,0.3));
+  shared_ptr<metal> metal_sphere_a = std::make_shared<metal>(color(0.5,0.5,0.5),0.5);
+  shared_ptr<metal> metal_sphere_b = std::make_shared<metal>(color(0.1,0.5,0.3),1);
   shared_ptr<lambertian> lambertian_sphere = std::make_shared<lambertian>(color(0.7,0.3,0.3));
 
   world.add(make_shared<sphere>(vec3(0, 0, -1), .5,lambertian_sphere));
   world.add(make_shared<sphere>(vec3(-1.0, 0, -1), .5,metal_sphere_a));
   world.add(make_shared<sphere>(vec3(1.0, 0, -1), 0.5,metal_sphere_b));
 
-  world.add(make_shared<sphere>(vec3(0, -100.5, -1), 100,metal_sphere_a));
+  world.add(make_shared<sphere>(vec3(0, -100.5, -1), 100,metal_sphere_b));
 
   int img_width = IMG_WIDTH;
   int img_height = static_cast<int>(img_width / RATIO);
