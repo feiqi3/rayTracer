@@ -23,7 +23,7 @@ class metal : public material {
     attenuation = albedo;
     return (dot(scattered.dir,hit_rec.normal) > 0);
   }
-
+    //When fuzz is 0 is total reflection
     public:metal(const color& _albedo,float _fuzz):albedo(_albedo),fuzz(_fuzz > 1 ? 1 : _fuzz){}
 public:
 

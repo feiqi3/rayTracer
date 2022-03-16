@@ -10,13 +10,15 @@
 
 #include "camera.h"
 #include "hitableList.h"
+#include "material/normal_shader.h"
 #include "object/hitable.h"
 #include "object/sphere.h"
 #include <memory>
 constexpr int IMG_WIDTH = 1920;
 constexpr double RATIO = 16.0 / 9.0;
-constexpr int SAMPLES = 15;
+constexpr int SAMPLES = 20;
 #include "material/lambertian.h"
+#include "material/dielectric.h"
 #include "material/metal.h"
 #include "math/vector.h"
 #include "ray.h"
@@ -62,13 +64,15 @@ int main() {
 
   hitable_list world;
   shared_ptr<lambertian> ground_mat = std::make_shared<lambertian>(color(0.8,0.8,0.8));
-  shared_ptr<metal> metal_sphere_a = std::make_shared<metal>(color(0.5,0.5,0.5),0.5);
+  shared_ptr<metal> metal_sphere_a = std::make_shared<metal>(color(0.5,0.5,0.5),0);
   shared_ptr<metal> metal_sphere_b = std::make_shared<metal>(color(0.1,0.5,0.3),1);
   shared_ptr<lambertian> lambertian_sphere = std::make_shared<lambertian>(color(0.7,0.3,0.3));
-
-  world.add(make_shared<sphere>(vec3(0, 0, -1), .5,lambertian_sphere));
-  world.add(make_shared<sphere>(vec3(-1.0, 0, -1), .5,metal_sphere_a));
-  world.add(make_shared<sphere>(vec3(1.0, 0, -1), 0.5,metal_sphere_b));
+ shared_ptr<dielectric> die = make_shared<dielectric>(1.5);
+ shared_ptr<dielectric> die1 = make_shared<dielectric>(0.5);
+  
+  world.add(make_shared<sphere>(vec3(0, 0, -1), .5,metal_sphere_b));
+  world.add(make_shared<sphere>(vec3(-1.0, 0, -1), .5,metal_sphere_b));
+  world.add(make_shared<sphere>(vec3(1.0, 0, -1), 0.5,die1));
 
   world.add(make_shared<sphere>(vec3(0, -100.5, -1), 100,metal_sphere_b));
 

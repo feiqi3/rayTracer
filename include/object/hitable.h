@@ -21,6 +21,8 @@ typedef hitable object;
 
 struct record {
   vec3 p;
+
+  //normal should be normalized
   vec3 normal;
   std::shared_ptr<material> mat_ptr;
   double t;

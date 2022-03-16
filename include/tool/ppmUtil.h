@@ -36,25 +36,25 @@ public:
 
   ~ppmMaker() { outBuffer.close(); }
 
-  color gamma_correction(const color &in)
-  {
-    return color(InvSqrt(in.x()),InvSqrt(in.y()),InvSqrt(in.z()));
+  color gamma_correction(const color &in) {
+    return color(InvSqrt(in.x()), InvSqrt(in.y()), InvSqrt(in.z()));
   }
 
   void colorWrite(const color &in_color) {
-    color correction = gamma_correction(in_color);
-    outBuffer << static_cast<int>(256 * clamp<double>( correction.x(), 0, 0.999))
+    //color correction = gamma_correction(in_color);
+    color correction = in_color;
+    outBuffer << static_cast<int>(256 * clamp<double>(correction.x(), 0, 0.999))
               << " "
-              << static_cast<int>(256 * clamp<double>( correction.y(), 0, 0.999))
+              << static_cast<int>(256 * clamp<double>(correction.y(), 0, 0.999))
               << " "
-              << static_cast<int>(256 * clamp<double>( correction.z(), 0, 0.999))
+              << static_cast<int>(256 * clamp<double>(correction.z(), 0, 0.999))
               << "\n";
   }
 
- //@param: color, 1 / sample times
+  //@param: color, 1 / sample times
   void m_s_colorWirte(const color &_color, const double samples_num_divided) {
     color tmp(_color);
-    tmp =tmp * samples_num_divided;
+    tmp = tmp * samples_num_divided;
     colorWrite(tmp);
   }
 };
