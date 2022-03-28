@@ -1,3 +1,12 @@
+/*
+ * @Author: feiqi3
+ * @Date: 2022-03-17 09:44:16
+ * @LastEditTime: 2022-03-28 12:29:36
+ * @LastEditors: feiqi3
+ * @Description: |---description here---|
+ * @FilePath: \rayTracer\include\material\dielectric.h
+ * ->blog: feiqi3.cn <-
+ */
 
 
 #include "material/material.h"
@@ -27,8 +36,7 @@ class dielectric : public material {
             if (cannot_refract || reflectance(cos_theta, refraction_ratio) > rand_d())
                 direction = reflection(unit_direction, hit_rec.normal);
             else
-                direction = refractor(unit_direction, hit_rec.normal, refraction_ratio);
-
+                direction = refract(unit_direction, hit_rec.normal, refraction_ratio);
             out_scattered = ray(hit_rec.p, direction);
             return true;
   }

@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-02-02 12:09:27
- * @LastEditTime: 2022-03-01 22:46:45
+ * @LastEditTime: 2022-03-28 16:42:00
  * @LastEditors: feiqi3
  * @Description: |common untilitise|
  * @FilePath: \rayTracer\include\tool\common.h
@@ -11,6 +11,7 @@
 #define _COMMON_H_
 
 #include <cstdlib>
+#include <iostream>
 #include <limits>
 #include <memory>
 #include <stdlib.h>
@@ -52,4 +53,5 @@ template <typename T> inline T clamp(T x, T min, T max) {
   }
   return x;
 }
+
 #endif

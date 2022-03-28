@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-30 11:46:53
- * @LastEditTime: 2022-03-03 12:44:41
+ * @LastEditTime: 2022-03-27 10:18:28
  * @LastEditors: feiqi3
  * @Description: |---description here---|
  * @FilePath: \rayTracer\include\object\sphere.h

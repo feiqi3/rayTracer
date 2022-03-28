@@ -1,10 +1,10 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 15:27:35
- * @LastEditTime: 2022-03-04 09:30:54
+ * @LastEditTime: 2022-03-27 09:37:40
  * @LastEditors: feiqi3
  * @Description: |---description here---|
- * @FilePath: \include\math\vector.h
+ * @FilePath: \rayTracer\include\math\vector.h
  * ->blog: feiqi3.cn <-
  */
 #ifndef _VECTOR_H_
@@ -127,7 +127,7 @@ inline vec3 reflection(const vec3 &in, const vec3 &normal) {
 
 // to caculator refration ray
 // eta of ray_in side divide eta of refractor side
-inline vec3 refractor(const vec3 &ray_in, const vec3 &ray_normal,
+inline vec3 refract(const vec3 &ray_in, const vec3 &ray_normal,
                       const double etai_divide_etat) {
   auto cos_theta = -dot(ray_normal, ray_in);
   return -(ray_normal * InvSqrt(1 - etai_divide_etat * etai_divide_etat *
