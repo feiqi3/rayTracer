@@ -1,9 +1,9 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-30 11:46:53
- * @LastEditTime: 2022-03-27 10:18:28
+ * @LastEditTime: 2022-03-29 14:38:25
  * @LastEditors: feiqi3
- * @Description: |---description here---|
+ * @Description: |obj class|
  * @FilePath: \rayTracer\include\object\sphere.h
  * ->blog: feiqi3.cn <-
  */

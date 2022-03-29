@@ -1,9 +1,9 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 20:06:53
- * @LastEditTime: 2022-03-28 16:38:41
+ * @LastEditTime: 2022-03-29 14:37:34
  * @LastEditors: feiqi3
- * @Description: |main appliancation|
+ * @Description: |main application|
  * @FilePath: \rayTracer\src\main.cpp
  * ->blog: feiqi3.cn <-
  */
@@ -72,7 +72,7 @@ int main() {
       std::make_shared<lambertian>(color(0.7, 0.3, 0.3));
   shared_ptr<dielectric> die = make_shared<dielectric>(1.5);
 
-  world.add(make_shared<sphere>(vec3(0, 0, -1), .5, metal_sphere_b));
+  world.add(make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere));
   world.add(make_shared<sphere>(vec3(-1.0, 0, -1), .5, metal_sphere_a));
   world.add(make_shared<sphere>(vec3(1.0, 0, -1), 0.5, die));
 
@@ -82,8 +82,14 @@ int main() {
   int img_height = static_cast<int>(img_width / RATIO);
   ppmMaker pm(img_width, img_height);
 
-  vec3 cameraPos(-2, 2, 1);
-  camera cam(90, 16.0 / 9.0, cameraPos, vec3(0, 0, -1), vec3(0, 1, 0));
+  vec3 cameraPos(3, 3, 2);
+#ifdef DEBUG
+  std::cout << "Focus length  " << (vec3(0, 0, -1) - cameraPos).length()
+            << "\n";
+#endif
+
+  camera cam(20, RATIO, cameraPos, vec3(0, 1, 0), vec3(0, 0, -1),0.5,
+             (vec3(0, 0, -1) - cameraPos).length());
 
   double division_x = 1.0 / (img_width - 1.0);
   double division_y = 1.0 / (img_height - 1.0);
@@ -108,10 +114,10 @@ int main() {
       pm.m_s_colorWirte(pxl, divided_samples);
     }
 #ifndef DEBUG
-    if (y % ((int)(img_height/100)) == 0){
+    if (y % ((int)(img_height / 100)) == 0) {
       std::cout << "render :"
                 << (int)((1.0 - (double)y / (img_height - 1.0)) * 100) << "\n";
-                }
+    }
 #endif
   }
   std::cout << "Done!";

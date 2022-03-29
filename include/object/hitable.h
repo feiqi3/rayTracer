@@ -1,9 +1,9 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-28 18:18:09
- * @LastEditTime: 2022-03-03 12:36:34
+ * @LastEditTime: 2022-03-29 14:38:06
  * @LastEditors: feiqi3
- * @Description: |---description here---|
+ * @Description: |Ray hit class|
  * @FilePath: \rayTracer\include\object\hitable.h
  * ->blog: feiqi3.cn <-
  */

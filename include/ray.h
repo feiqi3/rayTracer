@@ -1,9 +1,9 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-26 14:08:25
- * @LastEditTime: 2022-01-26 14:54:38
+ * @LastEditTime: 2022-03-29 14:39:06
  * @LastEditors: feiqi3
- * @Description: |a ray class|
+ * @Description: |ray class|
  * @FilePath: \rayTracer\include\ray.h
  * ->blog: feiqi3.cn <-
  */

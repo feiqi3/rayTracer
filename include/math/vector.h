@@ -1,9 +1,9 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 15:27:35
- * @LastEditTime: 2022-03-27 09:37:40
+ * @LastEditTime: 2022-03-29 14:37:53
  * @LastEditors: feiqi3
- * @Description: |---description here---|
+ * @Description: |Vector class|
  * @FilePath: \rayTracer\include\math\vector.h
  * ->blog: feiqi3.cn <-
  */
@@ -121,6 +121,17 @@ inline vec3 rand_in_unit_sphere() {
   }
 }
 
+inline vec3 get_rand_in_disk() {
+  vec3 res;
+  while (true) {
+    res = vec3(rand_d(-1,1), rand_d(-1,1), 0);
+    if (res.length() >= 1) {
+      break;
+    }
+  }
+  return res;
+}
+
 inline vec3 reflection(const vec3 &in, const vec3 &normal) {
   return in - 2 * dot(in, normal) * normal;
 }
@@ -128,11 +139,11 @@ inline vec3 reflection(const vec3 &in, const vec3 &normal) {
 // to caculator refration ray
 // eta of ray_in side divide eta of refractor side
 inline vec3 refract(const vec3 &ray_in, const vec3 &ray_normal,
-                      const double etai_divide_etat) {
+                    const double etai_divide_etat) {
   auto cos_theta = -dot(ray_normal, ray_in);
   return -(ray_normal * InvSqrt(1 - etai_divide_etat * etai_divide_etat *
                                         (1 - cos_theta * cos_theta))) +
-           etai_divide_etat * (ray_in + ray_normal * cos_theta);
+         etai_divide_etat * (ray_in + ray_normal * cos_theta);
 }
 
 typedef vec3 color;
