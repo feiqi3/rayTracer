@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 15:27:35
- * @LastEditTime: 2022-03-29 14:37:53
+ * @LastEditTime: 2022-05-12 11:51:14
  * @LastEditors: feiqi3
  * @Description: |Vector class|
  * @FilePath: \rayTracer\include\math\vector.h
@@ -10,7 +10,7 @@
 #ifndef _VECTOR_H_
 #define _VECTOR_H_
 
-#include "tool/common.h"
+#include "../tool/common.h"
 #include <cmath>
 #include <iostream>
 

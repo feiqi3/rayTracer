@@ -1,8 +1,17 @@
+/*
+ * @Author: feiqi3
+ * @Date: 2022-05-10 09:33:03
+ * @LastEditTime: 2022-05-12 12:31:13
+ * @LastEditors: feiqi3
+ * @Description: |---description here---|
+ * @FilePath: \rayTracer\include\material\normal_shader.h
+ * ->blog: feiqi3.cn <-
+ */
 #ifndef NORMAL_SHADER_H
 #define NORMAL_SHADER_H
 
-#include "material/material.h"
-#include "object/hitable.h"
+#include "material.h"
+#include "../object/hitable.h"
 class normal_shader : public material {
   bool scatter(const ray &_in, const record &hit_rec, color &out_attenuation,
                ray &out_scattered) const override {

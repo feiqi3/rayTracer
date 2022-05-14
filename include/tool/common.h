@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-02-02 12:09:27
- * @LastEditTime: 2022-03-29 13:47:54
+ * @LastEditTime: 2022-05-10 10:00:26
  * @LastEditors: feiqi3
  * @Description: |common untilitise|
  * @FilePath: \rayTracer\include\tool\common.h
@@ -10,13 +10,12 @@
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
-#include "math/vector.h"
 #include <cstdlib>
 #include <iostream>
 #include <limits>
 #include <memory>
 #include <stdlib.h>
-
+#include <string>
 using std::make_shared;
 using std::shared_ptr;
 

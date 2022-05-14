@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-03-17 09:44:16
- * @LastEditTime: 2022-03-29 14:39:29
+ * @LastEditTime: 2022-05-12 12:32:34
  * @LastEditors: feiqi3
  * @Description: |Dielectric material class,like glass|
  * @FilePath: \rayTracer\include\material\dielectric.h
@@ -9,11 +9,11 @@
  */
 
 
-#include "material/material.h"
-#include "math/vector.h"
-#include "object/hitable.h"
-#include "ray.h"
-#include "tool/common.h"
+#include "material.h"
+#include "../math/vector.h"
+#include "../object/hitable.h"
+#include "../ray.h"
+#include "../tool/common.h"
 
 #include <cmath>
 #include <stdlib.h>

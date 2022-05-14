@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-03-02 13:44:22
- * @LastEditTime: 2022-03-03 20:32:52
+ * @LastEditTime: 2022-05-12 12:32:01
  * @LastEditors: feiqi3
  * @Description: |material class|
  * @FilePath: \rayTracer\include\material\material.h
@@ -11,8 +11,8 @@
 #ifndef MATERIAL_H_
 #define MATERIAL_H_
 
-#include "math/vector.h"
-#include "ray.h"
+#include "../math/vector.h"
+#include "../ray.h"
 struct record;
 
 class material {

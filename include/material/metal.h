@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-03-03 20:14:32
- * @LastEditTime: 2022-03-04 10:45:40
+ * @LastEditTime: 2022-05-12 12:31:29
  * @LastEditors: feiqi3
  * @Description: |metal material|
  * @FilePath: \rayTracer\include\material\metal.h
@@ -10,10 +10,10 @@
 #ifndef METAL_H_
 #define METAL_H_
 
-#include "hitableList.h"
+#include "../hitableList.h"
 #include "material.h"
-#include "math/vector.h"
-#include "ray.h"
+#include "../math/vector.h"
+#include "../ray.h"
 
 class metal : public material {
   virtual bool scatter(const ray &_in, const record &hit_rec,

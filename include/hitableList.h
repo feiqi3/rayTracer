@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-02-02 11:51:26
- * @LastEditTime: 2022-03-04 00:05:49
+ * @LastEditTime: 2022-05-13 15:56:58
  * @LastEditors: feiqi3
  * @Description: |a list of objects|
  * @FilePath: \rayTracer\include\hitableList.h
@@ -15,6 +15,7 @@
 #include <vector>
 class hitable_list : hitable {
 public:
+//object == hitable
   std::vector<std::shared_ptr<object>> obj_list;
 
 public:

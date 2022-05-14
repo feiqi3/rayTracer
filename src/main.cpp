@@ -1,20 +1,22 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 20:06:53
- * @LastEditTime: 2022-03-29 14:37:34
+ * @LastEditTime: 2022-05-13 17:09:03
  * @LastEditors: feiqi3
  * @Description: |main application|
  * @FilePath: \rayTracer\src\main.cpp
  * ->blog: feiqi3.cn <-
  */
 #include "Macro.h"
-#include "camera.h"
+#include "object/triangle.h"
+#include "renderPass/camera.h"
 #include "hitableList.h"
 #include "material/normal_shader.h"
 #include "object/hitable.h"
 #include "object/sphere.h"
+#include "renderPass/subRender.h"
 #include <memory>
-constexpr int IMG_WIDTH = 1000;
+constexpr int IMG_WIDTH = 2560;
 constexpr double RATIO = 16.0 / 9.0;
 constexpr int SAMPLES = 20;
 #include "material/dielectric.h"
@@ -26,18 +28,6 @@ constexpr int SAMPLES = 20;
 #include "tool/ppmUtil.h"
 #include <iostream>
 
-double sphere_disrimination(const vec3 &point, const double radius,
-                            const ray &r) {
-  vec3 o2o = r.orig - point;
-  double a = dot(r.direction(), r.direction());
-  double b = 2.0 * dot(r.direction(), (o2o));
-  double c = dot(o2o, o2o) - radius * radius;
-  double dis = b * b - 4.0 * a * c;
-  if (dis > 0.0) {
-    return (-b - sqrt(dis)) / (2.0 * a);
-  }
-  return -1.0;
-}
 
 color ray_test(const ray &r, const hitable_list &world, int depth) {
   record rec;
@@ -74,7 +64,8 @@ int main() {
 
   world.add(make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere));
   world.add(make_shared<sphere>(vec3(-1.0, 0, -1), .5, metal_sphere_a));
-  world.add(make_shared<sphere>(vec3(1.0, 0, -1), 0.5, die));
+  world.add(make_shared<triangle>(vec3(1.5, 1.5, -1),vec3(-1.5,1.5,-1),vec3(0,-0.5,-3), metal_sphere_a));
+  world.add(make_shared<sphere>(vec3(1.0, 0, -1), .5, die));
 
   world.add(make_shared<sphere>(vec3(0, -100.5, -1), 100, ground_mat));
 
@@ -88,30 +79,29 @@ int main() {
             << "\n";
 #endif
 
-  camera cam(20, RATIO, cameraPos, vec3(0, 1, 0), vec3(0, 0, -1),0.5,
-             (vec3(0, 0, -1) - cameraPos).length());
-
+  camera cam(45, RATIO, vec3(0,0,3), vec3(0, 1, 0), vec3(0, 0, -1));
+  
   double division_x = 1.0 / (img_width - 1.0);
   double division_y = 1.0 / (img_height - 1.0);
 
   auto divided_samples = 1.0 / SAMPLES;
 
   int max_dep = 100;
-
+  DepthRender nomgetter(cam);
   // render from top left to bottom right
   for (int y = img_height - 1; y >= 0; --y) {
     for (int x = 0; x < img_width; ++x) {
       color pxl(0, 0, 0);
       for (std::size_t sample_times = 0; sample_times < SAMPLES;
            sample_times++) {
-
+        
         // transform to NDC(?)
         auto u = (x + rand_d()) * division_x;
         auto v = (y + rand_d()) * division_y;
         ray tmp_ray = cam.get_ray(u, v);
-        pxl += ray_test(tmp_ray, world, max_dep);
+        pxl += cam.cast_ray(tmp_ray, world, max_dep);
       }
-      pm.m_s_colorWirte(pxl, divided_samples);
+      pm.m_s_colorWirte(pxl, divided_samples); 
     }
 #ifndef DEBUG
     if (y % ((int)(img_height / 100)) == 0) {

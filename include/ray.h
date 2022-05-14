@@ -1,10 +1,10 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-26 14:08:25
- * @LastEditTime: 2022-03-29 14:39:06
+ * @LastEditTime: 2022-05-10 15:05:33
  * @LastEditors: feiqi3
  * @Description: |ray class|
- * @FilePath: \rayTracer\include\ray.h
+ * @FilePath: \raytracer_post\rayTracer\include\ray.h
  * ->blog: feiqi3.cn <-
  */
 #ifndef _RAY_H_
@@ -19,7 +19,7 @@ public:
 public:
     ray() {}
     ray(const vec3 &_orig, const vec3 &_dir)
-        : orig(_orig), dir(_dir)
+        : orig(_orig), dir(normalize(_dir))
     {
     }
 
