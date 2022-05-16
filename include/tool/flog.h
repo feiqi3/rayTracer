@@ -1,4 +1,4 @@
-#include "Macro.h"
+#include "../Macro.h"
 #include <Windows.h>
 #include <cmath>
 #include <ctime>
