@@ -1,32 +1,19 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 20:06:53
- * @LastEditTime: 2022-05-13 17:09:03
+ * @LastEditTime: 2022-05-15 13:34:26
  * @LastEditors: feiqi3
  * @Description: |main application|
  * @FilePath: \rayTracer\src\main.cpp
  * ->blog: feiqi3.cn <-
  */
 #include "Macro.h"
-#include "object/triangle.h"
-#include "renderPass/camera.h"
-#include "hitableList.h"
-#include "material/normal_shader.h"
-#include "object/hitable.h"
-#include "object/sphere.h"
-#include "renderPass/subRender.h"
-#include <memory>
-constexpr int IMG_WIDTH = 2560;
-constexpr double RATIO = 16.0 / 9.0;
-constexpr int SAMPLES = 20;
-#include "material/dielectric.h"
-#include "material/lambertian.h"
-#include "material/metal.h"
-#include "math/vector.h"
-#include "ray.h"
-#include "tool/common.h"
-#include "tool/ppmUtil.h"
+#include "../include/HeaderFiles.h"
 #include <iostream>
+constexpr int IMG_WIDTH = 192;
+constexpr double RATIO = 16.0 / 9.0;
+constexpr int SAMPLES = 40;
+
 
 
 color ray_test(const ray &r, const hitable_list &world, int depth) {
@@ -50,6 +37,8 @@ color ray_test(const ray &r, const hitable_list &world, int depth) {
 }
 
 int main() {
+Flog logger();
+Flog::set_glob_log_level(INFO);
 
   hitable_list world;
   shared_ptr<lambertian> ground_mat =
@@ -84,10 +73,18 @@ int main() {
   double division_x = 1.0 / (img_width - 1.0);
   double division_y = 1.0 / (img_height - 1.0);
 
-  auto divided_samples = 1.0 / SAMPLES;
+  constexpr auto divided_samples = 1.0 / SAMPLES;
+
+  constexpr float theta = 256 * divided_samples;
+
 
   int max_dep = 100;
   DepthRender nomgetter(cam);
+
+
+
+  buffer* main_fram = new RGB12(img_width,img_height);
+  main_fram->make_buffer();
   // render from top left to bottom right
   for (int y = img_height - 1; y >= 0; --y) {
     for (int x = 0; x < img_width; ++x) {
@@ -101,14 +98,19 @@ int main() {
         ray tmp_ray = cam.get_ray(u, v);
         pxl += cam.cast_ray(tmp_ray, world, max_dep);
       }
-      pm.m_s_colorWirte(pxl, divided_samples); 
+
+      main_fram->writeBuffer(x, y, (pxl*divided_samples));
+      //pm.colorWrite(main_fram->sampler(x * division_x, y * division_y));
+      pm.m_s_colorWirte(pxl,divided_samples);
     }
 #ifndef DEBUG
-    if (y % ((int)(img_height / 100)) == 0) {
+/*     if (y % ((int)(img_height / 100)) == 0) {
       std::cout << "render :"
                 << (int)((1.0 - (double)y / (img_height - 1.0)) * 100) << "\n";
-    }
+    } */
 #endif
   }
-  std::cout << "Done!";
+  fPic::jpgWriter(main_fram);
+  Flog::flog(INFO, "Render finished!");
+  delete main_fram;
 }
