@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-10 13:38:05
- * @LastEditTime: 2022-05-12 13:00:21
+ * @LastEditTime: 2022-05-15 12:49:51
  * @LastEditors: feiqi3
  * @Description: |---
  Render pass base class 
@@ -26,6 +26,7 @@ enum RenderType {
   SubRender = BIT(3)
 };
 
+
 class renderPass {
 public:
 //need basic camera infomation to build this pass
@@ -35,6 +36,8 @@ public:
   virtual ray get_ray(double s, double t) = 0;
   //get ray's feedback
   virtual color cast_ray(const ray &r, const hitable_list &world, int depth) = 0;
+
+  virtual const std::string toString() const = 0;
 public:
   const vec3 origin;
   const vec3 up;
@@ -58,6 +61,9 @@ inline renderPass::renderPass(float _fov, float _ratio, vec3 pos, vec3 _up,
   w = normalize(lookDir);
   u = normalize(cross(up, w));
   v = cross(w, u);
+
+
+  
 }
 inline renderPass::~renderPass() {}
 #endif

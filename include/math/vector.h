@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 15:27:35
- * @LastEditTime: 2022-05-12 11:51:14
+ * @LastEditTime: 2022-05-15 13:18:50
  * @LastEditors: feiqi3
  * @Description: |Vector class|
  * @FilePath: \rayTracer\include\math\vector.h
@@ -11,8 +11,10 @@
 #define _VECTOR_H_
 
 #include "../tool/common.h"
+#include "../tool/flog.h"
 #include <cmath>
 #include <iostream>
+#include <sstream>
 
 class vec3 {
 public:
@@ -25,6 +27,13 @@ public:
   double x() const { return vec[0]; }
   double y() const { return vec[1]; }
   double z() const { return vec[2]; }
+
+  std::string const toString()
+  const {
+    std::ostringstream oos;
+    oos<<x()<<","<<y()<<","<<z();
+    return "("+oos.str()+")";
+  }
 
   vec3 operator-() {
 

@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-13 15:01:40
- * @LastEditTime: 2022-05-13 16:46:45
+ * @LastEditTime: 2022-05-15 13:25:33
  * @LastEditors: feiqi3
  * @Description: |---Obj Triangle---|
 
@@ -24,6 +24,17 @@ public:
            record &rec) const override;
   bool is_in_tri(const vec3 &_p) const;
 
+  GET_CLASS_NAME(Triangle);
+  const std::string toString() const override {
+    std::string className = clsname();
+    return className + ",P1: "
+     +p1.toString()
+    +" ,P2: " + p2.toString()
+    +" ,P3: " + p3.toString()
+    +" ,Normal: " + normal.toString()
+    + ".\n";
+  }
+
 private:
   vec3 p1, p2, p3;
   vec3 normal;
@@ -37,17 +48,15 @@ private:
 };
 
 inline triangle::triangle(const vec3 &_p1, const vec3 &_p2, const vec3 &_p3,
-                          std::shared_ptr<material> _mat_ptr) 
-                          :hitable(_mat_ptr),
-                          p1(_p1),p2(_p2),p3(_p3)
-{
-    _v0 = p3 - p1;
-    _v1 = p2 - p1;
-    _dot00 = dot(_v0, _v0);
-    _dot01 = dot(_v0, _v1);
-    _dot11 = dot(_v1, _v1);
-    normal = normalize(cross(_v1, p3 - p2));
-
+                          std::shared_ptr<material> _mat_ptr)
+    : hitable(_mat_ptr), p1(_p1), p2(_p2), p3(_p3) {
+  _v0 = p3 - p1;
+  _v1 = p2 - p1;
+  _dot00 = dot(_v0, _v0);
+  _dot01 = dot(_v0, _v1);
+  _dot11 = dot(_v1, _v1);
+  normal = normalize(cross(_v1, p3 - p2));
+  Flog::flog(TRACE, toString());
 }
 
 inline bool triangle::is_in_tri(const vec3 &_p) const {

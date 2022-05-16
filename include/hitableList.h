@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-02-02 11:51:26
- * @LastEditTime: 2022-05-13 15:56:58
+ * @LastEditTime: 2022-05-15 13:05:50
  * @LastEditors: feiqi3
  * @Description: |a list of objects|
  * @FilePath: \rayTracer\include\hitableList.h
@@ -10,8 +10,10 @@
 #ifndef _HITABLELIST_H_
 #define _HITABLELIST_H_
 
+#include "Macro.h"
 #include "object/hitable.h"
 #include <memory>
+#include <string>
 #include <vector>
 class hitable_list : hitable {
 public:
@@ -22,6 +24,13 @@ public:
   hitable_list() {}
 
   hitable_list(std::shared_ptr<object> obj) { add(obj); }
+
+  GET_CLASS_NAME(hitableList)
+  const std::string toString() const override
+  {
+    std::string classname = clsname();
+    return classname+","+ STR(obj_list.size())+" object in map.";
+  }
 
   void add(std::shared_ptr<object> obj) { obj_list.push_back(obj); }
 

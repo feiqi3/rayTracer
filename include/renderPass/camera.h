@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-02-08 10:43:24
- * @LastEditTime: 2022-05-13 16:55:46
+ * @LastEditTime: 2022-05-15 12:58:26
  * @LastEditors: feiqi3
  * @Description: |camera class|
  * @FilePath: \rayTracer\include\renderPass\camera.h
@@ -11,14 +11,17 @@
 #ifndef _CAMERA_H
 #define _CAMERA_H
 
+#include "../Macro.h"
 #include "../material/material.h"
 #include "../math/vector.h"
 #include "../ray.h"
-#include "renderPass.h"
 #include "../tool/common.h"
+#include "renderPass.h"
 #include <cmath>
 #include <iostream>
 #include <stdio.h>
+#include <winuser.h>
+
 
 class camera : public renderPass {
 private:
@@ -33,12 +36,15 @@ public:
         focal_viewport_height(renderPass::viewport_height * focal_length),
         focal_viewport_width(renderPass::ratio * focal_viewport_height),
         aperture(_aperture) {
-    horizontal = focal_viewport_width *renderPass::u;
-    vertical = focal_viewport_height *renderPass::v;
+    horizontal = focal_viewport_width * renderPass::u;
+    vertical = focal_viewport_height * renderPass::v;
     lens_radius = aperture / 2;
-    lower_left_corner =
-        renderPass::origin - horizontal / 2 - vertical / 2 - renderPass::w * focal_length;
-
+    lower_left_corner = renderPass::origin - horizontal / 2 - vertical / 2 -
+                        renderPass::w * focal_length;
+    Flog::flog(INFO, toString());
+    Flog::flog(TRACE, "U:" + u.toString() + ",V:" + v.toString() +
+                          ",W:" + w.toString() +
+                          ",Lower left corner:" + lower_left_corner.toString()+"\n");
     // Note here : The order of cross product does affect result
 #ifdef DEBUG
     std::cout << "U" << u << "\n";
@@ -57,6 +63,13 @@ public:
 #endif
   }
 
+  GET_CLASS_NAME(camera);
+  const std::string toString() const override {
+    std::string classname = clsname();
+    return classname + "," + "Position: " + origin.toString() +
+           ",look at: " + look_at.toString() + ".";
+  }
+
   ray get_ray(double s, double t) {
     vec3 rand_p = get_rand_in_disk() * lens_radius;
     vec3 offset = u * rand_p.x() + v * rand_p.y();
@@ -64,25 +77,25 @@ public:
                                     t * vertical - (origin + offset));
   }
 
-color cast_ray(const ray &r, const hitable_list &world, int depth) {
-  record rec;
-  depth = depth - 1;
-  if (depth <= 0) {
-    return color(0, 0, 0);
-  }
-  if (world.hit(r, 0.001, Infinity, rec)) {
-    color attenuation;
-    ray scattered;
-    if (rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
-      return attenuation * cast_ray(scattered, world, depth);
+  color cast_ray(const ray &r, const hitable_list &world, int depth) {
+    record rec;
+    depth = depth - 1;
+    if (depth <= 0) {
+      return color(0, 0, 0);
     }
-    return color(0, 0, 0);
+    if (world.hit(r, 0.001, Infinity, rec)) {
+      color attenuation;
+      ray scattered;
+      if (rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
+        return attenuation * cast_ray(scattered, world, depth);
+      }
+      return color(0, 0, 0);
+    }
+    vec3 unit_dir = r.direction(); // in ray.class it has been normalized
+    double t = 0.5 * (unit_dir.y() + 1);
+    // a linear interpolation
+    return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
   }
-  vec3 unit_dir =r.direction();//in ray.class it has been normalized
-  double t = 0.5 * (unit_dir.y() + 1);
-  // a linear interpolation
-  return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
-}
 
 public:
   const float focal_length;
