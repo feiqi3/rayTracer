@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-12 11:10:47
- * @LastEditTime: 2022-05-15 12:16:07
+ * @LastEditTime: 2022-05-16 20:30:20
  * @LastEditors: feiqi3
  * @Description: |---a buffer to save float3,or vec3 in glsl :)---|
  * @FilePath: \rayTracer\include\buffer\RGB12Buffer.h
@@ -13,7 +13,8 @@
                           
 #include "../math/vector.h"
 #include "Buffer.h"
-#include "Macro.h"
+#include "../Macro.h"
+#include "../tool/picTools.h"
 #include <string>
 #include <winuser.h>
 class RGB12F : public buffer {
@@ -118,6 +119,7 @@ inline void *RGB12F::getData() const { return _buffer_map; }
 class RGB12 : public buffer {
 public:
   RGB12(int _x, int _y) : buffer(_x, _y) {Flog::flog(INFO, toString());}
+  RGB12(const char* _path);
   ~RGB12();
 
 
@@ -131,7 +133,6 @@ public:
   void writeBufferf(float x, float y, const vec3 in) override;
   void writeBuffer(int x, int y, const vec3 in) override;
   virtual void *getData() const override;
-  
 protected:
   // vec3 **bufferMap;
   unsigned char *_buffer_map;
@@ -141,6 +142,18 @@ inline RGB12::~RGB12() {
   if (init == true) {
     del_buffer();
   }
+}
+
+inline RGB12::RGB12(const char* _path):buffer(1,1)
+{
+  fPic::img_info info;
+  _buffer_map = fPic::load_from_jpg(_path, info);
+  //I dont know wheter it will cause memory leak
+  //because stbi has its own delete function
+  Flog::flog(WARN,"Open from file"+std::string(_path) );
+  init = true;
+  buffer::x = info.x;
+  buffer::y = info.y;
 }
 
 inline bool RGB12::make_buffer() {
