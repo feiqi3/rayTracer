@@ -136,10 +136,11 @@ public:
 protected:
   // vec3 **bufferMap;
   unsigned char *_buffer_map;
+private:bool load_from_file;
 };
 
 inline RGB12::~RGB12() {
-  if (init == true) {
+  if (init == true&& _buffer_map!=nullptr) {
     del_buffer();
   }
 }
@@ -148,9 +149,9 @@ inline RGB12::RGB12(const char* _path):buffer(1,1)
 {
   fPic::img_info info;
   _buffer_map = fPic::load_from_jpg(_path, info);
-  //I dont know wheter it will cause memory leak
-  //because stbi has its own delete function
-  Flog::flog(WARN,"Open from file"+std::string(_path) );
+  load_from_file = true;
+
+  Flog::flog(INFO,"Open from file"+std::string(_path) );
   init = true;
   buffer::x = info.x;
   buffer::y = info.y;
@@ -167,8 +168,19 @@ inline void RGB12::del_buffer() {
   if (init == false) {
     return;
   }
-
-  delete[] _buffer_map;
+  if (!load_from_file)
+  {
+      delete[] _buffer_map;
+      _buffer_map = nullptr;
+      init = false;
+  }
+  else
+  {
+      free(_buffer_map);
+      _buffer_map = nullptr;
+      load_from_file = false;
+      init = false;
+  }
   init = false;
 }
 
@@ -189,7 +201,8 @@ inline vec3 RGB12::sampler(double _x, double _y) const {
 }
 
 inline void RGB12::writeBufferf(float _x, float _y, const vec3 _in) {
-  int sample_x =(float) _x * (x - 1); //[0,x)
+    if (!init) return;
+    int sample_x =(float) _x * (x - 1); //[0,x)
   int sample_y =(float) _y * (y - 1); //[0,y)
   int pos = sample_x * 3 + sample_y * x * 3;
 #ifdef DEBUG
@@ -201,7 +214,8 @@ inline void RGB12::writeBufferf(float _x, float _y, const vec3 _in) {
 }
 
 inline void RGB12::writeBuffer(int _x, int _y, const vec3 _in) {
-  int sample_x = _x;
+    if (!init) return;
+    int sample_x = _x;
   int sample_y = _y;
 
   int pos = sample_x * 3 + sample_y * x * 3;
