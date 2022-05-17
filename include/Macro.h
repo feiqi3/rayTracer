@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-03-28 16:37:42
- * @LastEditTime: 2022-05-15 12:01:29
+ * @LastEditTime: 2022-05-17 11:41:06
  * @LastEditors: feiqi3
  * @Description: |Some macros here|
  * @FilePath: \rayTracer\include\Macro.h
@@ -15,7 +15,7 @@
 #define BIT(x) 1 << (x)
 
 #define GET_CLASS_NAME(cls)                                                    \
-  const std::string clsname() const { return std::string(#cls); };
+virtual const std::string clsname() const{ return std::string(#cls); };
 
 #define CLASS_INFO                                                             \
   virtual const std::string __className() const{                                          \
