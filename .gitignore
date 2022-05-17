@@ -3,3 +3,4 @@ build/*
 .vscode/*
 .clangd
 unit_test/*
+vs_build/*
