@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 20:06:53
- * @LastEditTime: 2022-05-16 21:55:38
+ * @LastEditTime: 2022-05-17 12:53:45
  * @LastEditors: feiqi3
  * @Description: |main application|
  * @FilePath: \rayTracer\src\main.cpp
@@ -11,10 +11,11 @@
 #include "Macro.h"
 #include "buffer/RGB12Buffer.h"
 #include "material/texture.h"
+#include "object/texture_triangle.h"
 #include <iostream>
 #include <memory>
 
-constexpr int IMG_WIDTH = 1920;
+constexpr int IMG_WIDTH = 192;
 constexpr double RATIO = 16.0 / 9.0;
 constexpr int SAMPLES = 80;
 
@@ -33,24 +34,21 @@ int main() {
       std::make_shared<lambertian>(color(0.7, 0.3, 0.3));
   shared_ptr<dielectric> die = make_shared<dielectric>(1.5);
 
-  RGB12 text_buffer("./texture/DSC01859.jpg");
+  RGB12 text_buffer("./DSC01859.jpg");
 
-  shared_ptr<texture> text = make_shared<texture>(text_buffer);
-  shared_ptr<triangle> tri = std::make_shared<triangle>(
-      vec3(-5, 2, -2), vec3(5, 2, -2), vec3(5, -2, -2), text);
-  tri->set_texcoord(vec3(0, 1, 0), vec3(1, 1, 0), vec3(1, 0, 0));
-  text->set_triangle(tri);
+  shared_ptr<texture_triangle> texTri = make_shared<texture_triangle>(
+      vec3(-5, 2, -2), vec3(-5, -2, -2), vec3(5, -2, -2),
+       text_buffer);
 
-  shared_ptr<texture> text2 = make_shared<texture>(text_buffer);
-  shared_ptr<triangle> tri2 = std::make_shared<triangle>(
-      vec3(-5, 2, -2), vec3(-5, -2, -2), vec3(5, -2, -2), text2);
-  tri2->set_texcoord(vec3(0, 1, 0), vec3(0, 0, 0), vec3(1, 0, 0));
-  text2->set_triangle(tri2);
+  texTri->init();
+  texTri->set_texcoord(vec3(0, 1, 0), vec3(0, 0, 0), vec3(1, 0, 0));
+
+
+
 
   world.add(make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere));
   world.add(make_shared<sphere>(vec3(-1.0, 0, -1), .5, metal_sphere_a));
-  world.add(tri);
-  world.add(tri2);
+  world.add(texTri);
 
   world.add(make_shared<sphere>(vec3(1.0, 0, -1), .5, die));
 

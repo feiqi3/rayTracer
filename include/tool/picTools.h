@@ -47,6 +47,8 @@ inline unsigned char *load_from_jpg(const char *filename, img_info &_info) {
   int x, y, n;
   stbi_set_flip_vertically_on_load(1);
   unsigned char * output = stbi_load(filename, &x, &y, &n, 3);
+  if(output == nullptr)
+      Flog::flog(ERRO, std::string(filename) + "  Failed to load");
   Flog::flog(TRACE, std::string(filename)+" has loaded.");
   _info.x = x;
   _info.y = y;
