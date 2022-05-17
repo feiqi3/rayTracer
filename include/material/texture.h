@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-03-03 19:26:25
- * @LastEditTime: 2022-05-16 21:47:12
+ * @LastEditTime: 2022-05-17 12:38:49
  * @LastEditors: feiqi3
  * @Description: |material lambertian|
  * @FilePath: \rayTracer\include\material\texture.h
@@ -30,14 +30,14 @@ class texture : public material {
     if (scatter_dir.is_close_to_zero()) {
       scatter_dir = hit_rec.normal;
     }
-    if (tri == nullptr) {
+    if (tri.lock() == nullptr) {
       attenuation = color(0, 0, 0);
     } else {
       barycoord coord;
-      coord = tri->get_barycentric(hit_rec.p);
-      vec3 sample_coord = coord.alpha * tri->texP1() +
-                          coord.beta * tri->texP2() +
-                          coord.gamma * tri->texP3();
+      coord = tri.lock()->get_barycentric(hit_rec.p);
+      vec3 sample_coord = coord.alpha * tri.lock()->texP1() +
+                          coord.beta * tri.lock()->texP2() +
+                          coord.gamma * tri.lock()->texP3();
       attenuation = buffer.sampler(sample_coord.x(), sample_coord.y()) / 255.0;
     }
     scattered = ray(hit_rec.p, scatter_dir);
@@ -45,14 +45,13 @@ class texture : public material {
   }
 
 public:
-  texture(const RGB12 &_buf) : buffer(_buf), tri(nullptr) {}
-  void set_triangle(std::shared_ptr<triangle>_tri) { tri = _tri; }
+  texture(const RGB12 &_buf) : buffer(_buf) {}
+  void set_triangle(const std::shared_ptr<triangle>&_tri) {
+     tri = _tri; }
 
 private:
   RGB12 buffer;
-  std::shared_ptr<triangle> tri;
+  std::weak_ptr<triangle> tri;
 
-protected:
-  bool is_down_triangle;
 };
 #endif
