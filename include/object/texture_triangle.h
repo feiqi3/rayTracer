@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-17 09:56:29
- * @LastEditTime: 2022-05-17 12:52:29
+ * @LastEditTime: 2022-05-17 15:13:40
  * @LastEditors: feiqi3
  * @Description: |---
  Triangle with texture !
@@ -47,11 +47,7 @@ inline texture_triangle::texture_triangle(const vec3 &_p1, const vec3 &_p2,
 }
 
 inline void texture_triangle::init() {
-  Flog::flog(INFO, "Triangle init1");
-
-  std::weak_ptr<texture_triangle> _this_ptr = weak_from_this();
-Flog::flog(INFO, "Triangle init2");
+  std::weak_ptr<texture_triangle> _this_ptr = shared_from_this();
    _tex->set_triangle(_this_ptr.lock());
-  Flog::flog(INFO, "Triangle init");
 }
 #endif
