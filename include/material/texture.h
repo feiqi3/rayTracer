@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-03-03 19:26:25
- * @LastEditTime: 2022-05-17 12:38:49
+ * @LastEditTime: 2022-05-18 14:01:40
  * @LastEditors: feiqi3
  * @Description: |material lambertian|
  * @FilePath: \rayTracer\include\material\texture.h
@@ -34,24 +34,24 @@ class texture : public material {
       attenuation = color(0, 0, 0);
     } else {
       barycoord coord;
-      coord = tri.lock()->get_barycentric(hit_rec.p);
+      coord = tri.lock()->get_barycentric(hit_rec.p,hit_rec);
       vec3 sample_coord = coord.alpha * tri.lock()->texP1() +
                           coord.beta * tri.lock()->texP2() +
                           coord.gamma * tri.lock()->texP3();
-      attenuation = buffer.sampler(sample_coord.x(), sample_coord.y()) / 255.0;
+      attenuation = _buffer->sampler(sample_coord.x(), sample_coord.y());
     }
     scattered = ray(hit_rec.p, scatter_dir);
     return true;
   }
 
 public:
-  texture(const RGB12 &_buf) : buffer(_buf) {}
+  texture(const std::shared_ptr<RGB12>& _buf) : _buffer(_buf) {}
+
   void set_triangle(const std::shared_ptr<triangle>&_tri) {
      tri = _tri; }
-
-private:
-  RGB12 buffer;
+  
+protected:
   std::weak_ptr<triangle> tri;
-
+  std::shared_ptr<RGB12> _buffer;
 };
 #endif
