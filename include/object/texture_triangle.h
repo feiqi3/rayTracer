@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-17 09:56:29
- * @LastEditTime: 2022-05-17 15:13:40
+ * @LastEditTime: 2022-05-18 11:56:00
  * @LastEditors: feiqi3
  * @Description: |---
  Triangle with texture !
@@ -9,8 +9,8 @@
  * @FilePath: \rayTracer\include\object\texture_triangle.h
  * ->blog: feiqi3.cn <-
  */
-#ifndef TEXTURE_rectangle_H
-#define TEXTURE_rectangle_H
+#ifndef TEXTURE_TRIANGLE_H
+#define TEXTURE_TRIANGLE_H
 
 #include "../buffer/RGB12Buffer.h"
 #include "../material/texture.h"
@@ -23,14 +23,15 @@ class texture_triangle : public triangle,
                          public std::enable_shared_from_this<texture_triangle> {
 public:
   texture_triangle(const vec3 &_p1, const vec3 &_p2, const vec3 &_p3,
-                   const RGB12& _buffer);
+                   const std::shared_ptr<RGB12>& _buffer);
   GET_CLASS_NAME(texture_triangle);
   virtual const std::string toString() const override {
     std::string className = clsname();
     return className + ",P1: " + p1.toString() + " ,P2: " + p2.toString() +
            " ,P3: " + p3.toString() + " ,Normal: " + normal.toString() + ".\n";
   }
-  // This func showed be called after ctr
+  
+  // This func MUST be called after ctr
   virtual void init();
   std::weak_ptr<texture> get_texture(){return _tex;}
 protected:
@@ -38,7 +39,7 @@ protected:
   std::shared_ptr<texture> _tex;
 };
 inline texture_triangle::texture_triangle(const vec3 &_p1, const vec3 &_p2,
-                                          const vec3 &_p3, const RGB12& _buffer)
+                                          const vec3 &_p3, const std::shared_ptr<RGB12>& _buffer)
     : triangle(_p1, _p2, _p3) {
   _tex = std::make_shared<texture>(_buffer);
   triangle::mat_ptr = _tex;
