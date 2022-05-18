@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-02-02 11:51:26
- * @LastEditTime: 2022-05-15 13:05:50
+ * @LastEditTime: 2022-05-18 13:15:46
  * @LastEditors: feiqi3
  * @Description: |a list of objects|
  * @FilePath: \rayTracer\include\hitableList.h
@@ -32,7 +32,7 @@ public:
     return classname+","+ STR(obj_list.size())+" object in map.";
   }
 
-  void add(std::shared_ptr<object> obj) { obj_list.push_back(obj); }
+  void add(const std::shared_ptr<object>& obj) { obj_list.push_back(obj); }
 
   bool hit(const ray &r, double t_min, double t_max,
            record &rec) const override {
