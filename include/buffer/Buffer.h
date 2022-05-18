@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-12 10:34:58
- * @LastEditTime: 2022-05-15 13:35:34
+ * @LastEditTime: 2022-05-18 14:14:25
  * @LastEditors: feiqi3
  * @Description: |---
 Buffer base class
@@ -20,6 +20,10 @@ RGB24->double vec3
 #include "../math/vector.h"
 #include "../tool/flog.h"
 #include <string>
+
+typedef int BUFFER_TPYE;
+const BUFFER_TPYE FBUFFER_RGB12 = 1001;
+const BUFFER_TPYE FBUFFER_RGB12F = 1002;
 
 
 #define BUFFER_INFO_STR                                                        \
