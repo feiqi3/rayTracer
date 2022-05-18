@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-10 13:38:05
- * @LastEditTime: 2022-05-15 12:49:51
+ * @LastEditTime: 2022-05-18 13:49:09
  * @LastEditors: feiqi3
  * @Description: |---
  Render pass base class 
@@ -17,7 +17,9 @@
 #include "../hitableList.h"
 #include "../math/vector.h"
 #include "../ray.h"
+#include "buffer/Buffer.h"
 #include <iostream>
+#include <memory>
 
 enum RenderType {
   MainRender = BIT(0),
@@ -30,7 +32,7 @@ enum RenderType {
 class renderPass {
 public:
 //need basic camera infomation to build this pass
-  renderPass(float _fov, float _ratio, vec3 pos, vec3 up, vec3 look_at);
+  renderPass(float _fov, float _ratio, vec3 pos, vec3 up, vec3 look_at,const RenderType& _type);
   virtual ~renderPass();
   //get ray from viewport
   virtual ray get_ray(double s, double t) = 0;
@@ -46,15 +48,17 @@ public:
   const float ratio;
   const float viewport_height;
   const float viewport_width;
-
+  void setRenderType(RenderType _type){m_type = _type;}
+  RenderType getRenderType(){return m_type;}
 protected:
   vec3 lookDir;
+  RenderType m_type;
   vec3 u, v, w;
   //Like lookat Matrix in glm
 };
 inline renderPass::renderPass(float _fov, float _ratio, vec3 pos, vec3 _up,
-                              vec3 lookat)
-    : origin(pos), up(_up), look_at(lookat), fov_vertical(_fov), ratio(_ratio),
+                            vec3 lookat,const RenderType& _type)
+    :m_type(_type), origin(pos), up(_up), look_at(lookat), fov_vertical(_fov), ratio(_ratio),
       viewport_height(2 * tan(d2radian(fov_vertical / 2.0))),
       viewport_width(ratio * viewport_height) {
   lookDir = renderPass::origin - renderPass::look_at;

@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-10 13:54:41
- * @LastEditTime: 2022-05-15 13:33:22
+ * @LastEditTime: 2022-05-18 14:00:22
  * @LastEditors: feiqi3
  * @Description: |---
  Actually I want to make a hybrid rayTracer/renderer
@@ -17,11 +17,12 @@
 #include "../math/vector.h"
 #include "../ray.h"
 #include "camera.h"
+#include "renderPass/renderPass.h"
 class NormalRender : public renderPass {
 public:
   NormalRender(camera cam)
       : renderPass(cam.fov_vertical, cam.ratio, cam.origin, cam.up,
-                   cam.look_at) {
+                   cam.look_at,RenderType::SubRender) {
     horizontal = viewport_width * renderPass::u;
     vertical = viewport_height * renderPass::v;
     lower_left_corner =
@@ -62,7 +63,7 @@ class DepthRender : public renderPass {
 public:
   DepthRender(camera cam)
       : renderPass(cam.fov_vertical, cam.ratio, cam.origin, cam.up,
-                   cam.look_at) {
+                   cam.look_at,RenderType::SubRender) {
     horizontal = viewport_width * renderPass::u;
     vertical = viewport_height * renderPass::v;
     lower_left_corner =
