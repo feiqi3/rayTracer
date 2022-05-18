@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 20:06:53
- * @LastEditTime: 2022-05-17 12:53:45
+ * @LastEditTime: 2022-05-18 14:51:11
  * @LastEditors: feiqi3
  * @Description: |main application|
  * @FilePath: \rayTracer\src\main.cpp
@@ -9,8 +9,11 @@
  */
 #include "../include/HeaderFiles.h"
 #include "Macro.h"
+#include "RenderQueue.h"
 #include "buffer/RGB12Buffer.h"
 #include "material/texture.h"
+#include "math/vector.h"
+#include "object/texture_rectangle.h"
 #include "object/texture_triangle.h"
 #include <iostream>
 #include <memory>
@@ -34,25 +37,23 @@ int main() {
       std::make_shared<lambertian>(color(0.7, 0.3, 0.3));
   shared_ptr<dielectric> die = make_shared<dielectric>(1.5);
 
-  RGB12 text_buffer("./DSC01859.jpg");
-
-  shared_ptr<texture_triangle> texTri = make_shared<texture_triangle>(
-      vec3(-5, 2, -2), vec3(-5, -2, -2), vec3(5, -2, -2),
-       text_buffer);
-
-  texTri->init();
-  texTri->set_texcoord(vec3(0, 1, 0), vec3(0, 0, 0), vec3(1, 0, 0));
-
-
-
-
-  world.add(make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere));
+  std::shared_ptr<RGB12> text_buffer = std::make_shared<RGB12>("./DSC01859.jpg");
+  auto rectangle = make_shared<texture_rectangle>(vec3(-5, -2, -2), vec3(-5, 2, -2), vec3(5, 2, -2),
+                         vec3(5, -2, -2),text_buffer);
+                         rectangle->init();
+  
+  auto shperea = make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere);
+  auto shpereb = make_shared<sphere>(vec3(-1.0, 0, -1), .5, metal_sphere_a);
+  auto spherec = make_shared<sphere>(vec3(1.0, 0, -1), .5, die);
+  auto sphered = make_shared<sphere>(vec3(0, -100.5, -2), 99, ground_mat);
+  
+/*   world.add(make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere));
   world.add(make_shared<sphere>(vec3(-1.0, 0, -1), .5, metal_sphere_a));
-  world.add(texTri);
+  world.add(rectangle);
 
   world.add(make_shared<sphere>(vec3(1.0, 0, -1), .5, die));
 
-  world.add(make_shared<sphere>(vec3(0, -100.5, -2), 99, ground_mat));
+  world.add(make_shared<sphere>(vec3(0, -100.5, -2), 99, ground_mat)); */
 
   int img_width = IMG_WIDTH;
   int img_height = static_cast<int>(img_width / RATIO);
@@ -63,10 +64,16 @@ int main() {
   std::cout << "Focus length  " << (vec3(0, 0, -1) - cameraPos).length()
             << "\n";
 #endif
-
-  camera cam(60, RATIO, vec3(-2, 2, 3), vec3(0, 1, 0), vec3(0, 0, -1));
-
-  double division_x = 1.0 / (img_width - 1.0);
+shared_ptr<camera> cam = make_shared<camera>(60, RATIO, vec3(-2, 2, 3), vec3(0, 1, 0), vec3(0, 0, -1));
+renderQueue rq(cam,IMG_WIDTH,16./9,true);
+rq.addObj(shperea);
+rq.addObj(shpereb);
+rq.addObj(spherec);
+rq.addObj(sphered);
+rq.addObj(rectangle);
+rq.Render();
+rq.SaveToFile();
+/*   double division_x = 1.0 / (img_width - 1.0);
   double division_y = 1.0 / (img_height - 1.0);
 
   constexpr auto divided_samples = 1.0 / SAMPLES;
@@ -95,13 +102,13 @@ int main() {
       //      pm.m_s_colorWirte(pxl,divided_samples);
     }
 #ifndef DEBUG
-/*     if (y % ((int)(img_height / 100)) == 0) {
+     if (y % ((int)(img_height / 100)) == 0) {
       std::cout << "render :"
                 << (int)((1.0 - (double)y / (img_height - 1.0)) * 100) << "\n";
-    } */
+    }
 #endif
   }
   fPic::jpgWriter(main_fram);
   Flog::flog(INFO, "Render finished!");
-  delete main_fram;
+  delete main_fram; */
 }
