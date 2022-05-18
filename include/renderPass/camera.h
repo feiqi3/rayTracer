@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-02-08 10:43:24
- * @LastEditTime: 2022-05-15 12:58:26
+ * @LastEditTime: 2022-05-18 12:28:42
  * @LastEditors: feiqi3
  * @Description: |camera class|
  * @FilePath: \rayTracer\include\renderPass\camera.h
@@ -32,7 +32,7 @@ private:
 public:
   camera(float _fov, float _ratio, vec3 _pos, vec3 _up, vec3 lookat,
          float _aperture = 0, float focus_dist = 1)
-      : renderPass(_fov, _ratio, _pos, _up, lookat), focal_length(focus_dist),
+      : renderPass(_fov, _ratio, _pos, _up, lookat,RenderType::MainRender), focal_length(focus_dist),
         focal_viewport_height(renderPass::viewport_height * focal_length),
         focal_viewport_width(renderPass::ratio * focal_viewport_height),
         aperture(_aperture) {
@@ -70,14 +70,14 @@ public:
            ",look at: " + look_at.toString() + ".";
   }
 
-  ray get_ray(double s, double t) {
+  ray get_ray(double s, double t) override{
     vec3 rand_p = get_rand_in_disk() * lens_radius;
     vec3 offset = u * rand_p.x() + v * rand_p.y();
     return ray(origin + offset, lower_left_corner + s * horizontal +
                                     t * vertical - (origin + offset));
   }
 
-  color cast_ray(const ray &r, const hitable_list &world, int depth) {
+  color cast_ray(const ray &r, const hitable_list &world, int depth)override {
     record rec;
     depth = depth - 1;
     if (depth <= 0) {
