@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-13 15:01:40
- * @LastEditTime: 2022-05-17 11:46:59
+ * @LastEditTime: 2022-05-17 22:40:40
  * @LastEditors: feiqi3
  * @Description: |---Obj Triangle---|
 
@@ -29,7 +29,7 @@ public:
   virtual bool hit(const ray &r, double t_min, double t_max,
                    record &rec) const override;
   bool is_in_tri(const vec3 &_p) const;
-  barycoord get_barycentric(const vec3 &point);
+  virtual barycoord get_barycentric(const vec3 &point,const record &hit_rec);
   GET_CLASS_NAME(Triangle);
   virtual const std::string toString() const override {
     std::string className = clsname();
@@ -128,7 +128,7 @@ inline double get_triangle_size(const vec3 &a, const vec3 &b, const vec3 &c) {
   return 0.5 * cross(ab, ac).length();
 }
 
-inline barycoord triangle::get_barycentric(const vec3 &point) {
+inline barycoord triangle::get_barycentric(const vec3 &point,const record &hit_rec) {
   barycoord res;
   res.alpha = get_triangle_size(p3, p2, point) / area;
   res.beta = get_triangle_size(p3, p1, point) / area;
