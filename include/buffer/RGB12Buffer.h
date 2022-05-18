@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-12 11:10:47
- * @LastEditTime: 2022-05-16 20:30:20
+ * @LastEditTime: 2022-05-18 14:13:26
  * @LastEditors: feiqi3
  * @Description: |---a buffer to save float3,or vec3 in glsl :)---|
  * @FilePath: \rayTracer\include\buffer\RGB12Buffer.h
@@ -16,7 +16,10 @@
 #include "../Macro.h"
 #include "../tool/picTools.h"
 #include <string>
-#include <winuser.h>
+
+
+
+
 class RGB12F : public buffer {
 public:
   RGB12F(int _x, int _y) : buffer(_x, _y) {Flog::flog(INFO, toString());}
@@ -165,7 +168,7 @@ inline bool RGB12::make_buffer() {
 }
 
 inline void RGB12::del_buffer() {
-  if (init == false) {
+  if (init == false ||_buffer_map == nullptr) {
     return;
   }
   if (!load_from_file)
@@ -197,7 +200,7 @@ inline vec3 RGB12::sampler(double _x, double _y) const {
 #ifdef DEBUG
   std::cout << "Load from Buffer[" << pos << "]\n";
 #endif
-  return vec3(_buffer_map[pos], _buffer_map[pos + 1], _buffer_map[pos + 2]);
+  return vec3(_buffer_map[pos], _buffer_map[pos + 1], _buffer_map[pos + 2])/255.0;
 }
 
 inline void RGB12::writeBufferf(float _x, float _y, const vec3 _in) {
