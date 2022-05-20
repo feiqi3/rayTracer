@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 15:27:35
- * @LastEditTime: 2022-05-20 23:13:32
+ * @LastEditTime: 2022-05-20 23:26:11
  * @LastEditors: feiqi3
  * @Description: |Vector class|
  * @FilePath: \rayTracer\include\math\vector4.h
@@ -31,14 +31,14 @@ public:
   double y() const { return vec[1]; }
   double z() const { return vec[2]; }
   double w() const { return vec[3]; }
-  vec3 xyz() { return vec3(x(), y(), z()); }
+  vec3 xyz() const{ return vec3(x(), y(), z()); }
   std::string const toString() const {
     std::ostringstream oos;
     oos << x() << "," << y() << "," << z() << "," << w();
     return "(" + oos.str() + ")";
   }
 
-  vec4 operator-() {
+  vec4 operator-() const{
 
     return vec4(-vec[0], -vec[1], -vec[2], -vec[3]);
     ;
