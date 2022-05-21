@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 20:06:53
- * @LastEditTime: 2022-05-21 22:51:19
+ * @LastEditTime: 2022-05-21 22:57:42
  * @LastEditors: feiqi3
  * @Description: |main application|
  * @FilePath: \rayTracer\src\main.cpp
@@ -23,7 +23,7 @@
 #include <iostream>
 #include <memory>
 
-constexpr int IMG_WIDTH = 500;
+constexpr int IMG_WIDTH = 1920;
 constexpr double RATIO = 16.0 / 9.0;
 constexpr int SAMPLES = 40;
 
@@ -81,7 +81,7 @@ rq.addObj(shpereb);
 rq.addObj(spherec);
 rq.addObj(sphered);
 rq.addObj(rectangle);
-rq.setThreadNum(4);
+rq.setThreadNum(9);
 rq.MultiThreadRender();
 rq.SaveToFile();
 /*   double division_x = 1.0 / (img_width - 1.0);

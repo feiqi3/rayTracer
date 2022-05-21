@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-18 12:23:28
- * @LastEditTime: 2022-05-21 22:50:20
+ * @LastEditTime: 2022-05-21 22:55:15
  * @LastEditors: feiqi3
  * @Description: |---description here---|
  * @FilePath: \rayTracer\include\RenderQueue.h
@@ -210,7 +210,6 @@ inline void renderQueue::renderBlock(int b_x, int b_y, int stepX, int stepY,
 inline void renderQueue::MultiThreadRender()  {
   std::vector<std::shared_ptr<std::thread>> threads;
   int block_num = sqrt(threadNums);
-  std::cout<<"Thread Nums "<<block_num<<"\n";
   int x_nums = img_width / block_num;
   int y_nums = img_height / block_num;
   int x_mod = img_width - block_num * x_nums;
@@ -226,7 +225,7 @@ inline void renderQueue::MultiThreadRender()  {
         x_tail = x_mod;
       }
       Flog::flog(TRACE, "Block id: " + STR(id) +
-      " belongs to x:" + STR(x * x_nums)+
+      ", x:" + STR(x * x_nums)+
       " - " +STR(x * x_nums + x_nums + x_tail - 1) +
       " y:" + STR(y * y_nums - 1) +
       " - " +STR(y  * y_nums - 1 - y_nums + y_tail + 1)+"\n");
