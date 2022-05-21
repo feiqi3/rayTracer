@@ -7,7 +7,7 @@
 #include <io.h>
 #include <iostream>
 #include <string>
-
+#include<mutex>
 #define USE_STATIC_PATH "using_static_path"
 #define STR std::to_string
 #ifndef FLOG_H
@@ -33,6 +33,7 @@ private:
 
   static string static_path;
   static string static_logName;
+  static std::mutex mtx;
 
   static TYPE GLOB_LOG_LEVEL;
 
@@ -141,6 +142,7 @@ public:
     if (type < GLOB_LOG_LEVEL)
       return;
     string time = getTime();
+    Flog::mtx.lock();
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),
                             FOREGROUND_INTENSITY | FOREGROUND_GREEN |
                                 FOREGROUND_RED | FOREGROUND_BLUE);
@@ -151,6 +153,7 @@ public:
                               FOREGROUND_GREEN |
                                 FOREGROUND_RED | FOREGROUND_BLUE);
     std::cout << s << "\n";
+    Flog::mtx.unlock();
   }
 
   // make log print in console
@@ -204,12 +207,13 @@ public:
   static void logError(string s) { flog(ERRO, s); }
 };
 
+inline std::mutex Flog::mtx = std::mutex();
+
 class FTick : public Flog {
 private:
   float StartTick;
   float EndTick;
   float DeltaTick;
-
 public:
   FTick() {
     StartTick = -1;
