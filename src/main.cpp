@@ -17,19 +17,19 @@
 #include "object/texture_rectangle.h"
 #include "object/texture_triangle.h"
 #include "object/model.h"
+#include "renderPass/renderPass.h"
 #include "tool/fLoader.h"
 
 #include <iostream>
 #include <memory>
 
-constexpr int IMG_WIDTH = 192;
+constexpr int IMG_WIDTH = 500;
 constexpr double RATIO = 16.0 / 9.0;
 constexpr int SAMPLES = 40;
 
 int main() {
   Flog logger();
-  Flog::set_glob_log_level(INFO);
-
+  Flog::set_glob_log_level(TRACE);
   hitable_list world;
 /*   shared_ptr<lambertian> ground_mat =
       std::make_shared<lambertian>(color(0.8, 0.8, 0.8));
@@ -71,11 +71,11 @@ int main() {
   std::cout << "Focus length  " << (vec3(0, 0, -1) - cameraPos).length()
             << "\n";
 #endif
-shared_ptr<camera> cam = make_shared<camera>(60, RATIO, vec3(-2, 2, 3), vec3(0, 1, 0), vec3(0, 0, -1));
+shared_ptr<renderPass> cam = make_shared<camera>(30, RATIO, vec3(-2, -2, 5), vec3(0, 1, 0), vec3(0, 0, -1));
 renderQueue rq(cam,IMG_WIDTH,16./9,true);
 floader f;
 f.fload("./model/lowpolytree.obj");
-rq.addObj(f.getModel("./model/cottage_diffuse.png"));
+rq.addObj(f.getModel());
 /* rq.addObj(shperea);
 rq.addObj(shpereb);
 rq.addObj(spherec);
