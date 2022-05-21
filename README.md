@@ -1,7 +1,7 @@
 <!--
  * @Author: feiqi3
  * @Date: 2022-03-01 23:47:35
- * @LastEditTime: 2022-05-16 22:37:37
+ * @LastEditTime: 2022-05-21 23:03:21
  * @LastEditors: feiqi3
  * @Description: |The readme File|
  * @FilePath: \rayTracer\README.md
@@ -16,14 +16,14 @@ Triangle rendering
 Barycentric coordinate  
 .JPG writing based on STBI   
 Texture mapping    
-
+New render queue  
+Multithreading support 
   
 TO DO:   
 Light  
 Sky box  
-.obj file loading  
-New render queue  
-Multithreading support   
+.obj file loading(Still have bugs and low efficiency)  
+  
 Importance sampling  
   
 NO plan for:The randome scene.  
