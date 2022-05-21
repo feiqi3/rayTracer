@@ -139,6 +139,10 @@ inline void renderQueue::Render() const {
       // pm.colorWrite(main_fram->sampler(x * division_x, y * division_y));
       //      pm.m_s_colorWirte(pxl,divided_samples);
     }
+    if (y % ((int)(img_height / 50)) == 0) {
+      Flog::flog(TRACE, "render :"
+                + STR((int)((1.0 - (double)y / (img_height - 1.0)) * 100)));
+    }
   }
 }
 
