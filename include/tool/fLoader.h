@@ -18,7 +18,7 @@
 
 class floader {
 public:
-  floader(){}
+  floader() {}
   bool fload(const char *);
   std::shared_ptr<model> getModel(const char *);
 
@@ -42,14 +42,17 @@ floader::getModel(const char *picPath = "__NULL") {
 
   std::shared_ptr<model> res = make_shared<model>();
   std::shared_ptr<RGB12> pic;
+  // If texture map doesn't exist
+  // then use material's albedo instead
   if (strcmp(picPath, "__NULL") == 0) {
     pic = nullptr;
   } else {
     pic = std::make_shared<RGB12>(picPath);
   }
   for (auto mesh : loader.LoadedMeshes) {
-    std::shared_ptr<lambertian> mat =
-        std::make_shared<lambertian>(V32vec3(mesh.MeshMaterial.Kd));
+    // use color as albedo
+    std::shared_ptr<lambertian> mat = std::make_shared<lambertian>(V32vec3(
+        mesh.MeshMaterial.Kd + mesh.MeshMaterial.Ka + mesh.MeshMaterial.Ks));
     for (int i = 0; i < mesh.Indices.size() / 3; i++) {
       auto i1 = mesh.Indices[i * 3];
       auto i2 = mesh.Indices[i * 3 + 1];
@@ -60,7 +63,8 @@ floader::getModel(const char *picPath = "__NULL") {
       vec3 t1 = V22vec3(mesh.Vertices[i1].TextureCoordinate);
       vec3 t2 = V22vec3(mesh.Vertices[i2].TextureCoordinate);
       vec3 t3 = V22vec3(mesh.Vertices[i3].TextureCoordinate);
-      texture_triangle tri(v1, v2, v3, t1, t2, t3, pic, mat);
+      std::shared_ptr<texture_triangle> tri = make_shared<texture_triangle>(v1, v2, v3, t1, t2, t3, pic, mat);
+      tri->init();
       res->add(tri);
     }
   }
