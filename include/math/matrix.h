@@ -19,12 +19,11 @@ public:
 
   static mat4 Identity();
 
-  std::string toString()
-  {
-      return "Mat4:\n"+cmp[0].toString()+"\n"+cmp[1].toString()+"\n"+cmp[2].toString()+"\n"+cmp[3].toString();
+  std::string toString() {
+    return "Mat4:\n" + cmp[0].toString() + "\n" + cmp[1].toString() + "\n" +
+           cmp[2].toString() + "\n" + cmp[3].toString();
   }
 };
-
 
 inline mat4 IdentityMat() {
   return mat4(vec4(1, 0, 0, 0), vec4(0, 1, 0, 0), vec4(0, 0, 1, 0),
@@ -74,6 +73,8 @@ inline vec4 operator*(const mat4 &mat, const vec4 &vec) {
   return vec4(a, b, c, d);
 }
 
+namespace mat {
+
 inline mat4 getTranslate(const vec3 &vec) {
   mat4 tmp = IdentityMat();
   tmp.cmp[0].vec[3] = vec[0];
@@ -112,5 +113,5 @@ inline mat4 getRotate(double theta, const vec3 &v) {
   return mat4(vec4(m00, m01, m02, m03), vec4(m10, m11, m12, m13),
               vec4(m20, m21, m22, m23), vec4(0, 0, 0, 1));
 }
-
+} // namespace mat
 #endif

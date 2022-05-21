@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-13 15:01:40
- * @LastEditTime: 2022-05-17 22:40:40
+ * @LastEditTime: 2022-05-21 10:15:26
  * @LastEditors: feiqi3
  * @Description: |---Obj Triangle---|
 
@@ -11,8 +11,10 @@
 #ifndef TRIANGLE_H
 #define TRIANGLE_H
 
+#include "../math/matrix.h"
 #include "../math/vector.h"
 #include "hitable.h"
+
 
 struct barycoord {
   double alpha, beta, gamma;
@@ -29,14 +31,16 @@ public:
   virtual bool hit(const ray &r, double t_min, double t_max,
                    record &rec) const override;
   bool is_in_tri(const vec3 &_p) const;
-  virtual barycoord get_barycentric(const vec3 &point,const record &hit_rec);
+  virtual barycoord get_barycentric(const vec3 &point, const record &hit_rec);
+  virtual void transform(const mat4 &mat);
   GET_CLASS_NAME(Triangle);
   virtual const std::string toString() const override {
     std::string className = clsname();
     return className + ",P1: " + p1.toString() + " ,P2: " + p2.toString() +
            " ,P3: " + p3.toString() + " ,Normal: " + normal.toString() + ".\n";
   }
-  virtual void set_texcoord(const vec3 &_sp1, const vec3 &_sp2, const vec3 &_sp3) {
+  virtual void set_texcoord(const vec3 &_sp1, const vec3 &_sp2,
+                            const vec3 &_sp3) {
     s_p1 = _sp1;
     s_p2 = _sp2;
     s_p3 = _sp3;
@@ -53,17 +57,18 @@ protected:
   vec3 s_p1, s_p2, s_p3;
   /*
   these vectors are caculated during ctr
-  and wil be used when be use 
+  and wil be used when be use
   in function is_in_tri
   */
   vec3 _v0, _v1;
   double _dot00, _dot01, _dot11;
+
+  void __recaculate();
 };
 
 inline triangle::triangle(const vec3 &_p1, const vec3 &_p2, const vec3 &_p3,
                           std::shared_ptr<material> _mat_ptr)
-    : hitable(_mat_ptr), p1(_p1), p2(_p2), p3(_p3), s_p1(p1), s_p2(p2),
-      s_p3(p3) {
+    : hitable(_mat_ptr), p1(_p1), p2(_p2), p3(_p3) {
   _v0 = p3 - p1;
   _v1 = p2 - p1;
   _dot00 = dot(_v0, _v0);
@@ -72,6 +77,17 @@ inline triangle::triangle(const vec3 &_p1, const vec3 &_p2, const vec3 &_p3,
   normal = normalize(cross(_v1, p3 - p2));
   Flog::flog(TRACE, toString());
   area = get_triangle_size(p1, p2, p3);
+}
+
+inline void triangle::__recaculate() {
+  _v0 = p3 - p1;
+  _v1 = p2 - p1;
+  _dot00 = dot(_v0, _v0);
+  _dot01 = dot(_v0, _v1);
+  _dot11 = dot(_v1, _v1);
+  normal = normalize(cross(_v1, p3 - p2));
+  area = get_triangle_size(p1, p2, p3);
+  Flog::flog(TRACE, "Recaculate,"+toString());
 }
 
 inline triangle::triangle(const vec3 &_p1, const vec3 &_p2, const vec3 &_p3)
@@ -128,11 +144,19 @@ inline double get_triangle_size(const vec3 &a, const vec3 &b, const vec3 &c) {
   return 0.5 * cross(ab, ac).length();
 }
 
-inline barycoord triangle::get_barycentric(const vec3 &point,const record &hit_rec) {
+inline barycoord triangle::get_barycentric(const vec3 &point,
+                                           const record &hit_rec) {
   barycoord res;
   res.alpha = get_triangle_size(p3, p2, point) / area;
   res.beta = get_triangle_size(p3, p1, point) / area;
   res.gamma = 1 - res.alpha - res.beta;
   return res;
+}
+
+inline void triangle::transform(const mat4 &mat) {
+  p1 = (mat * vec4(p1, 1)).xyz();
+  p2 = (mat * vec4(p2, 1)).xyz();
+  p3 = (mat * vec4(p3, 1)).xyz();
+  __recaculate();
 }
 #endif

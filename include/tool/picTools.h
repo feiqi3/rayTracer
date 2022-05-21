@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-14 13:27:31
- * @LastEditTime: 2022-05-16 20:45:15
+ * @LastEditTime: 2022-05-21 13:03:14
  * @LastEditors: feiqi3
  * @Description: |---description here---|
  * @FilePath: \rayTracer\include\tool\picTools.h
@@ -34,7 +34,7 @@ inline void jpgWriter(buffer *_buffer, const char *path, const char *name,
   stbi_write_jpg(str, _buffer->buf_width(), _buffer->buf_height(), 3,
                  (int *)_buffer->getData(), 100);
   stbi_flip_vertically_on_write(0);
-  Flog::flog(INFO, "Render out put has been saved to " + string(path) +
+  Flog::flog(INFO, "Rendering output has been saved to " + string(path) +
                        string(name) + ".\n");
 }
 

@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 20:06:53
- * @LastEditTime: 2022-05-18 14:51:11
+ * @LastEditTime: 2022-05-21 16:31:08
  * @LastEditors: feiqi3
  * @Description: |main application|
  * @FilePath: \rayTracer\src\main.cpp
@@ -12,22 +12,26 @@
 #include "RenderQueue.h"
 #include "buffer/RGB12Buffer.h"
 #include "material/texture.h"
+#include "math/matrix.h"
 #include "math/vector.h"
 #include "object/texture_rectangle.h"
 #include "object/texture_triangle.h"
+#include "object/model.h"
+#include "tool/fLoader.h"
+
 #include <iostream>
 #include <memory>
 
 constexpr int IMG_WIDTH = 192;
 constexpr double RATIO = 16.0 / 9.0;
-constexpr int SAMPLES = 80;
+constexpr int SAMPLES = 40;
 
 int main() {
   Flog logger();
   Flog::set_glob_log_level(INFO);
 
   hitable_list world;
-  shared_ptr<lambertian> ground_mat =
+/*   shared_ptr<lambertian> ground_mat =
       std::make_shared<lambertian>(color(0.8, 0.8, 0.8));
   shared_ptr<metal> metal_sphere_a =
       std::make_shared<metal>(color(0.5, 0.5, 0.5), 0);
@@ -36,16 +40,19 @@ int main() {
   shared_ptr<lambertian> lambertian_sphere =
       std::make_shared<lambertian>(color(0.7, 0.3, 0.3));
   shared_ptr<dielectric> die = make_shared<dielectric>(1.5);
-
+  shared_ptr<dielectric> skm =
+      std::make_shared<dielectric>(0.8);
   std::shared_ptr<RGB12> text_buffer = std::make_shared<RGB12>("./DSC01859.jpg");
   auto rectangle = make_shared<texture_rectangle>(vec3(-5, -2, -2), vec3(-5, 2, -2), vec3(5, 2, -2),
-                         vec3(5, -2, -2),text_buffer);
+                         vec3(5, -2, -2),text_buffer,skm);
                          rectangle->init();
-  
+  mat4 trans = mat4::Identity();
+  trans = mat::getRotate(1./4*3.14159,vec3(0,1,0));
+  rectangle->transform(trans);
   auto shperea = make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere);
   auto shpereb = make_shared<sphere>(vec3(-1.0, 0, -1), .5, metal_sphere_a);
   auto spherec = make_shared<sphere>(vec3(1.0, 0, -1), .5, die);
-  auto sphered = make_shared<sphere>(vec3(0, -100.5, -2), 99, ground_mat);
+  auto sphered = make_shared<sphere>(vec3(0, -100.5, -2), 99, ground_mat); */
   
 /*   world.add(make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere));
   world.add(make_shared<sphere>(vec3(-1.0, 0, -1), .5, metal_sphere_a));
@@ -66,11 +73,14 @@ int main() {
 #endif
 shared_ptr<camera> cam = make_shared<camera>(60, RATIO, vec3(-2, 2, 3), vec3(0, 1, 0), vec3(0, 0, -1));
 renderQueue rq(cam,IMG_WIDTH,16./9,true);
-rq.addObj(shperea);
+floader f;
+f.fload("./model/lowpolytree.obj");
+rq.addObj(f.getModel("./model/cottage_diffuse.png"));
+/* rq.addObj(shperea);
 rq.addObj(shpereb);
 rq.addObj(spherec);
 rq.addObj(sphered);
-rq.addObj(rectangle);
+rq.addObj(rectangle); */
 rq.Render();
 rq.SaveToFile();
 /*   double division_x = 1.0 / (img_width - 1.0);

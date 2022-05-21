@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 15:27:35
- * @LastEditTime: 2022-05-20 23:26:11
+ * @LastEditTime: 2022-05-21 11:32:34
  * @LastEditors: feiqi3
  * @Description: |Vector class|
  * @FilePath: \rayTracer\include\math\vector4.h
@@ -41,7 +41,6 @@ public:
   vec4 operator-() const{
 
     return vec4(-vec[0], -vec[1], -vec[2], -vec[3]);
-    ;
   }
 
   vec4 &operator+=(const vec4 &v) {
