@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-10 13:38:05
- * @LastEditTime: 2022-05-18 13:49:09
+ * @LastEditTime: 2022-05-21 21:22:19
  * @LastEditors: feiqi3
  * @Description: |---
  Render pass base class 
@@ -17,7 +17,7 @@
 #include "../hitableList.h"
 #include "../math/vector.h"
 #include "../ray.h"
-#include "buffer/Buffer.h"
+#include "../buffer/Buffer.h"
 #include <iostream>
 #include <memory>
 
