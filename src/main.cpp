@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 20:06:53
- * @LastEditTime: 2022-05-21 16:31:08
+ * @LastEditTime: 2022-05-21 22:51:19
  * @LastEditors: feiqi3
  * @Description: |main application|
  * @FilePath: \rayTracer\src\main.cpp
@@ -31,7 +31,7 @@ int main() {
   Flog logger();
   Flog::set_glob_log_level(TRACE);
   hitable_list world;
-/*   shared_ptr<lambertian> ground_mat =
+  shared_ptr<lambertian> ground_mat =
       std::make_shared<lambertian>(color(0.8, 0.8, 0.8));
   shared_ptr<metal> metal_sphere_a =
       std::make_shared<metal>(color(0.5, 0.5, 0.5), 0);
@@ -52,7 +52,7 @@ int main() {
   auto shperea = make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere);
   auto shpereb = make_shared<sphere>(vec3(-1.0, 0, -1), .5, metal_sphere_a);
   auto spherec = make_shared<sphere>(vec3(1.0, 0, -1), .5, die);
-  auto sphered = make_shared<sphere>(vec3(0, -100.5, -2), 99, ground_mat); */
+  auto sphered = make_shared<sphere>(vec3(0, -100.5, -2), 99, ground_mat);
   
 /*   world.add(make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere));
   world.add(make_shared<sphere>(vec3(-1.0, 0, -1), .5, metal_sphere_a));
@@ -74,14 +74,15 @@ int main() {
 shared_ptr<renderPass> cam = make_shared<camera>(30, RATIO, vec3(-2, -2, 5), vec3(0, 1, 0), vec3(0, 0, -1));
 renderQueue rq(cam,IMG_WIDTH,16./9,true);
 floader f;
-f.fload("./model/lowpolytree.obj");
-rq.addObj(f.getModel());
-/* rq.addObj(shperea);
+//f.fload("./model/lowpolytree.obj");
+//rq.addObj(f.getModel());
+rq.addObj(shperea);
 rq.addObj(shpereb);
 rq.addObj(spherec);
 rq.addObj(sphered);
-rq.addObj(rectangle); */
-rq.Render();
+rq.addObj(rectangle);
+rq.setThreadNum(4);
+rq.MultiThreadRender();
 rq.SaveToFile();
 /*   double division_x = 1.0 / (img_width - 1.0);
   double division_y = 1.0 / (img_height - 1.0);
