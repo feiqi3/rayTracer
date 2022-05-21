@@ -38,7 +38,8 @@ public:
                    const std::shared_ptr<RGB12> &_buffer,
                    shared_ptr<material> _mat);
   // Useless
-  std::weak_ptr<texture> get_texture() { return _tex; }
+  std::weak_ptr<texture> get_texture() { 
+      return _tex; }
 
 protected:
   bool is_init;
