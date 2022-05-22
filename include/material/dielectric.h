@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-03-17 09:44:16
- * @LastEditTime: 2022-05-22 10:02:34
+ * @LastEditTime: 2022-05-22 10:54:49
  * @LastEditors: feiqi3
  * @Description: |Dielectric material class,like glass|
  * @FilePath: \rayTracer\include\material\dielectric.h
