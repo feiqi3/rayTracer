@@ -24,17 +24,11 @@ public:
   void add(const std::shared_ptr<texture_triangle> &);
   GET_CLASS_NAME(Model);
   virtual const std::string toString() const override;
-<<<<<<< HEAD
+
   void transform(const mat4&);
 protected:
   std::vector<std::shared_ptr<texture_triangle>> t_list;
-  
-=======
 
-protected:
-  std::vector<std::shared_ptr<texture_triangle>> t_list;
-  void transform(const mat4 &);
->>>>>>> ebe61e4f4752b6eeafe631c2494678253648e8ab
 };
 
 inline bool model::hit(const ray &r, double t_min, double t_max,
