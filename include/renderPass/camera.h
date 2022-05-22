@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-02-08 10:43:24
- * @LastEditTime: 2022-05-18 12:28:42
+ * @LastEditTime: 2022-05-22 10:06:06
  * @LastEditors: feiqi3
  * @Description: |camera class|
  * @FilePath: \rayTracer\include\renderPass\camera.h
@@ -86,10 +86,11 @@ public:
     if (world.hit(r, 0.001, Infinity, rec)) {
       color attenuation;
       ray scattered;
-      if (rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
-        return attenuation * cast_ray(scattered, world, depth);
+      color emit = rec.mat_ptr->emitted();
+      if (!rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
+        return emit * attenuation;
       }
-      return color(0, 0, 0);
+      return attenuation * cast_ray(scattered, world, depth);
     }
     vec3 unit_dir = r.direction(); // in ray.class it has been normalized
     double t = 0.5 * (unit_dir.y() + 1);

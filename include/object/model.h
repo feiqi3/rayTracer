@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-21 15:12:53
- * @LastEditTime: 2022-05-21 16:21:22
+ * @LastEditTime: 2022-05-22 09:28:36
  * @LastEditors: feiqi3
  * @Description: |---BUGS here---|
  * @FilePath: \rayTracer\include\object\model.h
@@ -25,6 +25,7 @@ public:
   virtual const std::string toString() const override;
 protected:
   std::vector<std::shared_ptr<texture_triangle>> t_list;
+  void transform(const mat4&);
 };
 
 inline bool model::hit(const ray &r, double t_min, double t_max, record &rec) const 
@@ -32,7 +33,7 @@ inline bool model::hit(const ray &r, double t_min, double t_max, record &rec) co
     for(auto i : t_list)
     {
 
-        if (i->hit(r, t_min, t_max, rec) && abs(i->get_texture().lock().get()->albedo.y() - 0.45) < 0.1) {
+        if (i->hit(r, t_min, t_max, rec)) {
             int x = 1000;
             return true; }
     }
@@ -48,4 +49,12 @@ inline void model::add(const std::shared_ptr<texture_triangle>& t)
 {
     t_list.push_back(t);
 }
+
+inline void model::transform(const mat4& mat)
+{
+  for (auto i : t_list) {
+    i->transform(mat);
+  }
+}
+
 #endif

@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-03-17 09:44:16
- * @LastEditTime: 2022-05-21 13:08:42
+ * @LastEditTime: 2022-05-22 10:02:34
  * @LastEditors: feiqi3
  * @Description: |Dielectric material class,like glass|
  * @FilePath: \rayTracer\include\material\dielectric.h
@@ -70,5 +70,6 @@ public:
       direction = refract(unit_direction, hit_rec.normal, refraction_ratio);
     return direction;
   }
+
 };
 #endif

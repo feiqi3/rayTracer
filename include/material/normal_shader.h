@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-10 09:33:03
- * @LastEditTime: 2022-05-21 11:58:42
+ * @LastEditTime: 2022-05-22 10:15:31
  * @LastEditors: feiqi3
  * @Description: |---description here---|
  * @FilePath: \rayTracer\include\material\normal_shader.h
@@ -20,6 +20,9 @@ class normal_shader : public material {
     vec3 scatter_dir = hit_rec.normal + rand_in_unit_sphere();
     if (scatter_dir.is_close_to_zero()) {
       scatter_dir = hit_rec.normal;
+    }
+    if (material::is_light) {
+    return false;
     }
     out_scattered = ray(hit_rec.p, scatter_dir);
     return 1;

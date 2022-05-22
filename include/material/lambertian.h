@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-03-03 19:26:25
- * @LastEditTime: 2022-05-21 12:04:19
+ * @LastEditTime: 2022-05-22 10:16:29
  * @LastEditors: feiqi3
  * @Description: |material lambertian|
  * @FilePath: \rayTracer\include\material\lambertian.h
@@ -25,6 +25,9 @@ class lambertian : public material {
     }
     scattered = ray(hit_rec.p, scatter_dir);
     attenuation = albedo;
+    if (material::is_light) {
+      return false;
+    }
     return true;
   }
 
