@@ -23,9 +23,9 @@
 #include <iostream>
 #include <memory>
 
-constexpr int IMG_WIDTH = 300;
+constexpr int IMG_WIDTH = 500;
 constexpr double RATIO = 16.0 / 9.0;
-constexpr int SAMPLES = 40;
+constexpr int SAMPLES = 20;
 
 int main() {
   Flog logger();
@@ -37,18 +37,21 @@ int main() {
       std::make_shared<metal>(color(0.5, 0.5, 0.5), 0);
   shared_ptr<metal> metal_sphere_b =
       std::make_shared<metal>(color(0.1, 0.5, 0.3), 1);
+  shared_ptr<metal> me =
+      std::make_shared<metal>(color(0.1, 0.5, 0.3),0.5 );
   shared_ptr<lambertian> lambertian_sphere =
       std::make_shared<lambertian>(color(0.7, 0.3, 0.3));
   shared_ptr<dielectric> die = make_shared<dielectric>(1.5);
   shared_ptr<lambertian> back = std::make_shared<lambertian>(color(1,1,1));
   back->setLightandColor(1,vec3(1,1,1));
-  std::shared_ptr<RGB12> text_buffer = std::make_shared<RGB12>("./DSC01859.jpg");
-  auto rectangle = make_shared<texture_rectangle>(vec3(-5, -2, -2), 
-  vec3(-5, 2, -2), vec3(5, 2, -2),
-                         vec3(5, -2, -2),text_buffer,back);
+  std::shared_ptr<RGB12> text_buffer = std::make_shared<RGB12>("./sample.png");
+  auto rectangle = make_shared<texture_rectangle>(vec3(-10, -10, -2), 
+  vec3(-10, 10, -2), vec3(10, 10, -2),
+                         vec3(10, -10, -2),text_buffer,back);
                          rectangle->init();
   mat4 trans = mat4::Identity();
-  trans = mat::getRotate(1./4*3.14159,vec3(0,1,0));
+  trans =  mat::getScale(vec3(0.7,0.7,0.7))* trans;
+
   rectangle->transform(trans);
   auto shperea = make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere);
   auto shpereb = make_shared<sphere>(vec3(-1.0, 0, -1), .5, metal_sphere_a);
@@ -67,22 +70,21 @@ int main() {
   int img_height = static_cast<int>(img_width / RATIO);
   //  ppmMaker pm(img_width, img_height);
 
-  vec3 cameraPos(3, 3, 2);
+  vec3 cameraPos(0, 0, 5);
+  vec3 lookAt(0, 0, -1);
 #ifdef DEBUG
   std::cout << "Focus length  " << (vec3(0, 0, -1) - cameraPos).length()
             << "\n";
 #endif
-shared_ptr<renderPass> cam = make_shared<camera>(90, RATIO, vec3(-2, -2, 5), vec3(0, 1, 0), vec3(2, 1, -2));
+shared_ptr<renderPass> cam = make_shared<camera>(45, RATIO, cameraPos, vec3(0, 1, 0), lookAt,0,(cameraPos - lookAt).length());
 renderQueue rq(cam,IMG_WIDTH,16./9,true);
 floader f;
-/* f.fload("./model/my_model.obj");
-rq.addObj(f.getModel()); */
-rq.addObj(shperea);
-rq.addObj(shpereb);
-rq.addObj(spherec);
-rq.addObj(sphered);
-rq.addObj(rectangle);
-rq.setThreadNum(1);
+f.fload("./model/cottage_obj.obj");
+auto mod = f.getModel("./model/cottage_diffuse.png");
+mat4 translate = mat::getRotate(0.5*3.1415926,vec3(0,1,0)) * mat::getScale(vec3(0.08, 0.08, 0.08)) * mat::getTranslate(vec3(0,-5,0));
+mod->transform(translate);
+rq.addObj(mod);
+rq.setThreadNum(16);
 rq.MultiThreadRender();
 rq.SaveToFile();
 /*   double division_x = 1.0 / (img_width - 1.0);
