@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-21 15:04:18
- * @LastEditTime: 2022-05-21 16:22:13
+ * @LastEditTime: 2022-05-22 09:32:04
  * @LastEditors: feiqi3
  * @Description: |---Load Model!---|
  * @FilePath: \rayTracer\include\tool\fLoader.h
@@ -50,9 +50,15 @@ floader::getModel(const char *picPath = "__NULL") {
     pic = std::make_shared<RGB12>(picPath);
   }
   for (auto mesh : loader.LoadedMeshes) {
+//clamp to 0,1
+    color tmp = V32vec3(
+        mesh.MeshMaterial.Kd);
+        tmp[0] = tmp[0] > 1? 1 :tmp[0];
+        tmp[1] = tmp[1] > 1? 1 :tmp[1];
+        tmp[2] = tmp[2] > 1? 1 :tmp[2];
+
     // use color as albedo
-    std::shared_ptr<lambertian> mat = std::make_shared<lambertian>(V32vec3(
-        mesh.MeshMaterial.Kd + mesh.MeshMaterial.Ka + mesh.MeshMaterial.Ks));
+    std::shared_ptr<lambertian> mat = std::make_shared<lambertian>(tmp);
     for (int i = 0; i < mesh.Indices.size() / 3; i++) {
       auto i1 = mesh.Indices[i * 3];
       auto i2 = mesh.Indices[i * 3 + 1];
@@ -63,6 +69,7 @@ floader::getModel(const char *picPath = "__NULL") {
       vec3 t1 = V22vec3(mesh.Vertices[i1].TextureCoordinate);
       vec3 t2 = V22vec3(mesh.Vertices[i2].TextureCoordinate);
       vec3 t3 = V22vec3(mesh.Vertices[i3].TextureCoordinate);
+      Flog::flog(TRACE,"V1 "+v1.toString()+" ,V2 "+v2.toString() + " ,V3 "+v3.toString());
       std::shared_ptr<texture_triangle> tri = make_shared<texture_triangle>(v1, v2, v3, t1, t2, t3, pic, mat);
       tri->init();
       res->add(tri);

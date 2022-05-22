@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 20:06:53
- * @LastEditTime: 2022-05-21 22:57:42
+ * @LastEditTime: 2022-05-22 10:21:12
  * @LastEditors: feiqi3
  * @Description: |main application|
  * @FilePath: \rayTracer\src\main.cpp
@@ -40,15 +40,14 @@ int main() {
   shared_ptr<lambertian> lambertian_sphere =
       std::make_shared<lambertian>(color(0.7, 0.3, 0.3));
   shared_ptr<dielectric> die = make_shared<dielectric>(1.5);
-  shared_ptr<dielectric> skm =
-      std::make_shared<dielectric>(0.8);
+  shared_ptr<lambertian> back = std::make_shared<lambertian>(color(1,1,1));
+  back->setLightandColor(1,vec3(1,1,1));
   std::shared_ptr<RGB12> text_buffer = std::make_shared<RGB12>("./DSC01859.jpg");
   auto rectangle = make_shared<texture_rectangle>(vec3(-5, -2, -2), vec3(-5, 2, -2), vec3(5, 2, -2),
-                         vec3(5, -2, -2),text_buffer,skm);
+                         vec3(5, -2, -2),text_buffer,back);
                          rectangle->init();
   mat4 trans = mat4::Identity();
   trans = mat::getRotate(1./4*3.14159,vec3(0,1,0));
-  rectangle->transform(trans);
   auto shperea = make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere);
   auto shpereb = make_shared<sphere>(vec3(-1.0, 0, -1), .5, metal_sphere_a);
   auto spherec = make_shared<sphere>(vec3(1.0, 0, -1), .5, die);
@@ -71,17 +70,17 @@ int main() {
   std::cout << "Focus length  " << (vec3(0, 0, -1) - cameraPos).length()
             << "\n";
 #endif
-shared_ptr<renderPass> cam = make_shared<camera>(30, RATIO, vec3(-2, -2, 5), vec3(0, 1, 0), vec3(0, 0, -1));
+shared_ptr<renderPass> cam = make_shared<camera>(90, RATIO, vec3(-2, -2, 3), vec3(0, 1, 0), vec3(2, 1, -2));
 renderQueue rq(cam,IMG_WIDTH,16./9,true);
 floader f;
-//f.fload("./model/lowpolytree.obj");
-//rq.addObj(f.getModel());
+/* f.fload("./model/my_model.obj");
+rq.addObj(f.getModel()); */
 rq.addObj(shperea);
 rq.addObj(shpereb);
 rq.addObj(spherec);
 rq.addObj(sphered);
 rq.addObj(rectangle);
-rq.setThreadNum(9);
+rq.setThreadNum(4);
 rq.MultiThreadRender();
 rq.SaveToFile();
 /*   double division_x = 1.0 / (img_width - 1.0);

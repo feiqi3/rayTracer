@@ -6,8 +6,10 @@
 #include <fstream>
 #include <io.h>
 #include <iostream>
+#include <memory>
+#include <mutex>
 #include <string>
-#include<mutex>
+
 #define USE_STATIC_PATH "using_static_path"
 #define STR std::to_string
 #ifndef FLOG_H
@@ -33,8 +35,8 @@ private:
 
   static string static_path;
   static string static_logName;
-  static std::mutex mtx;
-
+  // static std::mutex* mtx;
+  static std::shared_ptr<std::mutex> mtx;
   static TYPE GLOB_LOG_LEVEL;
 
   static string TimeForPath() {
@@ -142,7 +144,7 @@ public:
     if (type < GLOB_LOG_LEVEL)
       return;
     string time = getTime();
-    Flog::mtx.lock();
+    Flog::mtx->lock();
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),
                             FOREGROUND_INTENSITY | FOREGROUND_GREEN |
                                 FOREGROUND_RED | FOREGROUND_BLUE);
@@ -150,10 +152,10 @@ public:
     std::cout << " ";
     outLogTitle(type);
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),
-                              FOREGROUND_GREEN |
-                                FOREGROUND_RED | FOREGROUND_BLUE);
+                            FOREGROUND_GREEN | FOREGROUND_RED |
+                                FOREGROUND_BLUE);
     std::cout << s << "\n";
-    Flog::mtx.unlock();
+    Flog::mtx->unlock();
   }
 
   // make log print in console
@@ -207,13 +209,14 @@ public:
   static void logError(string s) { flog(ERRO, s); }
 };
 
-inline std::mutex Flog::mtx = std::mutex();
+inline std::shared_ptr<std::mutex> Flog::mtx = std::make_shared<std::mutex>();
 
 class FTick : public Flog {
 private:
   float StartTick;
   float EndTick;
   float DeltaTick;
+
 public:
   FTick() {
     StartTick = -1;
