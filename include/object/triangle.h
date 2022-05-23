@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-13 15:01:40
- * @LastEditTime: 2022-05-21 10:15:26
+ * @LastEditTime: 2022-05-22 21:19:41
  * @LastEditors: feiqi3
  * @Description: |---Obj Triangle---|
 
@@ -51,6 +51,7 @@ public:
 
 protected:
   triangle(const vec3 &_p1, const vec3 &_p2, const vec3 &_p3);
+  triangle(){}
   vec3 p1, p2, p3;
   vec3 normal;
   double area;

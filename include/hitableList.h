@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-02-02 11:51:26
- * @LastEditTime: 2022-05-18 13:15:46
+ * @LastEditTime: 2022-05-23 00:25:33
  * @LastEditors: feiqi3
  * @Description: |a list of objects|
  * @FilePath: \rayTracer\include\hitableList.h
@@ -40,13 +40,18 @@ public:
     bool is_hit = false;
     double t_closest = t_max;
     record temp_rec;
+    record __record;
     for (const auto &obj : obj_list) {
       if (obj->hit(r, t_min, t_closest, temp_rec)) {
         is_hit = true;
-        t_closest = temp_rec.t;
-        rec = temp_rec;
+        if(temp_rec.t < t_closest)
+        {
+          t_closest = temp_rec.t;
+          __record = temp_rec;
+        }
       }
     }
+    rec = __record;
     return is_hit;
   }
 };

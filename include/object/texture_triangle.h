@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-17 09:56:29
- * @LastEditTime: 2022-05-22 09:49:18
+ * @LastEditTime: 2022-05-22 21:19:28
  * @LastEditors: feiqi3
  * @Description: |---
  Triangle with texture !
@@ -44,6 +44,7 @@ public:
 protected:
   bool is_init;
   std::shared_ptr<texture> _tex;
+  texture_triangle(){}
   //  std::shared_ptr<material> _mat;
 };
 inline texture_triangle::texture_triangle(
