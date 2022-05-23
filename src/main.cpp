@@ -70,7 +70,9 @@ int main() {
   std::cout << "Focus length  " << (vec3(0, 0, -1) - cameraPos).length()
             << "\n";
 #endif
-shared_ptr<renderPass> cam = make_shared<camera>(45, RATIO, vec3(0,-3, 3), vec3(0, 1, 0), vec3(0, 0, -1));
+  vec3 camPos(0, 0, 10);
+  vec3 lookAt(0, 0, -1);
+shared_ptr<renderPass> cam = make_shared<camera>(15, RATIO, camPos, vec3(0, 1, 0), lookAt,1./15,(lookAt -camPos).length());
 renderQueue rq(cam,IMG_WIDTH,16./9,true);
 floader f;
 
