@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-03-03 19:26:25
- * @LastEditTime: 2022-05-22 10:17:26
+ * @LastEditTime: 2022-05-23 10:31:30
  * @LastEditors: feiqi3
  * @Description: |material lambertian|
  * @FilePath: \rayTracer\include\material\texture.h
@@ -31,7 +31,7 @@ public:
     vec3 scatter_dir;
 
     if (tri.lock() == nullptr) {
-      attenuation = color(0, 0, 0);
+      attenuation = _mat->albedo * _mat->emitted();
     } else {
       barycoord coord;
       coord = tri.lock()->get_barycentric(hit_rec.p, hit_rec);
