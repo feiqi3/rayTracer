@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-21 15:12:53
- * @LastEditTime: 2022-05-22 13:42:00
+ * @LastEditTime: 2022-05-23 11:12:19
  * @LastEditors: feiqi3
  * @Description: |---BUGS here---|
  * @FilePath: \rayTracer\include\object\model.h
@@ -33,18 +33,21 @@ protected:
 
 inline bool model::hit(const ray &r, double t_min, double t_max,
                        record &rec) const {
-    float __t = std::numeric_limits<float>::infinity();
-    float hit_flag = false;
+  float __t = std::numeric_limits<float>::infinity();
+  float hit_flag = false;
+  record tmp;
+  tmp.t = -1;
   for (auto i : t_list) {
     if (i->hit(r, t_min, t_max, rec)) {
       hit_flag = true;
-      if(rec.t < __t)
+      if (rec.t < __t && rec.t > t_min) {
         __t = rec.t;
+        tmp = rec;
+      }
     }
   }
-  if(hit_flag)
-  {
-    rec.t = __t;
+  if (hit_flag) {
+    rec = tmp;
   }
   return hit_flag;
 }

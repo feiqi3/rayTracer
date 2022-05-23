@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-17 09:56:29
- * @LastEditTime: 2022-05-22 10:30:30
+ * @LastEditTime: 2022-05-23 00:49:26
  * @LastEditors: feiqi3
  * @Description: |---rectangle with texture!---|
  * @FilePath: \rayTracer\include\object\texture_rectangle.h
@@ -32,6 +32,7 @@ public:
 
 protected:
   shared_ptr<texture_triangle> tri;
+  texture_rectangle(){};
 };
 
 inline texture_rectangle::texture_rectangle(const vec3 &lower_left,
@@ -51,7 +52,7 @@ shared_ptr<material> _mat=
 
 inline bool texture_rectangle::hit(const ray &r, double t_min, double t_max,
                                    record &rec) const {
-  if (texture_triangle::hit(r, t_min, t_max, rec) ||
+  if (triangle::hit(r, t_min, t_max, rec) ||
       tri->hit(r, t_min, t_max, rec)) {
     return true;
   } else {
