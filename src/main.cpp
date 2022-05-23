@@ -92,7 +92,7 @@ auto sc = std::make_shared<scene>(vec3(0,0,0),30,"./skyBox/Beautfil [From tutori
 auto shperea = make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere);
 auto shpereb = make_shared<sphere>(vec3(-1., 0, -1), .5, metal_sphere_a);
 auto spherec = make_shared<sphere>(vec3(1.0, 0, -1), .5, die);
-//auto sphered = make_shared<sphere>(vec3(0, -100.5, -1), 100, ground_mat);
+auto sphered = make_shared<sphere>(vec3(0, -100.5, -1), 100, ground_mat);
 shared_ptr<lambertian> lambertian_sphere_L =
 std::make_shared<lambertian>(color(1, 1, 1));
 lambertian_sphere_L->setLightandColor(true, vec3(1, 1, 1));
@@ -104,7 +104,7 @@ rq.addObj(sc);
 rq.addObj(shperea);
 rq.addObj(shpereb);
 rq.addObj(spherec);
-//rq.addObj(sphered);
+rq.addObj(sphered);
 
 
 rq.setThreadNum(4);
