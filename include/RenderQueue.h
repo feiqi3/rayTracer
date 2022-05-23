@@ -203,6 +203,11 @@ inline void renderQueue::renderBlock(int b_x, int b_y, int stepX, int stepY,
       // pm.colorWrite(main_fram->sampler(x * division_x, y * division_y));
       //      pm.m_s_colorWirte(pxl,divided_samples);
     }
+        if (y % ((int)(img_height / 40)) == 0) {
+        Flog::flog(TRACE,
+           "Block "+STR(block_id) + ", render :" +
+            STR((int)((1.0 - (double)y / (img_height - 1.0)) * 100)));
+    }
   }
     Flog::flog(INFO, "Block " + STR(block_id) + " has rendered.");
 }
