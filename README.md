@@ -10,21 +10,16 @@
 My work after reading "Ray Tracing in one weekend"
 Here is the book [Ray Tracing in one weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)
 Lots of new features have been added on the origin program in the book.
-Until now, the following features have been done:  
-- A simple log   
-- Triangle rendering   
-- Barycentric coordinate  
-- .JPG writing based on STBI   
-- Texture mapping    
-- New render queue  
+Until now, the following features have been done:    
+- Texture mapping base on Barycentric coordinate     
 - Multithreading support  
-- .obj model rendering(inefficiency)  
-- Light    
+- .obj model rendering
 - Sky box  
     
 TO DO:   
 - Importance sampling  
-- Accecleration structure
+- Accecleration structure  
+- Post effects
 NO plan for:  
 The randome scene.  
 
@@ -33,6 +28,7 @@ mkdir build
 cd build   
 cmake ..  
 make   
+./ray_tracer
 Then run it and wait to be surprised.
 
 
