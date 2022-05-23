@@ -24,9 +24,9 @@
 #include <iostream>
 #include <memory>
 
-constexpr int IMG_WIDTH = 500;
+constexpr int IMG_WIDTH = 4096;
 constexpr double RATIO = 16.0 / 9.0;
-constexpr int SAMPLES = 80;
+constexpr int SAMPLES = 200;
 
 int main() {
   Flog logger();
