@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 20:06:53
- * @LastEditTime: 2022-05-23 09:59:00
+ * @LastEditTime: 2022-05-23 11:13:16
  * @LastEditors: feiqi3
  * @Description: |main application|
  * @FilePath: \rayTracer\src\main.cpp
@@ -26,7 +26,7 @@
 
 constexpr int IMG_WIDTH = 500;
 constexpr double RATIO = 16.0 / 9.0;
-constexpr int SAMPLES = 80;
+constexpr int SAMPLES = 20;
 
 int main() {
   Flog logger();
@@ -38,18 +38,21 @@ int main() {
       std::make_shared<metal>(color(0.5, 0.5, 0.5), .5);
   shared_ptr<metal> metal_sphere_b =
       std::make_shared<metal>(color(0.1, 0.5, 0.3), 1);
+  shared_ptr<metal> me =
+      std::make_shared<metal>(color(0.1, 0.5, 0.3),0.5 );
   shared_ptr<lambertian> lambertian_sphere =
       std::make_shared<lambertian>(color(0.7, 0.3, 0.3));
   shared_ptr<dielectric> die = make_shared<dielectric>(1.5);
   shared_ptr<lambertian> back = std::make_shared<lambertian>(color(1,1,1));
   back->setLightandColor(1,vec3(1,1,1));
-  std::shared_ptr<RGB12> text_buffer = std::make_shared<RGB12>("./DSC01859.jpg");
-  auto rectangle = make_shared<texture_rectangle>(vec3(-5, -2, -2), 
-  vec3(-5, 2, -2), vec3(5, 2, -2),
-                         vec3(5, -2, -2),text_buffer,back);
+  std::shared_ptr<RGB12> text_buffer = std::make_shared<RGB12>("./sample.png");
+  auto rectangle = make_shared<texture_rectangle>(vec3(-10, -10, -2), 
+  vec3(-10, 10, -2), vec3(10, 10, -2),
+                         vec3(10, -10, -2),text_buffer,back);
                          rectangle->init();
   mat4 trans = mat4::Identity();
-  trans = mat::getRotate(1./4*3.14159,vec3(0,1,0));
+  trans =  mat::getScale(vec3(0.7,0.7,0.7))* trans;
+
   rectangle->transform(trans);
 
   
@@ -65,51 +68,21 @@ int main() {
   int img_height = static_cast<int>(img_width / RATIO);
   //  ppmMaker pm(img_width, img_height);
 
-  vec3 cameraPos(3, 3, 2);
+  vec3 cameraPos(0, 0, 5);
+  vec3 lookAt(0, 0, -1);
 #ifdef DEBUG
   std::cout << "Focus length  " << (vec3(0, 0, -1) - cameraPos).length()
             << "\n";
 #endif
-  vec3 camPos(0, 0, 10);
-  vec3 lookAt(0, 0, -1);
-shared_ptr<renderPass> cam = make_shared<camera>(15, RATIO, camPos, vec3(0, 1, 0), lookAt,1./15,(lookAt -camPos).length());
+shared_ptr<renderPass> cam = make_shared<camera>(45, RATIO, cameraPos, vec3(0, 1, 0), lookAt,0,(cameraPos - lookAt).length());
 renderQueue rq(cam,IMG_WIDTH,16./9,true);
 floader f;
-
-/* auto mid_p = vec3(0, 0, -5);
-float r = 10;
-std::string baseP = "./skyBox/NeonSky/sky512_";
-auto base_tex = std::make_shared<lambertian>(vec3(1, 1, 1));
-base_tex->setLightandColor(true, vec3(1, 1, 1));
-shared_ptr<RGB12> _forward = std::make_shared<RGB12>((baseP + "ft.tex").c_str());
-auto     forward = std::make_shared<texture_rectangle>(
-    vec3(mid_p[0] - r, mid_p[1] - r, mid_p[2] - r),
-    vec3(mid_p[0] - r, mid_p[1] + r, mid_p[2] - r),
-    vec3(mid_p[0] + r, mid_p[1] + r, mid_p[2] - r),
-    vec3(mid_p[0] + r, mid_p[1] - r, mid_p[2] - r), _forward, base_tex,
-    true);
-forward->init(); */
-
-auto sc = std::make_shared<scene>(vec3(0,0,0),30,"./skyBox/Beautfil [From tutorial]/");
-auto shperea = make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere);
-auto shpereb = make_shared<sphere>(vec3(-1., 0, -1), .5, metal_sphere_a);
-auto spherec = make_shared<sphere>(vec3(1.0, 0, -1), .5, die);
-auto sphered = make_shared<sphere>(vec3(0, -100.5, -1), 100, ground_mat);
-shared_ptr<lambertian> lambertian_sphere_L =
-std::make_shared<lambertian>(color(1, 1, 1));
-lambertian_sphere_L->setLightandColor(true, vec3(1, 1, 1));
-auto sphereL = make_shared<texture_rectangle>(vec3(-5, -5, -5), vec3(5, -5, -5), vec3(5, -5, 5), vec3(5, -5, 5),nullptr, lambertian_sphere_L);
-
-/* f.fload("./model/my_model.obj");
-rq.addObj(f.getModel()); */
-rq.addObj(sc);
-rq.addObj(shperea);
-rq.addObj(shpereb);
-rq.addObj(spherec);
-rq.addObj(sphered);
-
-
-rq.setThreadNum(4);
+f.fload("./model/cottage_obj.obj");
+auto mod = f.getModel("./model/cottage_diffuse.png");
+mat4 translate = mat::getRotate(0.5*3.1415926,vec3(0,1,0)) * mat::getScale(vec3(0.08, 0.08, 0.08)) * mat::getTranslate(vec3(0,-5,0));
+mod->transform(translate);
+rq.addObj(mod);
+rq.setThreadNum(16);
 rq.MultiThreadRender();
 rq.SaveToFile();
 /*   double division_x = 1.0 / (img_width - 1.0);

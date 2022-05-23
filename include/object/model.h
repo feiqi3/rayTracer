@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-21 15:12:53
- * @LastEditTime: 2022-05-23 00:48:51
+ * @LastEditTime: 2022-05-23 11:12:19
  * @LastEditors: feiqi3
  * @Description: |---BUGS here---|
  * @FilePath: \rayTracer\include\object\model.h
@@ -25,9 +25,10 @@ public:
   GET_CLASS_NAME(Model);
   virtual const std::string toString() const override;
 
+  void transform(const mat4&);
 protected:
   std::vector<std::shared_ptr<texture_triangle>> t_list;
-  void transform(const mat4 &);
+
 };
 
 inline bool model::hit(const ray &r, double t_min, double t_max,
