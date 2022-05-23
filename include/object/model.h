@@ -59,9 +59,10 @@ inline void model::add(const std::shared_ptr<texture_triangle> &t) {
 }
 
 inline void model::transform(const mat4 &mat) {
-  for (auto i : t_list) {
-    i->transform(mat);
+    for (auto &i:t_list) {
+        i->transform(mat);
   }
+   
 }
 
 #endif
