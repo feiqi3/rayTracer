@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 20:06:53
- * @LastEditTime: 2022-05-22 11:12:54
+ * @LastEditTime: 2022-05-23 09:59:00
  * @LastEditors: feiqi3
  * @Description: |main application|
  * @FilePath: \rayTracer\src\main.cpp
@@ -14,6 +14,7 @@
 #include "material/texture.h"
 #include "math/matrix.h"
 #include "math/vector.h"
+#include "object/scene.h"
 #include "object/texture_rectangle.h"
 #include "object/texture_triangle.h"
 #include "object/model.h"
@@ -23,18 +24,18 @@
 #include <iostream>
 #include <memory>
 
-constexpr int IMG_WIDTH = 300;
+constexpr int IMG_WIDTH = 500;
 constexpr double RATIO = 16.0 / 9.0;
-constexpr int SAMPLES = 40;
+constexpr int SAMPLES = 80;
 
 int main() {
   Flog logger();
   Flog::set_glob_log_level(TRACE);
   hitable_list world;
-  shared_ptr<lambertian> ground_mat =
-      std::make_shared<lambertian>(color(0.8, 0.8, 0.8));
+  shared_ptr<metal> ground_mat =
+      std::make_shared<metal>(color(0.8, 0.8, 0.8),0.03);
   shared_ptr<metal> metal_sphere_a =
-      std::make_shared<metal>(color(0.5, 0.5, 0.5), 0);
+      std::make_shared<metal>(color(0.5, 0.5, 0.5), .5);
   shared_ptr<metal> metal_sphere_b =
       std::make_shared<metal>(color(0.1, 0.5, 0.3), 1);
   shared_ptr<lambertian> lambertian_sphere =
@@ -50,10 +51,7 @@ int main() {
   mat4 trans = mat4::Identity();
   trans = mat::getRotate(1./4*3.14159,vec3(0,1,0));
   rectangle->transform(trans);
-  auto shperea = make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere);
-  auto shpereb = make_shared<sphere>(vec3(-1.0, 0, -1), .5, metal_sphere_a);
-  auto spherec = make_shared<sphere>(vec3(1.0, 0, -1), .5, die);
-  auto sphered = make_shared<sphere>(vec3(0, -100.5, -2), 99, ground_mat);
+
   
 /*   world.add(make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere));
   world.add(make_shared<sphere>(vec3(-1.0, 0, -1), .5, metal_sphere_a));
@@ -72,17 +70,44 @@ int main() {
   std::cout << "Focus length  " << (vec3(0, 0, -1) - cameraPos).length()
             << "\n";
 #endif
-shared_ptr<renderPass> cam = make_shared<camera>(90, RATIO, vec3(-2, -2, 5), vec3(0, 1, 0), vec3(2, 1, -2));
+shared_ptr<renderPass> cam = make_shared<camera>(45, RATIO, vec3(0,-3, 3), vec3(0, 1, 0), vec3(0, 0, -1));
 renderQueue rq(cam,IMG_WIDTH,16./9,true);
 floader f;
+
+/* auto mid_p = vec3(0, 0, -5);
+float r = 10;
+std::string baseP = "./skyBox/NeonSky/sky512_";
+auto base_tex = std::make_shared<lambertian>(vec3(1, 1, 1));
+base_tex->setLightandColor(true, vec3(1, 1, 1));
+shared_ptr<RGB12> _forward = std::make_shared<RGB12>((baseP + "ft.tex").c_str());
+auto     forward = std::make_shared<texture_rectangle>(
+    vec3(mid_p[0] - r, mid_p[1] - r, mid_p[2] - r),
+    vec3(mid_p[0] - r, mid_p[1] + r, mid_p[2] - r),
+    vec3(mid_p[0] + r, mid_p[1] + r, mid_p[2] - r),
+    vec3(mid_p[0] + r, mid_p[1] - r, mid_p[2] - r), _forward, base_tex,
+    true);
+forward->init(); */
+
+auto sc = std::make_shared<scene>(vec3(0,0,0),30,"./skyBox/Beautfil [From tutorial]/");
+auto shperea = make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere);
+auto shpereb = make_shared<sphere>(vec3(-1., 0, -1), .5, metal_sphere_a);
+auto spherec = make_shared<sphere>(vec3(1.0, 0, -1), .5, die);
+//auto sphered = make_shared<sphere>(vec3(0, -100.5, -1), 100, ground_mat);
+shared_ptr<lambertian> lambertian_sphere_L =
+std::make_shared<lambertian>(color(1, 1, 1));
+lambertian_sphere_L->setLightandColor(true, vec3(1, 1, 1));
+auto sphereL = make_shared<texture_rectangle>(vec3(-5, -5, -5), vec3(5, -5, -5), vec3(5, -5, 5), vec3(5, -5, 5),nullptr, lambertian_sphere_L);
+
 /* f.fload("./model/my_model.obj");
 rq.addObj(f.getModel()); */
+rq.addObj(sc);
 rq.addObj(shperea);
 rq.addObj(shpereb);
 rq.addObj(spherec);
-rq.addObj(sphered);
-rq.addObj(rectangle);
-rq.setThreadNum(1);
+//rq.addObj(sphered);
+
+
+rq.setThreadNum(4);
 rq.MultiThreadRender();
 rq.SaveToFile();
 /*   double division_x = 1.0 / (img_width - 1.0);
