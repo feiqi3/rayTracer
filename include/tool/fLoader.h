@@ -50,9 +50,9 @@ floader::getModel(const char *picPath = "__NULL") {
     pic = std::make_shared<RGB12>(picPath);
   }
   for (auto mesh : loader.LoadedMeshes) {
-//clamp to 0,1
+//Error implementation here!
     color tmp = V32vec3(
-        mesh.MeshMaterial.Kd);
+        mesh.MeshMaterial.Kd + mesh.MeshMaterial.Ks);
         tmp[0] = tmp[0] > 1? 1 :tmp[0];
         tmp[1] = tmp[1] > 1? 1 :tmp[1];
         tmp[2] = tmp[2] > 1? 1 :tmp[2];
