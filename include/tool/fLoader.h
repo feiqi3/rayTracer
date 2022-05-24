@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-21 15:04:18
- * @LastEditTime: 2022-05-22 09:32:04
+ * @LastEditTime: 2022-05-24 13:40:21
  * @LastEditors: feiqi3
  * @Description: |---Load Model!---|
  * @FilePath: \rayTracer\include\tool\fLoader.h
@@ -51,14 +51,13 @@ floader::getModel(const char *picPath = "__NULL") {
   }
   for (auto mesh : loader.LoadedMeshes) {
 //clamp to 0,1
-    color tmp = V32vec3(
-        mesh.MeshMaterial.Kd);
-        tmp[0] = tmp[0] > 1? 1 :tmp[0];
-        tmp[1] = tmp[1] > 1? 1 :tmp[1];
-        tmp[2] = tmp[2] > 1? 1 :tmp[2];
+
 
     // use color as albedo
-    std::shared_ptr<lambertian> mat = std::make_shared<lambertian>(tmp);
+    std::shared_ptr<lambertian> mat = std::make_shared<lambertian>(V32vec3(mesh.MeshMaterial.Kd));
+    mat->ka =V32vec3( mesh.MeshMaterial.Ka);
+    mat->ks =V32vec3(mesh.MeshMaterial.Ks);
+
     for (int i = 0; i < mesh.Indices.size() / 3; i++) {
       auto i1 = mesh.Indices[i * 3];
       auto i2 = mesh.Indices[i * 3 + 1];
