@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-03-17 09:44:16
- * @LastEditTime: 2022-05-22 10:54:49
+ * @LastEditTime: 2022-05-24 15:24:46
  * @LastEditors: feiqi3
  * @Description: |Dielectric material class,like glass|
  * @FilePath: \rayTracer\include\material\dielectric.h
@@ -44,7 +44,13 @@ class dielectric : public material {
 public:
   float ir; // the index of refactor
 public:
-  dielectric(float index_of_refractor,color _albedo = vec3(1.0,1.0,1.0)) : ir(index_of_refractor) {material::albedo = _albedo;}
+  dielectric(float index_of_refractor, color _albedo = vec3(1.0, 1.0, 1.0))
+      : ir(index_of_refractor) {
+    material::albedo = _albedo;
+    spec_lvl = 256;
+    material::ka = _albedo * vec3(.1,.1,.1);
+    material::ks = albedo;
+  }
 
 private:
   static double reflectance(double cosine, double ref_idx) {
@@ -70,6 +76,5 @@ public:
       direction = refract(unit_direction, hit_rec.normal, refraction_ratio);
     return direction;
   }
-
 };
 #endif

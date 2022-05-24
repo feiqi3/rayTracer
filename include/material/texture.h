@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-03-03 19:26:25
- * @LastEditTime: 2022-05-23 10:31:30
+ * @LastEditTime: 2022-05-24 15:26:56
  * @LastEditors: feiqi3
  * @Description: |material lambertian|
  * @FilePath: \rayTracer\include\material\texture.h
@@ -49,7 +49,7 @@ public:
       else
         attenuation = material::albedo;
     }
-    if (_mat->is_light == true)
+    if (_mat->emit == true)
       return false;
     scatter_dir = _mat->getRayDir(_in, hit_rec);
     scattered = ray(hit_rec.p, scatter_dir);
@@ -60,11 +60,15 @@ public:
   texture(const std::shared_ptr<RGB12> &_buf = nullptr,
           shared_ptr<material> mat = std::make_shared<lambertian>(vec3(1, 1,
                                                                        1)),
-          bool _light = false)
+          bool _emit = false)
       : _buffer(_buf), _mat(mat) {
-    material::is_light = _light;
+    material::emit = _emit;
+    if (emit)
+      material::setEmitandColor(mat->emit_);
     material::albedo = _mat->albedo;
-    material::setLightandColor(mat->is_light, mat->emit);
+    material::ka = mat->ka;
+    material::ks = mat->ks;
+    material::spec_lvl = mat->spec_lvl;
   }
 
   void set_triangle(const std::shared_ptr<triangle> &_tri) { tri = _tri; }

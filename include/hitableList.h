@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-02-02 11:51:26
- * @LastEditTime: 2022-05-23 00:25:33
+ * @LastEditTime: 2022-05-24 12:19:31
  * @LastEditors: feiqi3
  * @Description: |a list of objects|
  * @FilePath: \rayTracer\include\hitableList.h
@@ -11,13 +11,15 @@
 #define _HITABLELIST_H_
 
 #include "Macro.h"
+#include "material/material.h"
+#include "math/vector.h"
 #include "object/hitable.h"
 #include <memory>
 #include <string>
 #include <vector>
 class hitable_list : hitable {
 public:
-//object == hitable
+  // object == hitable
   std::vector<std::shared_ptr<object>> obj_list;
 
 public:
@@ -26,13 +28,21 @@ public:
   hitable_list(std::shared_ptr<object> obj) { add(obj); }
 
   GET_CLASS_NAME(hitableList)
-  const std::string toString() const override
-  {
+  const std::string toString() const override {
     std::string classname = clsname();
-    return classname+","+ STR(obj_list.size())+" object in map.";
+    return classname + "," + STR(obj_list.size()) + " object in map.";
   }
 
-  void add(const std::shared_ptr<object>& obj) { obj_list.push_back(obj); }
+  static std::vector<shared_ptr<object>> light_list;
+
+  void addLight(const shared_ptr<object> &obj,
+                color clr) {
+    obj->mat_ptr->setLightandColor(clr);
+    light_list.push_back(std::ref(obj));
+    obj_list.push_back(obj);
+    LightColor += clr;
+  }
+  void add(const std::shared_ptr<object> &obj) { obj_list.push_back(obj); }
 
   bool hit(const ray &r, double t_min, double t_max,
            record &rec) const override {
@@ -44,8 +54,7 @@ public:
     for (const auto &obj : obj_list) {
       if (obj->hit(r, t_min, t_closest, temp_rec)) {
         is_hit = true;
-        if(temp_rec.t < t_closest)
-        {
+        if (temp_rec.t < t_closest) {
           t_closest = temp_rec.t;
           __record = temp_rec;
         }
@@ -54,6 +63,15 @@ public:
     rec = __record;
     return is_hit;
   }
+static const vec3 getLightColor()
+{
+  if(light_list.size() == 0)return vec3(0,0,0);
+  return LightColor / light_list.size();  
+} 
+protected:
+  static vec3 LightColor;
 };
 
+vec3 hitable_list::LightColor = vec3(0,0,0);
+std::vector<std::shared_ptr<object>> hitable_list::light_list;
 #endif

@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-17 09:56:29
- * @LastEditTime: 2022-05-22 21:19:28
+ * @LastEditTime: 2022-05-24 11:15:04
  * @LastEditors: feiqi3
  * @Description: |---
  Triangle with texture !
@@ -22,8 +22,9 @@
 class texture_triangle : public triangle,
                          public std::enable_shared_from_this<texture_triangle> {
 public:
-  texture_triangle(const vec3 &_p1, const vec3 &_p2, const vec3 &_p3,bool is_light,
-                   const std::shared_ptr<RGB12> &_buffer, shared_ptr<material>);
+  texture_triangle(const vec3 &_p1, const vec3 &_p2, const vec3 &_p3,
+                   bool is_light, const std::shared_ptr<RGB12> &_buffer,
+                   shared_ptr<material>);
   GET_CLASS_NAME(texture_triangle);
   virtual const std::string toString() const override {
     std::string className = clsname();
@@ -38,23 +39,22 @@ public:
                    const std::shared_ptr<RGB12> &_buffer,
                    shared_ptr<material> _mat);
   // Useless
-  std::weak_ptr<texture> get_texture() { 
-      return _tex; }
+  std::weak_ptr<texture> get_texture() { return _tex; }
 
 protected:
   bool is_init;
   std::shared_ptr<texture> _tex;
-  texture_triangle(){}
+  texture_triangle() {}
   //  std::shared_ptr<material> _mat;
 };
 inline texture_triangle::texture_triangle(
-    const vec3 &_p1, const vec3 &_p2, const vec3 &_p3,bool is_light,
+    const vec3 &_p1, const vec3 &_p2, const vec3 &_p3, bool is_light,
     const std::shared_ptr<RGB12> &_buffer,
     shared_ptr<material> _mat = std::make_shared<lambertian>(vec3(1, 1, 1)))
     : triangle(_p1, _p2, _p3) {
   is_init = false;
-  _tex = std::make_shared<texture>(_buffer, _mat,is_light);
-  
+  _tex = std::make_shared<texture>(_buffer, _mat, is_light);
+
   triangle::mat_ptr = _tex;
   // member function in enable_shared_from_this<T>
   Flog::flog(INFO, toString());
@@ -64,7 +64,8 @@ inline texture_triangle::texture_triangle(
 //但是这个指针只有在这个类被智能指针初始化后才能使用
 //所以一定得在构造函数执行后调用init()
 inline void texture_triangle::init() {
-  std::weak_ptr<texture_triangle> _this_ptr = shared_from_this();
+  std::weak_ptr<texture_triangle> _this_ptr =
+      std::enable_shared_from_this<texture_triangle>::shared_from_this();
   _tex->set_triangle(_this_ptr.lock());
   is_init = true;
 }
