@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-18 12:23:28
- * @LastEditTime: 2022-05-21 22:55:15
+ * @LastEditTime: 2022-05-24 12:15:56
  * @LastEditors: feiqi3
  * @Description: |---description here---|
  * @FilePath: \rayTracer\include\RenderQueue.h
@@ -47,6 +47,7 @@ public:
   int addSubRenderPass(const std::shared_ptr<renderPass> &, int x, int y,
                        BUFFER_TPYE _buffer_type);
   void Render() const;
+  void addLight(const std::shared_ptr<object> &obj,const color&clr){world.addLight(obj,clr);}
   void MultiThreadRender() ;
   void renderBlock(int x, int y, int stepX, int stepY, int block_id);
   void SaveToFile() const;
