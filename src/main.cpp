@@ -24,7 +24,7 @@
 #include <iostream>
 #include <memory>
 
-constexpr int IMG_WIDTH = 500;
+constexpr int IMG_WIDTH = 1920;
 constexpr double RATIO = 16.0 / 9.0;
 constexpr int SAMPLES = 80;
 
@@ -72,7 +72,11 @@ int main() {
 #endif
   vec3 camPos(0, 0, 5);
   vec3 lookAt(0, 0, -1);
+<<<<<<< HEAD
 shared_ptr<renderPass> cam = make_shared<camera>(30, RATIO, camPos, vec3(0, 1, 0), lookAt,1./15,(lookAt -camPos).length());
+=======
+shared_ptr<renderPass> cam = make_shared<camera>(90, RATIO, camPos, vec3(0, 1, 0), lookAt,0,(lookAt - vec3(0, 0, -10)).length());
+>>>>>>> b690c3a2bcf2cf3ffd6bcd69750b81d09ee1c6b4
 renderQueue rq(cam,IMG_WIDTH,16./9,true);
 floader f;
 
@@ -90,26 +94,41 @@ auto     forward = std::make_shared<texture_rectangle>(
     true);
 forward->init(); */
 
-auto sc = std::make_shared<scene>(vec3(0,0,0),30,"./skyBox/Beautfil [From tutorial]/");
-auto shperea = make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere);
+auto sc = std::make_shared<scene>(vec3(0,0,0),30,"./skyBox/Cyan/");
+/* auto shperea = make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere);
 auto shpereb = make_shared<sphere>(vec3(-1., 0, -1), .5, metal_sphere_a);
 auto spherec = make_shared<sphere>(vec3(1.0, 0, -1), .5, die);
 auto sphered = make_shared<sphere>(vec3(0, -100.5, -1), 100, ground_mat);
 shared_ptr<lambertian> lambertian_sphere_L =
 std::make_shared<lambertian>(color(1, 1, 1));
+<<<<<<< HEAD
 
 auto sphereL = make_shared<texture_rectangle>(
     vec3(-5,-5,6),vec3(-5,5,6),vec3(5,5,6),vec3(5,-5,6), nullptr, lambertian_sphere_L);
 sphereL->init();
 /* f.fload("./model/my_model.obj");
 rq.addObj(f.getModel()); */
+=======
+lambertian_sphere_L->setLightandColor(true, vec3(1, 1, 1));
+auto sphereL = make_shared<texture_rectangle>(vec3(-5, -5, -5), vec3(5, -5, -5), vec3(5, -5, 5), vec3(5, -5, 5),nullptr, lambertian_sphere_L);
+ */
+f.fload("./model/lowpolytree.obj");
+auto mod= f.getModel();
+mod->transform(mat::getTranslate(vec3(0, -0.8, -10)) *mat::getScale(vec3(2, 2, 2)) );
+rq.addObj(mod);
+>>>>>>> b690c3a2bcf2cf3ffd6bcd69750b81d09ee1c6b4
 rq.addObj(sc);
-rq.addObj(shperea);
+/* rq.addObj(shperea);
 rq.addObj(shpereb);
 rq.addObj(spherec);
+<<<<<<< HEAD
 rq.addLight(sphereL, vec3(1,1,1));
+=======
+rq.addObj(sphered); */
 
-rq.setThreadNum(4);
+>>>>>>> b690c3a2bcf2cf3ffd6bcd69750b81d09ee1c6b4
+
+rq.setThreadNum(16);
 rq.MultiThreadRender();
 rq.SaveToFile();
 /*   double division_x = 1.0 / (img_width - 1.0);

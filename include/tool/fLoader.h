@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-21 15:04:18
- * @LastEditTime: 2022-05-24 13:40:21
+ * @LastEditTime: 2022-05-24 15:46:30
  * @LastEditors: feiqi3
  * @Description: |---Load Model!---|
  * @FilePath: \rayTracer\include\tool\fLoader.h
@@ -50,10 +50,6 @@ floader::getModel(const char *picPath = "__NULL") {
     pic = std::make_shared<RGB12>(picPath);
   }
   for (auto mesh : loader.LoadedMeshes) {
-//clamp to 0,1
-
-
-    // use color as albedo
     std::shared_ptr<lambertian> mat = std::make_shared<lambertian>(V32vec3(mesh.MeshMaterial.Kd));
     mat->ka =V32vec3( mesh.MeshMaterial.Ka);
     mat->ks =V32vec3(mesh.MeshMaterial.Ks);

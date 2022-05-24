@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-21 15:12:53
- * @LastEditTime: 2022-05-24 11:54:47
+ * @LastEditTime: 2022-05-24 15:47:19
  * @LastEditors: feiqi3
  * @Description: |---BUGS here---|
  * @FilePath: \rayTracer\include\object\model.h
@@ -59,8 +59,8 @@ inline void model::add(const std::shared_ptr<texture_triangle> &t) {
 }
 
 inline void model::transform(const mat4 &mat) {
-  for (auto i : t_list) {
-    i->transform(mat);
+    for (auto &i:t_list) {
+        i->transform(mat);
   }
   center_p = (mat * vec4(center_p,1)).xyz();
 }
