@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-22 21:15:30
- * @LastEditTime: 2022-05-23 09:55:10
+ * @LastEditTime: 2022-05-24 11:09:11
  * @LastEditors: feiqi3
  * @Description: |---description here---|
  * @FilePath: \rayTracer\include\object\scene.h
@@ -31,7 +31,7 @@ public:
     shared_ptr<RGB12> _forward =
         std::make_shared<RGB12>((baseP + "ft.tex").c_str());
     auto base_tex = std::make_shared<lambertian>(vec3(1, 1, 1));
-    base_tex->setLightandColor(true, vec3(1, 1, 1));
+    base_tex->setEmitandColor(vec3(1, 1, 1));
     top = std::make_shared<texture_rectangle>(
         vec3(mid_p[0] + r, mid_p[1] + r, mid_p[2] - r),
         vec3(mid_p[0] - r, mid_p[1] + r, mid_p[2] - r),

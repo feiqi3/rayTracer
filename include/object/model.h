@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-21 15:12:53
- * @LastEditTime: 2022-05-23 11:12:19
+ * @LastEditTime: 2022-05-24 11:54:47
  * @LastEditors: feiqi3
  * @Description: |---BUGS here---|
  * @FilePath: \rayTracer\include\object\model.h
@@ -18,7 +18,7 @@
 #include <winuser.h>
 class model : public hitable {
 public:
-  model() {}
+  model() {center_p = vec3(0,0,0);}
   virtual bool hit(const ray &r, double t_min, double t_max,
                    record &rec) const override;
   void add(const std::shared_ptr<texture_triangle> &);
@@ -62,6 +62,7 @@ inline void model::transform(const mat4 &mat) {
   for (auto i : t_list) {
     i->transform(mat);
   }
+  center_p = (mat * vec4(center_p,1)).xyz();
 }
 
 #endif

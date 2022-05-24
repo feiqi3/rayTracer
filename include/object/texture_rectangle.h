@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-17 09:56:29
- * @LastEditTime: 2022-05-23 00:49:26
+ * @LastEditTime: 2022-05-24 11:53:51
  * @LastEditors: feiqi3
  * @Description: |---rectangle with texture!---|
  * @FilePath: \rayTracer\include\object\texture_rectangle.h
@@ -48,6 +48,7 @@ shared_ptr<material> _mat=
   tri = std::make_shared<texture_triangle>(upper_left, upper_right, lower_right,is_ligjt,
                                            _buf,_mat);
   tri->set_texcoord(vec3(0, 1, 0), vec3(1, 1, 0), vec3(1, 0, 0));
+  center_p = (tri->center_p + center_p)/2;
 }
 
 inline bool texture_rectangle::hit(const ray &r, double t_min, double t_max,
@@ -72,6 +73,7 @@ inline barycoord texture_rectangle::get_barycentric(const vec3 &point,
   }
 }
 inline void texture_rectangle::transform(const mat4 &mat) {
+  //center will be transformed here.
   triangle::transform(mat);
   tri->transform(mat);
 }

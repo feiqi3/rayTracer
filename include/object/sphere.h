@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-30 11:46:53
- * @LastEditTime: 2022-05-15 12:47:07
+ * @LastEditTime: 2022-05-24 11:48:09
  * @LastEditors: feiqi3
  * @Description: |obj class|
  * @FilePath: \rayTracer\include\object\sphere.h
@@ -23,7 +23,9 @@ private:
 
 public:
   sphere(vec3 center, double r,std::shared_ptr<material> _material) :
-  hitable(_material), cen(center), radius(r){Flog::flog(TRACE,toString());}
+  hitable(_material), cen(center), radius(r){
+    center_p = cen;
+    Flog::flog(TRACE,toString());}
 
   GET_CLASS_NAME(sphere);
   const std::string toString() const override

@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-13 15:01:40
- * @LastEditTime: 2022-05-22 21:19:41
+ * @LastEditTime: 2022-05-24 11:52:47
  * @LastEditors: feiqi3
  * @Description: |---Obj Triangle---|
 
@@ -100,6 +100,7 @@ inline triangle::triangle(const vec3 &_p1, const vec3 &_p2, const vec3 &_p3)
   _dot11 = dot(_v1, _v1);
   normal = normalize(cross(_v1, p3 - p2));
   area = get_triangle_size(p1, p2, p3);
+  center_p = vec3((p1[0]+p2[0]+p3[0])/3,(p1[1]+p2[1]+p3[1])/3,(p1[2]+p2[2]+p3[2])/3);
 }
 
 inline bool triangle::is_in_tri(const vec3 &_p) const {
@@ -158,6 +159,7 @@ inline void triangle::transform(const mat4 &mat) {
   p1 = (mat * vec4(p1, 1)).xyz();
   p2 = (mat * vec4(p2, 1)).xyz();
   p3 = (mat * vec4(p3, 1)).xyz();
+  center_p = (mat * vec4(center_p,1)).xyz();
   __recaculate();
 }
 #endif
