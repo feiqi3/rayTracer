@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 20:06:53
- * @LastEditTime: 2022-05-23 09:59:00
+ * @LastEditTime: 2022-05-24 13:41:19
  * @LastEditors: feiqi3
  * @Description: |main application|
  * @FilePath: \rayTracer\src\main.cpp
@@ -15,6 +15,7 @@
 #include "math/matrix.h"
 #include "math/vector.h"
 #include "object/scene.h"
+#include "object/sphere.h"
 #include "object/texture_rectangle.h"
 #include "object/texture_triangle.h"
 #include "object/model.h"
@@ -30,19 +31,19 @@ constexpr int SAMPLES = 80;
 
 int main() {
   Flog logger();
-  Flog::set_glob_log_level(TRACE);
+  Flog::set_glob_log_level(INFO);
   hitable_list world;
   shared_ptr<metal> ground_mat =
       std::make_shared<metal>(color(0.8, 0.8, 0.8),0.03);
   shared_ptr<metal> metal_sphere_a =
-      std::make_shared<metal>(color(0.5, 0.5, 0.5), .5);
+      std::make_shared<metal>(color(0.5, 0.5, 0.5),0.1);
   shared_ptr<metal> metal_sphere_b =
       std::make_shared<metal>(color(0.1, 0.5, 0.3), 1);
   shared_ptr<lambertian> lambertian_sphere =
       std::make_shared<lambertian>(color(0.7, 0.3, 0.3));
   shared_ptr<dielectric> die = make_shared<dielectric>(1.5);
   shared_ptr<lambertian> back = std::make_shared<lambertian>(color(1,1,1));
-  back->setLightandColor(1,vec3(1,1,1));
+
   std::shared_ptr<RGB12> text_buffer = std::make_shared<RGB12>("./DSC01859.jpg");
   auto rectangle = make_shared<texture_rectangle>(vec3(-5, -2, -2), 
   vec3(-5, 2, -2), vec3(5, 2, -2),
@@ -72,7 +73,7 @@ int main() {
 #endif
   vec3 camPos(0, 0, 5);
   vec3 lookAt(0, 0, -1);
-shared_ptr<renderPass> cam = make_shared<camera>(90, RATIO, camPos, vec3(0, 1, 0), lookAt,0,(lookAt - vec3(0, 0, -10)).length());
+shared_ptr<renderPass> cam = make_shared<camera>(45, RATIO, camPos, vec3(0, 1, 0), lookAt,0,(lookAt - vec3(-1, 0, -10)).length());
 renderQueue rq(cam,IMG_WIDTH,16./9,true);
 floader f;
 
@@ -100,11 +101,12 @@ std::make_shared<lambertian>(color(1, 1, 1));
 lambertian_sphere_L->setLightandColor(true, vec3(1, 1, 1));
 auto sphereL = make_shared<texture_rectangle>(vec3(-5, -5, -5), vec3(5, -5, -5), vec3(5, -5, 5), vec3(5, -5, 5),nullptr, lambertian_sphere_L);
  */
-f.fload("./model/lowpolytree.obj");
-auto mod= f.getModel();
-mod->transform(mat::getTranslate(vec3(0, -0.8, -10)) *mat::getScale(vec3(2, 2, 2)) );
+f.fload("./model/cottage_obj.obj");
+auto mod= f.getModel("./model/cottage_diffuse.png");
+mod->transform(mat::getTranslate(vec3(0, -0.8, -10)) *mat::getScale(vec3(0.35, 0.35, 0.35)) );
 rq.addObj(mod);
 rq.addObj(sc);
+rq.addLight(std::make_shared<sphere>(vec3(-8,5,7),1,lambertian_sphere),vec3(0.5,0.5,0.5));
 /* rq.addObj(shperea);
 rq.addObj(shpereb);
 rq.addObj(spherec);
