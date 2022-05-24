@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 20:06:53
- * @LastEditTime: 2022-05-23 09:59:00
+ * @LastEditTime: 2022-05-24 13:41:19
  * @LastEditors: feiqi3
  * @Description: |main application|
  * @FilePath: \rayTracer\src\main.cpp
@@ -35,14 +35,14 @@ int main() {
   shared_ptr<metal> ground_mat =
       std::make_shared<metal>(color(0.8, 0.8, 0.8),0.03);
   shared_ptr<metal> metal_sphere_a =
-      std::make_shared<metal>(color(0.5, 0.5, 0.5), .5);
+      std::make_shared<metal>(color(0.5, 0.5, 0.5),0.1);
   shared_ptr<metal> metal_sphere_b =
       std::make_shared<metal>(color(0.1, 0.5, 0.3), 1);
   shared_ptr<lambertian> lambertian_sphere =
       std::make_shared<lambertian>(color(0.7, 0.3, 0.3));
   shared_ptr<dielectric> die = make_shared<dielectric>(1.5);
   shared_ptr<lambertian> back = std::make_shared<lambertian>(color(1,1,1));
-  back->setLightandColor(1,vec3(1,1,1));
+
   std::shared_ptr<RGB12> text_buffer = std::make_shared<RGB12>("./DSC01859.jpg");
   auto rectangle = make_shared<texture_rectangle>(vec3(-5, -2, -2), 
   vec3(-5, 2, -2), vec3(5, 2, -2),
@@ -70,9 +70,9 @@ int main() {
   std::cout << "Focus length  " << (vec3(0, 0, -1) - cameraPos).length()
             << "\n";
 #endif
-  vec3 camPos(0, 0, 10);
+  vec3 camPos(0, 0, 5);
   vec3 lookAt(0, 0, -1);
-shared_ptr<renderPass> cam = make_shared<camera>(15, RATIO, camPos, vec3(0, 1, 0), lookAt,1./15,(lookAt -camPos).length());
+shared_ptr<renderPass> cam = make_shared<camera>(30, RATIO, camPos, vec3(0, 1, 0), lookAt,1./15,(lookAt -camPos).length());
 renderQueue rq(cam,IMG_WIDTH,16./9,true);
 floader f;
 
@@ -97,17 +97,17 @@ auto spherec = make_shared<sphere>(vec3(1.0, 0, -1), .5, die);
 auto sphered = make_shared<sphere>(vec3(0, -100.5, -1), 100, ground_mat);
 shared_ptr<lambertian> lambertian_sphere_L =
 std::make_shared<lambertian>(color(1, 1, 1));
-lambertian_sphere_L->setLightandColor(true, vec3(1, 1, 1));
-auto sphereL = make_shared<texture_rectangle>(vec3(-5, -5, -5), vec3(5, -5, -5), vec3(5, -5, 5), vec3(5, -5, 5),nullptr, lambertian_sphere_L);
 
+auto sphereL = make_shared<texture_rectangle>(
+    vec3(-5,-5,6),vec3(-5,5,6),vec3(5,5,6),vec3(5,-5,6), nullptr, lambertian_sphere_L);
+sphereL->init();
 /* f.fload("./model/my_model.obj");
 rq.addObj(f.getModel()); */
 rq.addObj(sc);
 rq.addObj(shperea);
 rq.addObj(shpereb);
 rq.addObj(spherec);
-rq.addObj(sphered);
-
+rq.addLight(sphereL, vec3(1,1,1));
 
 rq.setThreadNum(4);
 rq.MultiThreadRender();
