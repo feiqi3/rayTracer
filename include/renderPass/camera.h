@@ -10,7 +10,7 @@
 
 #ifndef _CAMERA_H
 #define _CAMERA_H
-
+#define max(a,b)            (((a) > (b)) ? (a) : (b))
 #include "../Macro.h"
 #include "../material/material.h"
 #include "../math/vector.h"
@@ -20,11 +20,9 @@
 #include "object/hitable.h"
 #include "renderPass.h"
 #include <cmath>
-#include <corecrt_math.h>
 #include <iostream>
-#include <minwindef.h>
 #include <stdio.h>
-#include <winuser.h>
+
 
 class camera : public renderPass {
 private:
@@ -110,8 +108,6 @@ public:
                 normalize(tmp_ray.direction() - r.dir)
             )),
                 rec.mat_ptr->spec_lvl);
-            if(tmp > 0.5)
-                int c= 123131;
             _k_s +=rec.mat_ptr->ks * _tmp.mat_ptr->emit_ * tmp;
 
           hit_num += 1;
