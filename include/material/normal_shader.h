@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-10 09:33:03
- * @LastEditTime: 2022-05-22 10:15:31
+ * @LastEditTime: 2022-05-24 13:47:10
  * @LastEditors: feiqi3
  * @Description: |---description here---|
  * @FilePath: \rayTracer\include\material\normal_shader.h
@@ -31,7 +31,7 @@ class normal_shader : public material {
 private:int scale;
         float divided_scale;
 public:
-  normal_shader():scale(1) {divided_scale = 1;}
+  normal_shader():scale(1) {divided_scale = 1;spec_lvl = 4;}
   normal_shader(const int _scale):scale(_scale >= 1 ? _scale : 1){divided_scale = 1.0 /scale;}
 
     virtual vec3 getRayDir(const ray &_in, const record &hit_rec) const override{
