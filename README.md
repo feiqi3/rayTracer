@@ -15,6 +15,7 @@ Until now, the following features have been done:
 - Multithreading support  
 - .obj model rendering
 - Sky box  
+- A simple( and also incorrect) Blinn-Phong.
     
 TO DO:   
 - Importance sampling  
