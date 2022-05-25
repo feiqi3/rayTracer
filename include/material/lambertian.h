@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-03-03 19:26:25
- * @LastEditTime: 2022-05-24 15:23:42
+ * @LastEditTime: 2022-05-25 09:31:14
  * @LastEditors: feiqi3
  * @Description: |material lambertian|
  * @FilePath: \rayTracer\include\material\lambertian.h
@@ -36,7 +36,7 @@ public:
      material::albedo = _albedo;
      material::ks = _albedo;
      material::ka = _albedo * vec3(.1,.1,.1);
-     spec_lvl =8;
+     spec_lvl =12;
       }
 
 public:
