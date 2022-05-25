@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-05-21 15:04:18
- * @LastEditTime: 2022-05-24 15:46:30
+ * @LastEditTime: 2022-05-25 11:20:08
  * @LastEditors: feiqi3
  * @Description: |---Load Model!---|
  * @FilePath: \rayTracer\include\tool\fLoader.h
@@ -12,6 +12,7 @@
 #include "../Vendor/OBJ_Loader.h"
 #include "../math/vector.h"
 #include "../object/model.h"
+#include "buffer/RGB12Buffer.h"
 #include "cstring"
 #include "flog.h"
 #include <memory>
@@ -49,7 +50,13 @@ floader::getModel(const char *picPath = "__NULL") {
   } else {
     pic = std::make_shared<RGB12>(picPath);
   }
+
   for (auto mesh : loader.LoadedMeshes) {
+    std::shared_ptr<RGB12> tmp;
+    if(pic == nullptr)
+    auto tmp_ptr = std::make_shared<RGB12>(mesh.MeshMaterial.map_Kd.c_str());
+    else
+     tmp = std::shared_ptr<RGB12>(tmp);
     std::shared_ptr<lambertian> mat = std::make_shared<lambertian>(V32vec3(mesh.MeshMaterial.Kd));
     mat->ka =V32vec3( mesh.MeshMaterial.Ka);
     mat->ks =V32vec3(mesh.MeshMaterial.Ks);
