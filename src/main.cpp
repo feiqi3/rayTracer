@@ -1,7 +1,7 @@
 /*
  * @Author: feiqi3
  * @Date: 2022-01-24 20:06:53
- * @LastEditTime: 2022-05-24 13:41:19
+ * @LastEditTime: 2022-05-24 22:38:34
  * @LastEditors: feiqi3
  * @Description: |main application|
  * @FilePath: \rayTracer\src\main.cpp
@@ -25,7 +25,7 @@
 #include <iostream>
 #include <memory>
 
-constexpr int IMG_WIDTH = 1920;
+constexpr int IMG_WIDTH = 500;
 constexpr double RATIO = 16.0 / 9.0;
 constexpr int SAMPLES = 80;
 
@@ -71,9 +71,9 @@ int main() {
   std::cout << "Focus length  " << (vec3(0, 0, -1) - cameraPos).length()
             << "\n";
 #endif
-  vec3 camPos(0, 0, 5);
+  vec3 camPos(0, 0, 18);
   vec3 lookAt(0, 0, -1);
-shared_ptr<renderPass> cam = make_shared<camera>(45, RATIO, camPos, vec3(0, 1, 0), lookAt,0,(lookAt - vec3(-1, 0, -10)).length());
+shared_ptr<renderPass> cam = make_shared<camera>(150, RATIO, camPos, vec3(0, 1, 0), lookAt,0,(lookAt - vec3(-1, 0, -10)).length());
 renderQueue rq(cam,IMG_WIDTH,16./9,true);
 floader f;
 
@@ -91,7 +91,7 @@ auto     forward = std::make_shared<texture_rectangle>(
     true);
 forward->init(); */
 
-auto sc = std::make_shared<scene>(vec3(0,0,0),30,"./skyBox/Cyan/");
+auto sc = std::make_shared<scene>(vec3(0,0,0),90,"./skyBox/Pandora [From tutorial]/");
 /* auto shperea = make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere);
 auto shpereb = make_shared<sphere>(vec3(-1., 0, -1), .5, metal_sphere_a);
 auto spherec = make_shared<sphere>(vec3(1.0, 0, -1), .5, die);
@@ -101,12 +101,8 @@ std::make_shared<lambertian>(color(1, 1, 1));
 lambertian_sphere_L->setLightandColor(true, vec3(1, 1, 1));
 auto sphereL = make_shared<texture_rectangle>(vec3(-5, -5, -5), vec3(5, -5, -5), vec3(5, -5, 5), vec3(5, -5, 5),nullptr, lambertian_sphere_L);
  */
-f.fload("./model/cottage_obj.obj");
-auto mod= f.getModel("./model/cottage_diffuse.png");
-mod->transform(mat::getTranslate(vec3(0, -0.8, -10)) *mat::getScale(vec3(0.35, 0.35, 0.35)) );
-rq.addObj(mod);
 rq.addObj(sc);
-rq.addLight(std::make_shared<sphere>(vec3(-8,5,7),1,lambertian_sphere),vec3(0.5,0.5,0.5));
+
 /* rq.addObj(shperea);
 rq.addObj(shpereb);
 rq.addObj(spherec);
