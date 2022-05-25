@@ -130,6 +130,7 @@ public:
   const float focal_viewport_height;
   const float focal_viewport_width;
   const float aperture;
+  int sample_times = 32;
 };
 
 #endif

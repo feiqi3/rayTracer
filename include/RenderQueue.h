@@ -20,8 +20,9 @@
 #include <cstddef>
 #include <iostream>
 #include <memory>
+#include <thread>
 #include <vector>
-#include<thread>
+
 struct renderPair {
   std::shared_ptr<renderPass> renderPass;
   std::shared_ptr<buffer> renderBuffer;
@@ -47,10 +48,15 @@ public:
   int addSubRenderPass(const std::shared_ptr<renderPass> &, int x, int y,
                        BUFFER_TPYE _buffer_type);
   void Render() const;
-  void addLight(const std::shared_ptr<object> &obj,const color&clr){world.addLight(obj,clr);}
-  void MultiThreadRender() ;
+  void addLight(const std::shared_ptr<object> &obj, const color &clr) {
+    world.addLight(obj, clr);
+  }
+  void MultiThreadRender();
   void renderBlock(int x, int y, int stepX, int stepY, int block_id);
   void SaveToFile() const;
+  void set(const std::shared_ptr<renderPass> &main_cam, int imgWidth,
+           float _ratio, bool _open_ssao, int sample_nums, const char *savepath,
+           const char *savename);
   void setThreadNum(int i) {
     if (i <= 1)
       threadNums = 1;
@@ -62,13 +68,16 @@ public:
       threadNums = 16;
   }
 
+public:
+  int sample_times = 32;
+
 protected:
   hitable_list world;
   renderPair main_cam;
   std::vector<renderPair> subRenderList;
   const char *filePath;
   const char *fileName;
-  const bool SSAA_OPEN;
+  bool SSAA_OPEN;
   float ratio;
   int img_width;
   int img_height;
@@ -88,14 +97,15 @@ inline renderQueue::renderQueue(const std::shared_ptr<renderPass> &main_cam,
                                 const char *savename = nullptr)
     : SSAA_OPEN(_open_ssao), ratio(_ratio), img_width(imgWidth),
       img_height(img_width / ratio), fileName(savename), filePath(savepath),
-      maxRayDepth(100), sampleNums(sample_nums),threadNums(1) {
+      maxRayDepth(100), sampleNums(sample_nums), threadNums(1) {
   setMainRender(main_cam);
 }
 
 std::shared_ptr<renderQueue> renderQueue::_INSTANCE = nullptr;
 inline std::shared_ptr<renderQueue> renderQueue::getInstance() {
   if (_INSTANCE == nullptr) {
-    return std::make_shared<renderQueue>();
+    _INSTANCE = std::make_shared<renderQueue>();
+    return _INSTANCE;
   } else {
     return _INSTANCE;
   }
@@ -140,7 +150,8 @@ inline void renderQueue::Render() const {
         i->renderBuffer->writeBuffer(x, y, clr);
       }
       if (SSAA_OPEN) {
-        for (std::size_t sample_times = 0; sample_times < 64; sample_times++) {
+        for (std::size_t sample_times = 0; sample_times < sample_times;
+             sample_times++) {
           // transform to NDC(?)
 
           auto u = (x + rand_d()) * division_x;
@@ -204,16 +215,16 @@ inline void renderQueue::renderBlock(int b_x, int b_y, int stepX, int stepY,
       // pm.colorWrite(main_fram->sampler(x * division_x, y * division_y));
       //      pm.m_s_colorWirte(pxl,divided_samples);
     }
-        if (y % ((int)(img_height / 40)) == 0) {
-        Flog::flog(TRACE,
-           "Block "+STR(block_id) + ", render :" +
-            STR((int)((1.0 - (double)y / (img_height - 1.0)) * 100)));
+    if (y % ((int)(img_height / 40)) == 0) {
+      Flog::flog(TRACE,
+                 "Block " + STR(block_id) + ", render :" +
+                     STR((int)((1.0 - (double)y / (img_height - 1.0)) * 100)));
     }
   }
-    Flog::flog(INFO, "Block " + STR(block_id) + " has rendered.");
+  Flog::flog(INFO, "Block " + STR(block_id) + " has rendered.");
 }
 
-inline void renderQueue::MultiThreadRender()  {
+inline void renderQueue::MultiThreadRender() {
   std::vector<std::shared_ptr<std::thread>> threads;
   int block_num = sqrt(threadNums);
   int x_nums = img_width / block_num;
@@ -230,14 +241,13 @@ inline void renderQueue::MultiThreadRender()  {
       if (x == block_num - 1) {
         x_tail = x_mod;
       }
-      Flog::flog(TRACE, "Block id: " + STR(id) +
-      ", x:" + STR(x * x_nums)+
-      " - " +STR(x * x_nums + x_nums + x_tail - 1) +
-      " y:" + STR(y * y_nums - 1) +
-      " - " +STR(y  * y_nums - 1 - y_nums + y_tail + 1)+"\n");
-      std::shared_ptr<std::thread> tmp= std::make_shared<std::thread>(&renderQueue::renderBlock,this,
-      x * x_nums,y * y_nums - 1,
-       x_nums + x_tail - 1,-y_nums + y_tail + 1,id);
+      Flog::flog(TRACE, "Block id: " + STR(id) + ", x:" + STR(x * x_nums) +
+                            " - " + STR(x * x_nums + x_nums + x_tail - 1) +
+                            " y:" + STR(y * y_nums - 1) + " - " +
+                            STR(y * y_nums - 1 - y_nums + y_tail + 1) + "\n");
+      std::shared_ptr<std::thread> tmp = std::make_shared<std::thread>(
+          &renderQueue::renderBlock, this, x * x_nums, y * y_nums - 1,
+          x_nums + x_tail - 1, -y_nums + y_tail + 1, id);
       threads.push_back(tmp);
     }
   }
@@ -247,4 +257,22 @@ inline void renderQueue::MultiThreadRender()  {
   }
   Flog::flog(INFO, "All threads done.");
 }
+
+inline void renderQueue::set(const std::shared_ptr<renderPass> &main_cam,
+                             int imgWidth, float _ratio, bool _open_ssao = true,
+                             int sample_nums = 64,
+                             const char *savepath = nullptr,
+                             const char *savename = nullptr) {
+  SSAA_OPEN = _open_ssao;
+  ratio = _ratio;
+  img_width = imgWidth;
+  img_height = img_width / ratio;
+  filePath = savepath;
+  maxRayDepth = 100;
+  sampleNums = sample_nums;
+  threadNums = 1;
+  fileName = savename;
+  setMainRender(main_cam);
+}
+
 #endif

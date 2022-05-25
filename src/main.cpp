@@ -21,13 +21,13 @@
 #include "object/model.h"
 #include "renderPass/renderPass.h"
 #include "tool/fLoader.h"
-
+#include "presets.cpp"
 #include <iostream>
 #include <memory>
 
-constexpr int IMG_WIDTH = 500;
+constexpr int IMG_WIDTH = 100;
 constexpr double RATIO = 16.0 / 9.0;
-constexpr int SAMPLES = 80;
+constexpr int SAMPLES = 100;
 
 int main() {
   Flog logger();
@@ -66,15 +66,16 @@ int main() {
   int img_height = static_cast<int>(img_width / RATIO);
   //  ppmMaker pm(img_width, img_height);
 
-  vec3 cameraPos(3, 3, 2);
 #ifdef DEBUG
   std::cout << "Focus length  " << (vec3(0, 0, -1) - cameraPos).length()
             << "\n";
 #endif
-  vec3 camPos(0, 0, 18);
-  vec3 lookAt(0, 0, -1);
-shared_ptr<renderPass> cam = make_shared<camera>(150, RATIO, camPos, vec3(0, 1, 0), lookAt,0,(lookAt - vec3(-1, 0, -10)).length());
-renderQueue rq(cam,IMG_WIDTH,16./9,true);
+  vec3 camPos(0, -1.2, 0);
+  vec3 lookAt(-0.3,-1.05, -1);
+shared_ptr<renderPass> cam = make_shared<camera>(60, RATIO, camPos, vec3(0, 1, 0), lookAt,0,(lookAt - vec3(-1, 0, -10)).length());
+auto rq = renderQueue::getInstance();
+rq->set(cam,IMG_WIDTH,16./9,true);
+rq->sample_times = SAMPLES;
 floader f;
 
 /* auto mid_p = vec3(0, 0, -5);
@@ -91,7 +92,6 @@ auto     forward = std::make_shared<texture_rectangle>(
     true);
 forward->init(); */
 
-auto sc = std::make_shared<scene>(vec3(0,0,0),90,"./skyBox/Pandora [From tutorial]/");
 /* auto shperea = make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere);
 auto shpereb = make_shared<sphere>(vec3(-1., 0, -1), .5, metal_sphere_a);
 auto spherec = make_shared<sphere>(vec3(1.0, 0, -1), .5, die);
@@ -101,17 +101,15 @@ std::make_shared<lambertian>(color(1, 1, 1));
 lambertian_sphere_L->setLightandColor(true, vec3(1, 1, 1));
 auto sphereL = make_shared<texture_rectangle>(vec3(-5, -5, -5), vec3(5, -5, -5), vec3(5, -5, 5), vec3(5, -5, 5),nullptr, lambertian_sphere_L);
  */
-rq.addObj(sc);
 
 /* rq.addObj(shperea);
 rq.addObj(shpereb);
 rq.addObj(spherec);
 rq.addObj(sphered); */
-
-
-rq.setThreadNum(16);
-rq.MultiThreadRender();
-rq.SaveToFile();
+PreSets::House_under_Sky();
+rq->setThreadNum(16);
+rq->MultiThreadRender();
+rq->SaveToFile();
 /*   double division_x = 1.0 / (img_width - 1.0);
   double division_y = 1.0 / (img_height - 1.0);
 
