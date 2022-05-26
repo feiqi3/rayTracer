@@ -18,7 +18,8 @@ struct record;
 
 class material{
 public:
-  material() : albedo(0, 0, 0) {}
+  material() : albedo(0, 0, 0),spec_lvl(22) {
+  }
   virtual vec3 emitted() const { return emit_; }
   virtual bool scatter(const ray &_in, const record &hit_rec,
                        color &out_attenuation, ray &out_scattered) const = 0;
