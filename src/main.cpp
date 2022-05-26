@@ -45,7 +45,7 @@ int main() {
 
   rq->set(nullptr, IMG_WIDTH, 16. / 9, true);
   rq->sample_times = SAMPLES;
-  PreSets::Three_Little_Ballgys();
+  PreSets::Three_Little_Ballgys_under_blue_sky();
   floader f;
   rq->setThreadNum(16);
   rq->MultiThreadRender();

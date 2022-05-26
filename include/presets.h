@@ -69,7 +69,7 @@ inline void House_under_night() {
   rq->addObj(mode);
 }
 
-inline void Three_Little_Ballgys() {
+inline void Three_Little_Ballgys_under_night() {
     vec3 camPos(0, 0, 5);
     vec3 lookAt(0, 0, -1);
     shared_ptr<renderPass> cam =
@@ -84,6 +84,28 @@ inline void Three_Little_Ballgys() {
     auto ball_right = std::make_shared<sphere>(vec3(2, 0, -1), 1, std::make_shared<dielectric>(1.3));
     auto ball_ground = std::make_shared<sphere>(vec3(0, -99, -1), 98, std::make_shared<metal>(vec3(0.1, 0.4, 0.23), 0.03));
     rq->addLight(make_shared<sphere>(vec3(-1, 4, 5), 0.3,std::make_shared<lambertian>(vec3(0.36, 0.55, 0.72))), vec3(0.5, 0.5, 0.5) * 1.4);
+    rq->addObj(ball_left);
+    rq->addObj(ball_mid);
+    rq->addObj(ball_right);
+    rq->addObj(ball_ground);
+    rq->addObj(sc);
+}
+
+inline void Three_Little_Ballgys_under_blue_sky() {
+    vec3 camPos(0, 0, 5);
+    vec3 lookAt(0, 0, -1);
+    shared_ptr<renderPass> cam =
+        make_shared<camera>(45, 16. / 9, camPos, vec3(0, 1, 0), lookAt, 1./13,
+            (camPos - lookAt).length());
+    auto rq = renderQueue::getInstance();
+    rq->setMainRender(cam);
+    auto sc =
+   std::make_shared<scene>(vec3(0, 0, 0), 300, "./skyBox/Beautfil [From tutorial]/");
+    auto ball_left = std::make_shared<sphere>(vec3(-2, 0, -1), 1, std::make_shared<metal>(vec3(0.05, 0.13, 0.22)* 1.7, 0.3));
+    auto ball_mid = std::make_shared<sphere>(vec3(0, 0, -1), 1, std::make_shared<lambertian>(vec3(0.1, 0.1, 0.211)));
+    auto ball_right = std::make_shared<sphere>(vec3(2, 0, -1), 1, std::make_shared<dielectric>(1.5));
+    auto ball_ground = std::make_shared<sphere>(vec3(0, -99, -1), 98, std::make_shared<metal>(vec3(0.1, 0.2, 0.23), 0.05));
+    rq->addLight(make_shared<sphere>(vec3(0, 10, -2), 0.3,std::make_shared<lambertian>(vec3(0.99, 0.99, 0.99))), vec3(1.1,1.1,1.1));
     rq->addObj(ball_left);
     rq->addObj(ball_mid);
     rq->addObj(ball_right);
