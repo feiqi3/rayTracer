@@ -20,10 +20,7 @@ Until now, the following features have been done:
 TO DO:   
 - Importance sampling  
 - Accecleration structure  
-- Post effects
-NO plan for:  
-The randome scene.    
-
+- Post effects   
 how to run:  
 mkdir build  
 cd build   
