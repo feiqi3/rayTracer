@@ -27,7 +27,7 @@ How to Run:
 - cd build   
 - cmake ..  
 - make   
-- ./ray_tracer
+- ./ray_tracer  
 Then run it and wait to be surprised.
 
 
