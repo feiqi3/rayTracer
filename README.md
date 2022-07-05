@@ -20,13 +20,14 @@ Until now, the following features have been done:
 TO DO:   
 - Importance sampling  
 - Accecleration structure  
-- Post effects   
-how to run:  
-mkdir build  
-cd build   
-cmake ..  
-make   
-./ray_tracer
+- Post effects  
+    
+How to Run:  
+- mkdir build  
+- cd build   
+- cmake ..  
+- make   
+- ./ray_tracer
 Then run it and wait to be surprised.
 
 
