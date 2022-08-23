@@ -33,8 +33,11 @@ public:
     for (const auto &obj : obj_list) {
       if (obj->hit(r, t_min, t_closest, temp_rec)) {
         is_hit = true;
-        t_closest = temp_rec.t;
-        rec = temp_rec;
+        //Find the closest target
+        if (temp_rec.t < t_closest) {
+          t_closest = temp_rec.t;
+          rec = temp_rec;
+        }
       }
     }
     return is_hit;
