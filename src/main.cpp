@@ -8,11 +8,13 @@
  * ->blog: feiqi3.cn <-
  */
 #include "Macro.h"
+#include "buffer/RGB12Buffer.h"
 #include "camera.h"
 #include "hitableList.h"
 #include "material/normal_shader.h"
 #include "object/hitable.h"
 #include "object/sphere.h"
+#include "tool/picTool.h"
 #include <memory>
 constexpr int IMG_WIDTH = 1000;
 constexpr double RATIO = 16.0 / 9.0;
@@ -26,20 +28,7 @@ constexpr int SAMPLES = 20;
 #include "tool/ppmUtil.h"
 #include <iostream>
 
-double sphere_disrimination(const vec3 &point, const double radius,
-                            const ray &r) {
-  vec3 o2o = r.orig - point;
-  double a = dot(r.direction(), r.direction());
-  double b = 2.0 * dot(r.direction(), (o2o));
-  double c = dot(o2o, o2o) - radius * radius;
-  double dis = b * b - 4.0 * a * c;
-  if (dis > 0.0) {
-    return (-b - sqrt(dis)) / (2.0 * a);
-  }
-  return -1.0;
-}
-
-color ray_test(const ray &r, const hitable_list &world, int depth) {
+color rayTrace(const ray &r, const hitable_list &world, int depth) {
   record rec;
   depth = depth - 1;
   if (depth <= 0) {
@@ -49,7 +38,7 @@ color ray_test(const ray &r, const hitable_list &world, int depth) {
     color attenuation;
     ray scattered;
     if (rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
-      return attenuation * ray_test(scattered, world, depth);
+      return attenuation * rayTrace(scattered, world, depth);
     }
     return color(0, 0, 0);
   }
@@ -60,6 +49,11 @@ color ray_test(const ray &r, const hitable_list &world, int depth) {
 }
 
 int main() {
+
+  constexpr auto IMG_HEIGHT = static_cast<int>(IMG_WIDTH / RATIO);
+  ;
+
+  RGB12 mainBuffer(IMG_WIDTH, IMG_HEIGHT);
 
   hitable_list world;
   shared_ptr<lambertian> ground_mat =
@@ -75,32 +69,23 @@ int main() {
   world.add(make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere));
   world.add(make_shared<sphere>(vec3(-1.0, 0, -1), .5, metal_sphere_a));
   world.add(make_shared<sphere>(vec3(1.0, 0, -1), 0.5, die));
-
   world.add(make_shared<sphere>(vec3(0, -100.5, -1), 100, ground_mat));
 
-  int img_width = IMG_WIDTH;
-  int img_height = static_cast<int>(img_width / RATIO);
-  ppmMaker pm(img_width, img_height);
-
   vec3 cameraPos(3, 3, 2);
-#ifdef DEBUG
-  std::cout << "Focus length  " << (vec3(0, 0, -1) - cameraPos).length()
-            << "\n";
-#endif
 
-  camera cam(20, RATIO, cameraPos, vec3(0, 1, 0), vec3(0, 0, -1),0.5,
+  camera cam(20, RATIO, cameraPos, vec3(0, 1, 0), vec3(0, 0, -1), 0.5,
              (vec3(0, 0, -1) - cameraPos).length());
 
-  double division_x = 1.0 / (img_width - 1.0);
-  double division_y = 1.0 / (img_height - 1.0);
+  double division_x = 1.0 / (IMG_WIDTH - 1.0);
+  double division_y = 1.0 / (IMG_HEIGHT - 1.0);
 
   auto divided_samples = 1.0 / SAMPLES;
 
   int max_dep = 100;
 
   // render from top left to bottom right
-  for (int y = img_height - 1; y >= 0; --y) {
-    for (int x = 0; x < img_width; ++x) {
+  for (int y = IMG_HEIGHT - 1; y >= 0; --y) {
+    for (int x = 0; x < IMG_WIDTH; ++x) {
       color pxl(0, 0, 0);
       for (std::size_t sample_times = 0; sample_times < SAMPLES;
            sample_times++) {
@@ -109,16 +94,12 @@ int main() {
         auto u = (x + rand_d()) * division_x;
         auto v = (y + rand_d()) * division_y;
         ray tmp_ray = cam.get_ray(u, v);
-        pxl += ray_test(tmp_ray, world, max_dep);
+        pxl += rayTrace(tmp_ray, world, max_dep);
       }
-      pm.m_s_colorWirte(pxl, divided_samples);
+      pxl = pxl * divided_samples;
+      mainBuffer.writeBuffer(x, y, pxl);
     }
-#ifndef DEBUG
-    if (y % ((int)(img_height / 100)) == 0) {
-      std::cout << "render :"
-                << (int)((1.0 - (double)y / (img_height - 1.0)) * 100) << "\n";
-    }
-#endif
+    fPic::jpgWriter(&mainBuffer);
   }
   std::cout << "Done!";
 }
