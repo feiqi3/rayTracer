@@ -16,20 +16,22 @@
 #include "ray.h"
 
 class metal : public material {
+public:
   virtual bool scatter(const ray &_in, const record &hit_rec,
                        color &attenuation, ray &scattered) const override {
-    auto reflect_dir = reflection(_in.dir, hit_rec.normal) + fuzz * rand_in_unit_sphere();
+    auto reflect_dir =
+        reflection(_in.dir, hit_rec.normal) + fuzz * rand_in_unit_sphere();
     scattered = ray(hit_rec.p, reflect_dir);
     attenuation = albedo;
-    return (dot(scattered.dir,hit_rec.normal) > 0);
+    return (dot(scattered.dir, hit_rec.normal) > 0);
   }
-    //When fuzz is 0 is total reflection
-    public:metal(const color& _albedo,float _fuzz):albedo(_albedo),fuzz(_fuzz > 1 ? 1 : _fuzz){}
-public:
+  // When fuzz is 0 is total reflection
+
+  metal(const color &_albedo, float _fuzz)
+      : albedo(_albedo), fuzz(_fuzz > 1 ? 1 : _fuzz) {}
 
 public:
   color albedo;
   float fuzz;
-
 };
 #endif
