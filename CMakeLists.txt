@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
-
+if(CMAKE_COMPILER_IS_GNUCXX)
+    add_compile_options(-fstandalone-debug)
+    message(STATUS "optional:-fstandalone-debug") 
+endif(CMAKE_COMPILER_IS_GNUCXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
