@@ -7,16 +7,17 @@
  * @FilePath: \rayTracer\README.md
  * ->blog: feiqi3.cn <-
 -->
-My work after reading "Ray Tracing in one weekend"
-Here is the book [Ray Tracing in one weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)
-
+Now I'm working on "Ray Tracing: The Next Week"  
+Here is the book [Ray Tracing: The Next Week](https://raytracing.github.io/books/RayTracingTheNextWeek.html)  
+  
 how to run:
+```
 mkdir build
 cd build 
 cmake ..
 make 
+```   
+Or U can use ninja to build(Just like what I'm doing)  
+Depends on you!
 
 
-TO DO: Ray Tracing in next weekenk!
-
-NO plan for:The randome scene.
