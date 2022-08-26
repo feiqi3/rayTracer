@@ -16,15 +16,15 @@
 
 class vec3 {
 public:
-  double vec[3];
+  float vec[3];
 
 public:
   vec3() : vec{0, 0, 0} {}
-  vec3(double x, double y, double z) : vec{x, y, z} {};
-
-  double x() const { return vec[0]; }
-  double y() const { return vec[1]; }
-  double z() const { return vec[2]; }
+  vec3(float x, float y, float z) : vec{x, y, z} {};
+  vec3(float x) : vec{x, x, x} {}
+  float x() const { return vec[0]; }
+  float y() const { return vec[1]; }
+  float z() const { return vec[2]; }
 
   vec3 operator-() {
 
@@ -48,12 +48,12 @@ public:
 
   vec3 &operator/=(const double t) { return *this *= 1.0 / t; }
 
-  double length() const {
+  float length() const {
     return sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
   }
 
-  double operator[](int i) const { return vec[i]; }
-  double &operator[](int i) { return vec[i]; }
+  float operator[](int i) const { return vec[i]; }
+  float &operator[](int i) { return vec[i]; }
 
   bool is_close_to_zero() {
     const auto bias = 1e-7;
@@ -99,7 +99,7 @@ inline vec3 cross(const vec3 &u, const vec3 &v) {
               u[0] * v[1] - u[1] * v[0]);
 }
 
-inline double dot(const vec3 &u, const vec3 &v) {
+inline float dot(const vec3 &u, const vec3 &v) {
   return u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
 }
 
@@ -124,7 +124,7 @@ inline vec3 rand_in_unit_sphere() {
 inline vec3 get_rand_in_disk() {
   vec3 res;
   while (true) {
-    res = vec3(rand_d(-1,1), rand_d(-1,1), 0);
+    res = vec3(rand_d(-1, 1), rand_d(-1, 1), 0);
     if (res.length() >= 1) {
       break;
     }
