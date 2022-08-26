@@ -12,8 +12,10 @@
 #include "camera.h"
 #include "hitableList.h"
 #include "material/normal_shader.h"
+#include "object/bvh_node.h"
 #include "object/hitable.h"
 #include "object/sphere.h"
+#include "texture/checker_texture.h"
 #include "tool/picTool.h"
 #include <memory>
 constexpr int IMG_WIDTH = 1000;
@@ -28,13 +30,13 @@ constexpr int SAMPLES = 20;
 #include "tool/ppmUtil.h"
 #include <iostream>
 
-color rayTrace(const ray &r, const hitable_list &world, int depth) {
+color rayTrace(const ray &r, hitable *world, int depth) {
   record rec;
   depth = depth - 1;
   if (depth <= 0) {
     return color(0, 0, 0);
   }
-  if (world.hit(r, 0.001, Infinity, rec)) {
+  if (world->hit(r, 0.001, Infinity, rec)) {
     color attenuation;
     ray scattered;
     if (rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
@@ -55,22 +57,25 @@ int main() {
 
   RGB12 mainBuffer(IMG_WIDTH, IMG_HEIGHT);
 
+  auto colorTexA = std::make_shared<constant_color>(vec3(1,1,1));
+  auto colorTexB = std::make_shared<constant_color>(vec3(.1,.7,.7));
+
+  auto checker = make_shared<checker_texture>(colorTexA,colorTexB);
+
   hitable_list world;
   shared_ptr<lambertian> ground_mat =
-      std::make_shared<lambertian>(color(0.3, 0.8, 0.1));
+      std::make_shared<lambertian>(checker);
   shared_ptr<metal> metal_sphere_a =
       std::make_shared<metal>(color(0.5, 0.5, 0.5), 0);
   shared_ptr<metal> metal_sphere_b =
       std::make_shared<metal>(color(0.1, 0.5, 0.3), 1);
-  shared_ptr<lambertian> lambertian_sphere =
-      std::make_shared<lambertian>(color(0.7, 0.3, 0.3));
+  shared_ptr<lambertian> lambertian_sphere = std::make_shared<lambertian>(vec3(0.2,0.1,0.6));
   shared_ptr<dielectric> die = make_shared<dielectric>(1.5);
-
   world.add(make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere));
   world.add(make_shared<sphere>(vec3(-1.0, 0, -1), .5, metal_sphere_a));
   world.add(make_shared<sphere>(vec3(1.0, 0, -1), 0.5, die));
   world.add(make_shared<sphere>(vec3(0, -100.5, -1), 100, ground_mat));
-
+  bvh_node bvh(world);
   vec3 cameraPos(3, 3, 2);
 
   camera cam(20, RATIO, cameraPos, vec3(0, 1, 0), vec3(0, 0, -1), 0.5,
@@ -94,7 +99,7 @@ int main() {
         auto u = (x + rand_d()) * division_x;
         auto v = (y + rand_d()) * division_y;
         ray tmp_ray = cam.get_ray(u, v);
-        pxl += rayTrace(tmp_ray, world, max_dep);
+        pxl += rayTrace(tmp_ray, &world, max_dep);
       }
       pxl = pxl * divided_samples;
       mainBuffer.writeBuffer(x, y, pxl);
