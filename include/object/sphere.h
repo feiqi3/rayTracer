@@ -14,6 +14,8 @@
 #include "aabb.h"
 #include "hitable.h"
 #include "math/vector.h"
+#include "tool/common.h"
+#include <cmath>
 #include <memory>
 #include <utility>
 
@@ -38,6 +40,9 @@ public:
            record &rec) const override;
 
   bool bounding_box(AABB &box_out) const override;
+
+private:
+  static void get_sphere_uv(const vec3 &p, double &u, double &v);
 };
 
 inline bool sphere::hit(const ray &r, double t_min, double t_max,
@@ -63,14 +68,25 @@ inline bool sphere::hit(const ray &r, double t_min, double t_max,
   rec.p = r.at(rec.t);
   rec.mat_ptr = mat_ptr;
   rec.normal = (rec.p - cen) / radius; // normalized
+  get_sphere_uv(
+      rec.normal, rec.u,
+      rec.v); // The normal is strictly defined in the model coord(-1,1)
   set_face_normal(r, rec.normal, rec);
   return true;
 }
 
 inline bool sphere::bounding_box(AABB &box_out) const {
-  box_out = AABB(getCenter() - vec3(radius), getCenter() - vec3(radius));
+  box_out = AABB(getCenter() - vec3(radius), getCenter() + vec3(radius));
   return true;
 }
 
+// atan2() -> (-pi,pi)
+// atan2() + pi -> (0,2pi)
+inline void sphere::get_sphere_uv(const vec3 &p, double &u, double &v) {
+  double theta = acos(-p.y());
+  double phi = atan2(p.y(), -p.x()) + pi;
+  u = phi * inv_pi2;
+  v = theta * inv_pi;
+}
 
 #endif
