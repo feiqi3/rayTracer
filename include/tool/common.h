@@ -20,6 +20,8 @@ using std::make_shared;
 using std::shared_ptr;
 
 constexpr double pi = 3.14159265358979;
+constexpr double inv_pi2 = 1/(2*pi);
+constexpr double inv_pi = 1/(pi);
 
 const double Infinity = std::numeric_limits<double>::infinity();
 
