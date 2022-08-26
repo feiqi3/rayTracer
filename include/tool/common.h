@@ -44,6 +44,10 @@ inline double rand_d(double min, double max) {
   return min + (max - min) * rand_d();
 }
 
+inline int rand_i(int min,int max){
+  return static_cast<int>(rand_d(min, max));
+}
+
 template <typename T> inline T clamp(T x, T min, T max) {
   if (x < min) {
     return min;
