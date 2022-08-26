@@ -15,7 +15,7 @@
 #include <memory>
 #include <vector>
 
-class hitable_list : hitable {
+class hitable_list :public hitable {
 public:
   std::vector<std::shared_ptr<object>> obj_list;
 
