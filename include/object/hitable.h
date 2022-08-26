@@ -13,7 +13,7 @@
 #include "ray.h"
 #include <memory>
 
-//Forward declear
+// Forward declear
 class hitable;
 class material;
 class AABB;
@@ -23,22 +23,22 @@ typedef hitable object;
 struct record {
   vec3 p;
 
-  //normal should be normalized
+  // normal MUST be normalized
   vec3 normal;
   std::shared_ptr<material> mat_ptr;
   double t;
+  double u;
+  double v;
   bool front_face;
 };
 
-inline void set_face_normal(const ray& r,const vec3& v_out_normal,record& rec)
-{
-  if(dot(r.dir,v_out_normal)<0.0)
-  {
+inline void set_face_normal(const ray &r, const vec3 &v_out_normal,
+                            record &rec) {
+  if (dot(r.dir, v_out_normal) < 0.0) {
     rec.front_face = true;
-  }
-  else {
-  rec.front_face = false;
-  rec.normal = - rec.normal;
+  } else {
+    rec.front_face = false;
+    rec.normal = -rec.normal;
   }
 }
 
@@ -46,7 +46,7 @@ class hitable {
 public:
   virtual bool hit(const ray &r, double t_min, double t_max,
                    record &rec) const = 0;
-  virtual bool bounding_box(AABB& box_out)const = 0;
+  virtual bool bounding_box(AABB &box_out) const = 0;
 };
 
 #endif
