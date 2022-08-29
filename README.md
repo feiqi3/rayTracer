@@ -19,4 +19,8 @@ make
 
 TO DO: Ray Tracing in next weekenk!
 
-NO plan for:The randome scene.
+NO plan for:The randome scene.     
+    <br/>
+    
+Now I'm working on the new branch ray_tracing_next_week   
+[Click here to check it out](https://github.com/feiqi3/rayTracer/tree/ray_tracing_next_week)
