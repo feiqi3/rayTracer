@@ -11,6 +11,7 @@
 #define PICTOOLS_H
 #include "buffer/RGB12Buffer.h"
 #include <iostream>
+#include <memory>
 #include <stdio.h>
 #include <system_error>
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -27,8 +28,7 @@ struct img_info {
   int channel;
 };
 
-
-//RGB12 Buffer only
+// RGB12 Buffer only
 inline void jpgWriter(RGB12 *_buffer, const char *path, const char *name,
                       int flip_vertically) {
   if (flip_vertically == 1) {
@@ -36,23 +36,23 @@ inline void jpgWriter(RGB12 *_buffer, const char *path, const char *name,
   }
   std::string destination = path;
   destination += name;
-  stbi_write_jpg(destination.c_str(), _buffer->buf_width(), _buffer->buf_height(), 3,
-                 (int *)_buffer->getData(), 100);
+  stbi_write_jpg(destination.c_str(), _buffer->buf_width(),
+                 _buffer->buf_height(), 3, (int *)_buffer->getData(), 100);
   stbi_flip_vertically_on_write(0);
 }
 
-//RGB12 Buffer only
+// RGB12 Buffer only
 inline void jpgWriter(RGB12 *_buffer) {
   jpgWriter(_buffer, "./", "out.jpg", 1);
 }
 
-//load rgb from picture
+// load rgb from picture
 inline unsigned char *load_from_jpg(const char *filename, img_info &_info) {
   int x, y, n;
   stbi_set_flip_vertically_on_load(1);
-  unsigned char * output = stbi_load(filename, &x, &y, &n, 3);
-  if(output == nullptr)
-      std::cout<<"ERROR occurred when load picture";
+  unsigned char *output = stbi_load(filename, &x, &y, &n, 3);
+  if (output == nullptr)
+    std::cerr << "ERROR occurred when load picture";
   _info.x = x;
   _info.y = y;
   _info.channel = n;
@@ -60,8 +60,12 @@ inline unsigned char *load_from_jpg(const char *filename, img_info &_info) {
   return output;
 }
 
-inline void picDelete(unsigned char*p){
-    STBI_FREE(p);
+inline void picDelete(unsigned char *p) { STBI_FREE(p); }
+
+inline std::shared_ptr<RGB12> get_buffer_from_pic(const char *path) {
+  img_info _info;
+  auto _data = load_from_jpg(path, _info);
+  return make_shared<RGB12>(_data, _info.x, _info.y);
 }
 
 } // namespace fPic
