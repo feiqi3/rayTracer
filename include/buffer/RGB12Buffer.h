@@ -15,87 +15,35 @@
 #include "Macro.h"
 #include "math/vector.h"
 #include "tool/common.h"
+#include <cmath>
 #include <string>
-class RGB12F : public buffer {
-public:
-  RGB12F(int _x, int _y) : buffer(_x, _y) { make_buffer(); }
-  ~RGB12F();
-  bool make_buffer() override;
-  void del_buffer() override;
-  //vec3 sampler(double x, double y) const override;
-  void writeBufferf(float x, float y, const vec3 in) override;
-  void writeBuffer(int x, int y, const vec3 in) override;
-  virtual void *getData() const override;
-
-protected:
-  // vec3 **bufferMap;
-  float *_buffer_map;
-};
-
-inline RGB12F::~RGB12F() {
-  if (init == true) {
-    del_buffer();
-  }
-}
-
-inline bool RGB12F::make_buffer() {
-  del_buffer();
-  _buffer_map = new float[x * y * 3];
-  init = true;
-  return true;
-}
-
-inline void RGB12F::del_buffer() {
-  if (init == false) {
-    return;
-  }
-
-  delete[] _buffer_map;
-  init = false;
-}
-
-inline void RGB12F::writeBufferf(float _x, float _y, const vec3 _in) {
-  int sample_x = (float)_x * (x - 1); //[0,x)
-  int sample_y = (float)_y * (y - 1); //[0,y)
-  int pos = sample_x * 3 + sample_y * y * 3;
-#ifdef DEBUG
-  std::cout << "Write in Buffer[" << pos << "]=" << _in << "\n";
-#endif
-  _buffer_map[pos] = _in.x();
-  _buffer_map[pos + 1] = _in.y();
-  _buffer_map[pos + 2] = _in.z();
-}
-
-inline void RGB12F::writeBuffer(int _x, int _y, const vec3 _in) {
-  int sample_x = _x;
-  int sample_y = _y;
-  int pos = sample_x * 3 + sample_y * x * 3;
-#ifdef DEBUG
-  std::cout << "Write in Buffer[" << pos << "]=" << _in << "\n";
-#endif
-  _buffer_map[pos] = _in.x();
-  _buffer_map[pos + 1] = _in.y();
-  _buffer_map[pos + 2] = _in.z();
-}
-
-inline void *RGB12F::getData() const { return _buffer_map; }
 
 class RGB12 : public buffer {
 public:
   RGB12(int _x, int _y) : buffer(_x, _y) { make_buffer(); }
+  RGB12(unsigned char *_data, int _x, int _y)
+      : buffer(_x, _y), _buffer_map(_data) {
+    if (_data) {
+      init = true;
+      load_from_file = true;
+    }
+  }
   ~RGB12();
   bool make_buffer() override;
   void del_buffer() override;
   void writeBufferf(float x, float y, const vec3 in) override;
   void writeBuffer(int x, int y, const vec3 in) override;
   virtual void *getData() const override;
-
+  virtual vec3 sampler(double u, double v) const override;
+  void setInterpolation(bool flag) { linearInterpolation = flag; }
 protected:
-  // vec3 **bufferMap;
+  vec3 sampler(int u, int v) const override;
   unsigned char *_buffer_map;
-
+  vec3 BilinearSampler(float sampler_x,float sample_y)const;
 private:
   bool load_from_file;
+  static constexpr double colorScale = 1. / 255;
+  int linearInterpolation;
 };
 
 inline RGB12::~RGB12() {
@@ -103,7 +51,6 @@ inline RGB12::~RGB12() {
     del_buffer();
   }
 }
-
 
 inline bool RGB12::make_buffer() {
   del_buffer();
@@ -155,4 +102,37 @@ inline void RGB12::writeBuffer(int _x, int _y, const vec3 _in) {
 
 inline void *RGB12::getData() const { return _buffer_map; }
 
+// return in [0,1]
+inline vec3 RGB12::sampler(double u, double v) const {
+  if (!init) {
+    return vec3(0, 0, 0);
+  }
+  float sample_x = (float)u * (x - 1);
+  float sample_y = (float)v * (y - 1);
+  // clamp sample x,y to [0,x);
+  if (!linearInterpolation) {
+    return sampler(static_cast<int>(sample_x), static_cast<int>(sample_y));
+  } else {
+    return BilinearSampler(sample_x, sample_y);
+  }
+}
+inline vec3 RGB12::sampler(int u, int v) const {
+  u = clamp(u, 0, x - 1);
+  v = clamp(v, 0, v - 1);
+  int pos = u * 3 + v * x * 3;
+  return vec3(_buffer_map[pos], _buffer_map[pos + 1], _buffer_map[pos + 2]) *
+         colorScale;
+}
+
+inline vec3 RGB12::BilinearSampler(float sample_x,float sample_y)const{
+  int floor_x = floor(sample_x);
+    int floor_y = floor(sample_y);
+    int ceil_x = ceil(sample_x);
+    int ceil_y = ceil(sample_y);
+    float pxf = sample_x - floor_x;
+    float pyf = sample_y - floor_y;
+        return lerp(lerp(sampler(floor_x, floor_y), sampler(ceil_x, floor_y), pxf),
+                lerp(sampler(floor_x, ceil_y), sampler(ceil_x, ceil_y), pxf),
+                pyf);
+}
 #endif

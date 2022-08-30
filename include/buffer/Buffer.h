@@ -44,6 +44,7 @@ public:
   // delete buffer
   virtual void del_buffer() = 0;
   // sample buffer
+  virtual vec3 sampler(double u,double v)const = 0;
   //virtual vec3 sampler(double x, double y) const = 0;
   // write to buffer
   virtual void writeBufferf(float x, float y, const vec3 _in) = 0;
@@ -56,6 +57,7 @@ protected:
   bool init;
   // buffer size
   int x, y;
+  virtual vec3 sampler(int u,int v)const = 0;
 };
 
 // width and height
@@ -64,5 +66,4 @@ inline buffer::~buffer() {}
 inline bool buffer::is_init() const { return init; }
 inline int buffer::buf_width() const { return x; }
 inline int buffer::buf_height() const { return y; }
-
 #endif
