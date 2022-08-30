@@ -26,11 +26,7 @@ public:
   float y() const { return vec[1]; }
   float z() const { return vec[2]; }
 
-  vec3 operator-() {
-
-    return vec3(-vec[0], -vec[1], -vec[2]);
-    ;
-  }
+  vec3 operator-() { return vec3(-vec[0], -vec[1], -vec[2]); }
 
   vec3 &operator+=(const vec3 &v) {
     vec[0] += v[0];
@@ -144,6 +140,11 @@ inline vec3 refract(const vec3 &ray_in, const vec3 &ray_normal,
   return -(ray_normal * InvSqrt(1 - etai_divide_etat * etai_divide_etat *
                                         (1 - cos_theta * cos_theta))) +
          etai_divide_etat * (ray_in + ray_normal * cos_theta);
+}
+
+inline vec3 lerp(const vec3 &a, const vec3 &b, float i) {
+  return vec3(std::lerp(a.x(), b.x(), i), std::lerp(a.y(), b.y(), i),
+              std::lerp(a.z(), b.z(), i));
 }
 
 typedef vec3 color;
