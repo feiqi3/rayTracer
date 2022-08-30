@@ -12,15 +12,21 @@
 #include "camera.h"
 #include "hitableList.h"
 #include "material/normal_shader.h"
+#include "noise/perlin_noise_3d.h"
 #include "object/bvh_node.h"
 #include "object/hitable.h"
 #include "object/sphere.h"
 #include "texture/checker_texture.h"
+#include "texture/image_texture.h"
+#include "texture/marble_texture.h"
+#include "texture/noise_texture.h"
+#include "texture/turbulence_texture.h"
 #include "tool/picTool.h"
 #include <memory>
+#include <stdlib.h>
 constexpr int IMG_WIDTH = 1000;
 constexpr double RATIO = 16.0 / 9.0;
-constexpr int SAMPLES = 20;
+constexpr int SAMPLES = 100;
 #include "material/dielectric.h"
 #include "material/lambertian.h"
 #include "material/metal.h"
@@ -51,35 +57,38 @@ color rayTrace(const ray &r, hitable *world, int depth) {
 }
 
 int main() {
-
+  srand(time(0));
   constexpr auto IMG_HEIGHT = static_cast<int>(IMG_WIDTH / RATIO);
-  ;
+  auto earthTexture = make_shared<image_texture>("resource/texture/earthmap.jpg");
 
-  RGB12 mainBuffer(IMG_WIDTH, IMG_HEIGHT);
 
-  auto colorTexA = std::make_shared<constant_color>(vec3(1,1,1));
-  auto colorTexB = std::make_shared<constant_color>(vec3(.1,.7,.7));
 
-  auto checker = make_shared<checker_texture>(colorTexA,colorTexB);
-
-  hitable_list world;
-  shared_ptr<lambertian> ground_mat =
-      std::make_shared<lambertian>(checker);
+  perlin3D n;
+  auto colorTexA = std::make_shared<constant_color>(vec3(1, 1, 1));
+  auto colorTexB = std::make_shared<constant_color>(vec3(.1, .7, .7));
   shared_ptr<metal> metal_sphere_a =
       std::make_shared<metal>(color(0.5, 0.5, 0.5), 0);
   shared_ptr<metal> metal_sphere_b =
       std::make_shared<metal>(color(0.1, 0.5, 0.3), 1);
-  shared_ptr<lambertian> lambertian_sphere = std::make_shared<lambertian>(vec3(0.2,0.1,0.6));
+  shared_ptr<lambertian> lambertian_sphere =
+      std::make_shared<lambertian>(vec3(0.2, 0.1, 0.6));
   shared_ptr<dielectric> die = make_shared<dielectric>(1.5);
-  world.add(make_shared<sphere>(vec3(0, 0, -1), .5, lambertian_sphere));
+  auto checker = make_shared<checker_texture>(colorTexA, colorTexB);
+  shared_ptr<noise_texture> turb_noise_tex = make_shared<noise_texture>(5.5);
+  hitable_list world;
+  shared_ptr<lambertian> ground_mat = std::make_shared<lambertian>(checker);
+  auto turb_mat = std::make_shared<lambertian>(turb_noise_tex);
+  auto earth_mat = std::make_shared<lambertian>(earthTexture);
+  world.add(make_shared<sphere>(vec3(0, 0, -1), .5, turb_mat));
   world.add(make_shared<sphere>(vec3(-1.0, 0, -1), .5, metal_sphere_a));
   world.add(make_shared<sphere>(vec3(1.0, 0, -1), 0.5, die));
-  world.add(make_shared<sphere>(vec3(0, -100.5, -1), 100, ground_mat));
+  world.add(make_shared<sphere>(vec3(0, -30.5, -1), 30, earth_mat));
   bvh_node bvh(world);
-  vec3 cameraPos(3, 3, 2);
+  vec3 cameraPos(3, 3, 20);
 
-  camera cam(20, RATIO, cameraPos, vec3(0, 1, 0), vec3(0, 0, -1), 0.5,
+  camera cam(30, RATIO, cameraPos, vec3(0, 1, 0), vec3(0, 0, -1), 0,
              (vec3(0, 0, -1) - cameraPos).length());
+  RGB12 mainBuffer(IMG_WIDTH, IMG_HEIGHT);
 
   double division_x = 1.0 / (IMG_WIDTH - 1.0);
   double division_y = 1.0 / (IMG_HEIGHT - 1.0);
@@ -104,7 +113,7 @@ int main() {
       pxl = pxl * divided_samples;
       mainBuffer.writeBuffer(x, y, pxl);
     }
-    fPic::jpgWriter(&mainBuffer);
   }
+  fPic::jpgWriter(&mainBuffer);
   std::cout << "Done!";
 }
