@@ -6,7 +6,7 @@
 class image_texture : public texture {
 public:
   image_texture() {}
-  image_texture(const char *filename);
+  image_texture(const char *filename, bool filter = false);
   vec3 value(double u, double v, const vec3 &point) const override;
 
 private:
@@ -14,13 +14,15 @@ private:
   std::shared_ptr<RGB12> image_buffer;
 };
 
-inline image_texture::image_texture(const char *filename)
-    : image_buffer(fPic::get_buffer_from_pic(filename)) {}
+inline image_texture::image_texture(const char *filename, bool filter)
+    : image_buffer(fPic::get_buffer_from_pic(filename)) {
+  image_buffer->setInterpolation(filter);
+}
 
 inline vec3 image_texture::value(double u, double v, const vec3 &point) const {
   u = clamp(u, 0.0, 1.0);
   v = clamp(v, 0.0, 1.0);
-  image_buffer->setInterpolation(1);
+
   return image_buffer->sampler(u, v);
 }
 
