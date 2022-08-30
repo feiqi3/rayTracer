@@ -83,8 +83,9 @@ inline bool sphere::bounding_box(AABB &box_out) const {
 // atan2() -> (-pi,pi)
 // atan2() + pi -> (0,2pi)
 inline void sphere::get_sphere_uv(const vec3 &p, double &u, double &v) {
+  //precision problem
   double theta = acos(-p.y());
-  double phi = atan2(p.y(), -p.x()) + pi;
+  double phi = atan2(p.z(), -p.x()) + pi;
   u = phi * inv_pi2;
   v = theta * inv_pi;
 }
