@@ -15,6 +15,7 @@
 #include "material/normal_shader.h"
 #include "noise/perlin_noise_3d.h"
 #include "object/aarect.h"
+#include "object/box.h"
 #include "object/bvh_node.h"
 #include "object/hitable.h"
 #include "object/sphere.h"
@@ -27,9 +28,10 @@
 #include "tool/picTool.h"
 #include <memory>
 #include <stdlib.h>
-constexpr int IMG_WIDTH = 1000;
+#include <time.h>
+constexpr int IMG_WIDTH = 300;
 constexpr double RATIO = 1.0;
-constexpr int SAMPLES = 1000;
+constexpr int SAMPLES = 100;
 #include "material/dielectric.h"
 #include "material/lambertian.h"
 #include "material/metal.h"
@@ -39,7 +41,7 @@ constexpr int SAMPLES = 1000;
 #include "tool/ppmUtil.h"
 #include <iostream>
 
-const vec3 Back_Ground_Color(.3, .3, .3);
+const vec3 Back_Ground_Color(.7, .7, .7);
 
 color rayTrace(const ray &r, const vec3 &background, hitable *world,
                int depth) {
@@ -77,7 +79,11 @@ int main() {
   world.add(make_shared<xz_rect>(0, 555, 0, 555, 0, white));
   world.add(make_shared<xz_rect>(0, 555, 0, 555, 555, white));
   world.add(make_shared<xy_rect>(0, 555, 0, 555, 555, white));
-  world.add(make_shared<sphere>(vec3(278,100,200.5),100,glass));
+
+  // world.add(make_shared<sphere>(vec3(278,100,200.5),100,glass));
+
+  world.add(make_shared<box>(vec3(130, 0, 65), vec3(295, 165, 230), white));
+  world.add(make_shared<box>(vec3(265, 0, 295), vec3(430, 330, 460), white));
   /*  world.add(
         make_shared<rectangle>(vec3(0, 555, 0), vec3(555, 555, 555), white));
 
@@ -87,7 +93,7 @@ int main() {
       world.add(make_shared<rectangle>(vec3(555, 0, 0), vec3(555), green));
     world.add(make_shared<rectangle>(vec3(0, 0, 0), vec3(0, 555, 555), red));
     */
-  std::cout << world.obj_list.size();
+  float start_time = clock();
 
   bvh_node bvh(world);
   vec3 cameraPos(278, 278, -800);
@@ -118,6 +124,8 @@ int main() {
       mainBuffer.writeBuffer(x, y, pxl);
     }
   }
+  float end_time = clock();
+  std::cout << (end_time - start_time)<<"\n";
   fPic::jpgWriter(&mainBuffer);
   std::cout << "Done!";
 }
