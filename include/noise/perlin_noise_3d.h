@@ -95,8 +95,8 @@ inline double perlin3D::noise(const vec3 &p)const {
       for (int dk = 0; dk < 2; dk++) {
         vec3 corner(di, dj, dk);
         vec3 c2p = pf - corner;
-        int hash_ = perm_x[((int)pi.x()+di) & 255] ^ perm_y[((int)pi.y()+dj) & 255] ^
-                    perm_z[((int)pi.z()+dk) & 255];
+        int hash_ = perm_x[((int)pi.x()+di) & mask] ^ perm_y[((int)pi.y()+dj) & mask] ^
+                    perm_z[((int)pi.z()+dk) & mask];
         auto &grad = ranVec[hash_];
         c[di][dj][dk] = dot(c2p, grad);
       }
