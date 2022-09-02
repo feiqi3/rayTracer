@@ -24,7 +24,7 @@ public:
 
   hitable_list(std::shared_ptr<object> obj) { add(obj); }
 
-  void add(std::shared_ptr<object> obj) { obj_list.push_back(obj); }
+  void add(const std::shared_ptr<object>& obj) { obj_list.push_back(obj); }
 
   bool hit(const ray &r, double t_min, double t_max,
            record &rec) const override;
