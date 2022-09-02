@@ -118,7 +118,7 @@ inline vec3 RGB12::sampler(double u, double v) const {
 }
 inline vec3 RGB12::sampler(int u, int v) const {
   u = clamp(u, 0, x - 1);
-  v = clamp(v, 0, v - 1);
+  v = clamp(v, 0, y - 1);
   int pos = u * 3 + v * x * 3;
   return vec3(_buffer_map[pos], _buffer_map[pos + 1], _buffer_map[pos + 2]) *
          colorScale;
