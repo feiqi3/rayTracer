@@ -106,7 +106,7 @@ public:
   virtual bool bounding_box(AABB &output_box) const override {
     // The bounding box must have non-zero width in each dimension, so pad the X
     // dimension a small amount.
-    output_box = AABB(vec3(k - 0.0001, x0, y0), vec3(k + 0.0001, x1, y1));
+    output_box = AABB(vec3( x0, y0,k - 0.0001), vec3(x1, y1,k + 0.0001));
     return true;
   }
 

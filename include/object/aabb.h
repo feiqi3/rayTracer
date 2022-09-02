@@ -36,7 +36,7 @@ inline bool AABB::hit(const ray &r, double t_min, double t_max,
     }
     // find the closest interval
     t_min = t0 > t_min ? t0 : t_min;
-    t_max = t1 < t_max ? t0 : t_max;
+    t_max = t1 < t_max ? t1 : t_max;
     // no overlap
     if (t_max < t_min)
       return false;
