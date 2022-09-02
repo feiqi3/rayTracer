@@ -22,7 +22,6 @@ inline image_texture::image_texture(const char *filename, bool filter)
 inline vec3 image_texture::value(double u, double v, const vec3 &point) const {
   u = clamp(u, 0.0, 1.0);
   v = clamp(v, 0.0, 1.0);
-
   return image_buffer->sampler(u, v);
 }
 

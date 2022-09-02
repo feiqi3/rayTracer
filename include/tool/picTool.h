@@ -67,7 +67,6 @@ inline std::shared_ptr<RGB12> get_buffer_from_pic(const char *path) {
   auto _data = load_from_jpg(path, _info);
   return make_shared<RGB12>(_data, _info.x, _info.y);
 }
-
 } // namespace fPic
 
 #endif
