@@ -125,7 +125,7 @@ int main() {
     }
   }
   float end_time = clock();
-  std::cout << (end_time - start_time)<<"\n";
+  std::cout << (end_time - start_time)/60000<<"mins\n";
   fPic::jpgWriter(&mainBuffer);
   std::cout << "Done!";
 }
