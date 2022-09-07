@@ -17,8 +17,11 @@
 #include "object/aarect.h"
 #include "object/box.h"
 #include "object/bvh_node.h"
+#include "object/constant_medium.h"
 #include "object/hitable.h"
+#include "object/rotate_y.h"
 #include "object/sphere.h"
+#include "object/translate.h"
 #include "object/triangle.h"
 #include "texture/checker_texture.h"
 #include "texture/image_texture.h"
@@ -29,9 +32,9 @@
 #include <memory>
 #include <stdlib.h>
 #include <time.h>
-constexpr int IMG_WIDTH = 300;
-constexpr double RATIO = 1.0;
-constexpr int SAMPLES = 100;
+constexpr int IMG_WIDTH = 1920;
+constexpr double RATIO = 1.5;
+constexpr int SAMPLES = 1000;
 #include "material/dielectric.h"
 #include "material/lambertian.h"
 #include "material/metal.h"
@@ -41,7 +44,7 @@ constexpr int SAMPLES = 100;
 #include "tool/ppmUtil.h"
 #include <iostream>
 
-const vec3 Back_Ground_Color(.7, .7, .7);
+const vec3 Back_Ground_Color(.0, .0, .0);
 
 color rayTrace(const ray &r, const vec3 &background, hitable *world,
                int depth) {
@@ -71,19 +74,91 @@ int main() {
   auto red = make_shared<lambertian>(color(.65, .05, .05));
   auto white = make_shared<lambertian>(color(.73, .73, .73));
   auto green = make_shared<lambertian>(color(.12, .45, .15));
-  auto light = make_shared<diffuse_light>(color(15, 15, 15));
+  auto greenLit = make_shared<lambertian>((color(168, 247, 218) / 255));
+
+  auto light = make_shared<diffuse_light>(color(1.3, 1.3, 1.3));
+  auto lightRed = make_shared<diffuse_light>(color(1.3, .3, .3));
+  auto lightBlue = make_shared<diffuse_light>(color(.3, .3, 1.2));
+  auto lightGreen = make_shared<diffuse_light>(color(.3, 1.2, .3));
   auto glass = make_shared<dielectric>(1.5);
-  world.add(make_shared<yz_rect>(0, 555, 0, 555, 555, green));
-  world.add(make_shared<yz_rect>(0, 555, 0, 555, 0, red));
-  world.add(make_shared<xz_rect>(213, 343, 227, 332, 554, light));
-  world.add(make_shared<xz_rect>(0, 555, 0, 555, 0, white));
-  world.add(make_shared<xz_rect>(0, 555, 0, 555, 555, white));
-  world.add(make_shared<xy_rect>(0, 555, 0, 555, 555, white));
 
-  // world.add(make_shared<sphere>(vec3(278,100,200.5),100,glass));
+  auto earthTexture =
+      make_shared<image_texture>("resource/texture/earthmap.jpg", true);
+  auto earthMat = make_shared<lambertian>(earthTexture);
+  perlin3D noise;
+  auto lightAbove = make_shared<xz_rect>(-10, 10, 0, 25, 30, light);
+  auto lightLeft = make_shared<yz_rect>(10, 35, 10, 25, -35, light);
+  world.add(lightLeft);
 
-  world.add(make_shared<box>(vec3(130, 0, 65), vec3(295, 165, 230), white));
-  world.add(make_shared<box>(vec3(265, 0, 295), vec3(430, 330, 460), white));
+  auto earth = make_shared<sphere>(vec3(-6, 17, 25), 5, earthMat);
+    auto sphere2 = make_shared<sphere>(vec3(6, 10, 10), 4, white);
+  auto fog = make_shared<constant_medium>(sphere2, 0.2, vec3(0.7,0.9,0.7));
+  //world.add(fog);
+  world.add(lightAbove);
+  world.add(earth);
+  vec3 cubePosMin(0, -5, 0), cubePosMax(8, 5, 8);
+  for (int i = -3; i < 8; i++) {
+    for (int j = -3; j < 8; j++) {
+      vec3 tmpPos(-20 + 8 * i, 0, 50 - 8 * j);
+      float height = noise.noise(tmpPos / 16);
+      tmpPos[1] = height * 6;
+      if ((i == 3 && (j == 0))) {
+        tmpPos[1] = 10;
+        auto mBox = make_shared<box>(cubePosMin + tmpPos, cubePosMax + tmpPos,
+                                     lightRed);
+        world.add(mBox);
+        continue;
+      }
+      if ((i == 2 && (j == 5))) {
+        tmpPos[1] = 4;
+        auto mBox = make_shared<box>(cubePosMin + tmpPos, cubePosMax + tmpPos,
+                                     lightBlue);
+        world.add(mBox);
+        continue;
+      }
+      if ((i == -1 && (j == 2))) {
+        tmpPos[1] = 7;
+        auto mBox = make_shared<box>(cubePosMin + tmpPos, cubePosMax + tmpPos,
+                                     lightGreen);
+        world.add(mBox);
+        continue;
+      }
+      if ((i == 2 && (j == 2))) {
+        tmpPos[1] = 4;
+        auto mBox =
+            make_shared<box>(cubePosMin + tmpPos, cubePosMax + tmpPos, light);
+        world.add(mBox);
+        continue;
+      }
+      auto mBox =
+          make_shared<box>(cubePosMin + tmpPos, cubePosMax + tmpPos, greenLit);
+      world.add(mBox);
+    }
+  }
+  vec3 cameraPos(0, 20, 0);
+
+  camera cam(55, RATIO, cameraPos, vec3(0, 1, 0), vec3(-5, 14, 25), 0,
+             (vec3(0, 0, -1) - cameraPos).length());
+  /* world.add(make_shared<yz_rect>(0, 555, 0, 555, 555, green));
+   world.add(make_shared<yz_rect>(0, 555, 0, 555, 0, red));
+   world.add(make_shared<xz_rect>(213, 343, 227, 332, 554, light));
+   world.add(make_shared<xz_rect>(0, 555, 0, 555, 0, white));
+   world.add(make_shared<xz_rect>(0, 555, 0, 555, 555, white));
+   world.add(make_shared<xy_rect>(0, 555, 0, 555, 555, white));
+
+   // world.add(make_shared<sphere>(vec3(278,100,200.5),100,glass));
+   shared_ptr<hitable> box1 =
+       make_shared<box>(vec3(0, 0, 0), vec3(165, 330, 165), white);
+   box1 = make_shared<rotate_y>(box1, 15);
+   box1 = make_shared<translate>(box1, vec3(265, 0, 295));
+
+   shared_ptr<hitable> box2 =
+       make_shared<box>(vec3(0, 0, 0), vec3(165, 165, 165), white);
+   box2 = make_shared<rotate_y>(box2, -18);
+   box2 = make_shared<translate>(box2, vec3(130, 0, 65));
+   auto smoke_box = make_shared<constant_medium>(box2,0.015,vec3(1,1,1));
+   world.add(box1);
+   world.add(smoke_box);*/
   /*  world.add(
         make_shared<rectangle>(vec3(0, 555, 0), vec3(555, 555, 555), white));
 
@@ -92,14 +167,15 @@ int main() {
         make_shared<rectangle>(vec3(0, 0, 555), vec3(555, 555, 555), white));
       world.add(make_shared<rectangle>(vec3(555, 0, 0), vec3(555), green));
     world.add(make_shared<rectangle>(vec3(0, 0, 0), vec3(0, 555, 555), red));
-    */
-  float start_time = clock();
+
+
 
   bvh_node bvh(world);
   vec3 cameraPos(278, 278, -800);
+ */
+  float start_time = clock();
+  bvh_node bvh(world);
 
-  camera cam(40, RATIO, cameraPos, vec3(0, 1, 0), vec3(278, 278, 0), 0,
-             (vec3(0, 0, -1) - cameraPos).length());
   RGB12 mainBuffer(IMG_WIDTH, IMG_HEIGHT);
 
   double division_x = 1.0 / (IMG_WIDTH - 1.0);
@@ -125,7 +201,7 @@ int main() {
     }
   }
   float end_time = clock();
-  std::cout << (end_time - start_time)/60000<<"mins\n";
+  std::cout << (end_time - start_time) / 60000 << "mins\n";
   fPic::jpgWriter(&mainBuffer);
   std::cout << "Done!";
 }
