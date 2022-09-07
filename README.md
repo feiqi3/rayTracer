@@ -7,17 +7,17 @@
  * @FilePath: \rayTracer\README.md
  * ->blog: feiqi3.cn <-
 -->
-Now I'm working on "Ray Tracing: The Next Week"  
+I've finished the book "Ray Tracing: The Next Week".   
 Here is the book [Ray Tracing: The Next Week](https://raytracing.github.io/books/RayTracingTheNextWeek.html)  
   
-how to run:
+how to run:  
 ```
 mkdir build
 cd build 
 cmake ..
 make 
 ```   
-Or U can use ninja to build(Just like what I'm doing)  
-Depends on you!
+Or U can use ninja to build(Just like what I'm doing)    
+Enjoy it!   
 
-
+![](https://pic.feiqi3.cn/blogPic/out_2295final.jpg)
