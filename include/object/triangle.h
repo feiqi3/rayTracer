@@ -66,9 +66,6 @@ inline bool triangle::hit(const ray &r, double t_min, double t_max,
   if (t < t_min || t > t_max)
     return false;
   vec3 pointP = r.at(t);
-  if (std::isnan(pointP.x())) {
-    volatile int c = 0;
-  }
   if (!is_in_tri(pointP))
     return false;
   rec.t = t;
