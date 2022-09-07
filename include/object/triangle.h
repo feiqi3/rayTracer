@@ -12,15 +12,15 @@ class triangle : public hitable {
 
 public:
   triangle() {}
-  //pa： upper left, pc: lower right 
+  // pa： upper left, pc: lower right
   triangle(const vec3 &pa, const vec3 &pb, const vec3 &pc,
            const std::shared_ptr<material> &_mat,
            bool clock_wise_texcoord = false)
       : mat_ptr(_mat), point{pa, pb, pc}, texcoord{vec3(0, 1, 0),
-                                               clock_wise_texcoord
-                                                   ? vec3(1, 1, 0)
-                                                   : vec3(0),
-                                               vec3(1, 0, 0)} {
+                                                   clock_wise_texcoord
+                                                       ? vec3(1, 1, 0)
+                                                       : vec3(0),
+                                                   vec3(1, 0, 0)} {
     _data_caculate();
   }
   bool is_in_tri(const vec3 &_p) const;
@@ -36,13 +36,13 @@ protected:
   double _dot00, _dot01, _dot11;
   vec3 normal;
   float area;
-  double getTriangleSize(const vec3 &p0, const vec3 &p1, const vec3 &p2)const;
+  double getTriangleSize(const vec3 &p0, const vec3 &p1, const vec3 &p2) const;
   void get_triangle_uv(const vec3 &p, double &u, double &v) const;
   void _data_caculate();
 };
 
 inline double triangle::getTriangleSize(const vec3 &p0, const vec3 &p1,
-                                        const vec3 &p2) const{
+                                        const vec3 &p2) const {
   vec3 ab = p1 - p0;
   vec3 ac = p2 - p0;
   return 0.5 * cross(ab, ac).length();
@@ -95,17 +95,22 @@ inline bool triangle::is_in_tri(const vec3 &_p) const {
 }
 
 inline bool triangle::bounding_box(AABB &box_out) const {
-  vec3 pMin = vec3(std::min(std::min(point[0].x(), point[1].x()), point[2].x()),
-            std::min(std::min(point[0].y(), point[1].y()), point[2].y()),
-            std::min(std::min(point[0].z(), point[1].z()), point[2].z()))-vec3(0.00001);
-  vec3 pMax = vec3(std::max(std::max(point[0].x(), point[1].x()), point[2].x()),
-            std::max(std::max(point[0].y(), point[1].y()), point[2].y()),
-            std::max(std::max(point[0].z(), point[1].z()), point[2].z()))+vec3(0.00001);
+  vec3 pMin =
+      vec3(std::min(std::min(point[0].x(), point[1].x()), point[2].x()),
+           std::min(std::min(point[0].y(), point[1].y()), point[2].y()),
+           std::min(std::min(point[0].z(), point[1].z()), point[2].z())) -
+      vec3(0.00001);
+  vec3 pMax =
+      vec3(std::max(std::max(point[0].x(), point[1].x()), point[2].x()),
+           std::max(std::max(point[0].y(), point[1].y()), point[2].y()),
+           std::max(std::max(point[0].z(), point[1].z()), point[2].z())) +
+      vec3(0.00001);
   box_out = AABB(pMin, pMax);
   return true;
 }
 
-inline void triangle::get_triangle_uv(const vec3 &p, double &u, double &v)const {
+inline void triangle::get_triangle_uv(const vec3 &p, double &u,
+                                      double &v) const {
   auto alpha = getTriangleSize(point[2], point[1], p) / area;
   auto beta = getTriangleSize(point[2], point[0], p) / area;
   auto gamma = 1 - alpha - beta;

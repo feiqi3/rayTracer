@@ -10,6 +10,6 @@
 #ifndef MACRO_H_
 #define MACRO_H_
 
-#define DEBUG
+//#define DEBUG
 
 #endif

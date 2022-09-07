@@ -92,21 +92,21 @@ inline mat4 getScale(const vec3 &vec) {
 }
 
 // Rodrigues's rotation formula
-inline mat4 getRotate(double theta, const vec3 &v) {
+inline mat4 getRotate(double theta, const vec3 &axis) {
   double a = 1 - cos(theta);
   double s = sin(theta);
   double c = cos(theta);
-  double m00 = a * v.x() * v.x() + c;
-  double m01 = a * v.x() * v.y() - s * v.z();
-  double m02 = a * v.x() * v.z() + s * v.y();
+  double m00 = a * axis.x() * axis.x() + c;
+  double m01 = a * axis.x() * axis.y() - s * axis.z();
+  double m02 = a * axis.x() * axis.z() + s * axis.y();
   double m03 = 0;
-  double m10 = a * v.y() * v.x() + s * v.z();
-  double m11 = a * v.y() * v.y() + c;
-  double m12 = a * v.y() * v.z() - s * v.x();
+  double m10 = a * axis.y() * axis.x() + s * axis.z();
+  double m11 = a * axis.y() * axis.y() + c;
+  double m12 = a * axis.y() * axis.z() - s * axis.x();
   double m13 = 0;
-  double m20 = a * v.z() * v.x() - s * v.y();
-  double m21 = a * v.z() * v.y() + s * v.x();
-  double m22 = a * v.z() * v.z() + c;
+  double m20 = a * axis.z() * axis.x() - s * axis.y();
+  double m21 = a * axis.z() * axis.y() + s * axis.x();
+  double m22 = a * axis.z() * axis.z() + c;
   double m23 = 0;
 
   // Kill me
