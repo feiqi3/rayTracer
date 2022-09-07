@@ -104,7 +104,7 @@ inline double perlin3D::noise(const vec3 &p)const {
 }
 
 inline double perlin3D::noise01(const vec3 &p)const{
-  return noise(p);
+  return noise(p) * 0.5 + 0.5;
 }
 
 inline double perlin3D::turb_noise(vec3 p,int layer = 8)const{
