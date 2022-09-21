@@ -12,7 +12,7 @@
 #include "camera.h"
 #include "hitableList.h"
 #include "material/diffuse_light.h"
-#include "material/normal_shader.h"
+#include "math/matrix.h"
 #include "noise/perlin_noise_3d.h"
 #include "object/aarect.h"
 #include "object/box.h"
@@ -25,10 +25,8 @@
 #include "object/triangle.h"
 #include "texture/checker_texture.h"
 #include "texture/image_texture.h"
-#include "texture/marble_texture.h"
-#include "texture/noise_texture.h"
-#include "texture/turbulence_texture.h"
 #include "tool/picTool.h"
+#include <cstdlib>
 #include <memory>
 #include <stdlib.h>
 #include <time.h>
@@ -65,7 +63,7 @@ color rayTrace(const ray &r, const vec3 &background, hitable *world,
   return emitted +
          attenuaion * rayTrace(scattered, background, world, depth - 1);
 }
-
+/*
 int main() {
   srand(time(0));
   constexpr auto IMG_HEIGHT = static_cast<int>(IMG_WIDTH / RATIO);
@@ -139,40 +137,6 @@ int main() {
 
   camera cam(55, RATIO, cameraPos, vec3(0, 1, 0), vec3(-5, 14, 25), 0,
              (vec3(0, 0, -1) - cameraPos).length());
-  /* world.add(make_shared<yz_rect>(0, 555, 0, 555, 555, green));
-   world.add(make_shared<yz_rect>(0, 555, 0, 555, 0, red));
-   world.add(make_shared<xz_rect>(213, 343, 227, 332, 554, light));
-   world.add(make_shared<xz_rect>(0, 555, 0, 555, 0, white));
-   world.add(make_shared<xz_rect>(0, 555, 0, 555, 555, white));
-   world.add(make_shared<xy_rect>(0, 555, 0, 555, 555, white));
-
-   // world.add(make_shared<sphere>(vec3(278,100,200.5),100,glass));
-   shared_ptr<hitable> box1 =
-       make_shared<box>(vec3(0, 0, 0), vec3(165, 330, 165), white);
-   box1 = make_shared<rotate_y>(box1, 15);
-   box1 = make_shared<translate>(box1, vec3(265, 0, 295));
-
-   shared_ptr<hitable> box2 =
-       make_shared<box>(vec3(0, 0, 0), vec3(165, 165, 165), white);
-   box2 = make_shared<rotate_y>(box2, -18);
-   box2 = make_shared<translate>(box2, vec3(130, 0, 65));
-   auto smoke_box = make_shared<constant_medium>(box2,0.015,vec3(1,1,1));
-   world.add(box1);
-   world.add(smoke_box);*/
-  /*  world.add(
-        make_shared<rectangle>(vec3(0, 555, 0), vec3(555, 555, 555), white));
-
-    world.add(make_shared<rectangle>(vec3(0, 0, 0), vec3(555, 0, 555), white));
-    world.add(
-        make_shared<rectangle>(vec3(0, 0, 555), vec3(555, 555, 555), white));
-      world.add(make_shared<rectangle>(vec3(555, 0, 0), vec3(555), green));
-    world.add(make_shared<rectangle>(vec3(0, 0, 0), vec3(0, 555, 555), red));
-
-
-
-  bvh_node bvh(world);
-  vec3 cameraPos(278, 278, -800);
- */
   float start_time = clock();
   bvh_node bvh(world);
 
@@ -204,4 +168,13 @@ int main() {
   std::cout << (end_time - start_time) / 60000 << "mins\n";
   fPic::jpgWriter(&mainBuffer);
   std::cout << "Done!";
+}
+*/  
+int main(){
+ auto m = mat::getTBN(normalize(vec3(1,1,1)));
+ vec3 nn = normalize(vec3(1));
+ for (int i = 0 ; i < 340 ; i++) {
+    auto dir =sample_on_hemi(nn);
+    assert(dot(dir,nn) > 0);
+ }
 }
