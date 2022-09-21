@@ -9,8 +9,7 @@
  */
 #ifndef _VECTOR_H_
 #define _VECTOR_H_
-
-#include "tool/common.h"
+#include "../tool/common.h"
 #include <cmath>
 #include <iostream>
 
@@ -142,9 +141,13 @@ inline vec3 refract(const vec3 &ray_in, const vec3 &ray_normal,
          etai_divide_etat * (ray_in + ray_normal * cos_theta);
 }
 
+inline double lerp(double a, double b, double t) { return a + (b - a) * t; }
+
+inline float lerp(float a, float b, float t) { return a + (b - a) * t; }
+
 inline vec3 lerp(const vec3 &a, const vec3 &b, float i) {
-  return vec3(std::lerp(a.x(), b.x(), i), std::lerp(a.y(), b.y(), i),
-              std::lerp(a.z(), b.z(), i));
+  return vec3(lerp(a.x(), b.x(), i), lerp(a.y(), b.y(), i),
+              lerp(a.z(), b.z(), i));
 }
 
 typedef vec3 color;
