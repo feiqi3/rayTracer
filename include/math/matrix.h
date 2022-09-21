@@ -1,13 +1,17 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
+#include "tool/common.h"
+#include "math/vector.h"
 #include "vector.h"
 #include "vector4.h"
+#include <cmath>
+#include <iostream>
 #include <string>
-
 class mat4 {
 public:
   vec4 cmp[4];
+  mat4() {}
   mat4(vec4 a, vec4 b, vec4 c, vec4 d) {
     cmp[0] = a;
     cmp[1] = b;
@@ -73,6 +77,22 @@ inline vec4 operator*(const mat4 &mat, const vec4 &vec) {
   return vec4(a, b, c, d);
 }
 
+inline vec3 operator*(const mat4& mat,const vec3& vec){
+  return (mat * vec4(vec,1)).xyz();
+}
+
+inline vec4 operator*(const vec4 &vec,const mat4 &mat) {
+  double a = __cmp_wise_mul_then_add(__getCol(mat, 0), vec);
+  double b = __cmp_wise_mul_then_add(__getCol(mat, 1), vec);
+  double c = __cmp_wise_mul_then_add(__getCol(mat, 2), vec);
+  double d = __cmp_wise_mul_then_add(__getCol(mat, 4), vec);
+  return vec4(a, b, c, d);
+}
+
+inline vec3 operator*(const vec3& vec,const mat4& mat){
+  return (vec4(vec,1) * mat).xyz();
+}
+
 namespace mat {
 
 inline mat4 getTranslate(const vec3 &vec) {
@@ -113,5 +133,44 @@ inline mat4 getRotate(double theta, const vec3 &axis) {
   return mat4(vec4(m00, m01, m02, m03), vec4(m10, m11, m12, m13),
               vec4(m20, m21, m22, m23), vec4(0, 0, 0, 1));
 }
+
+inline mat4 getTBN(const vec3 &t, const vec3 &n) {
+  vec3 tmp_t = normalize(t);
+  vec3 bi =normalize(cross(n, t));
+  tmp_t = normalize(cross(bi,n));
+  return mat4(vec4(tmp_t, 0), vec4(n, 0), vec4(0), vec4(bi, 0));
+}
+
+/*
+ * Implementation of Schmidt orthogonalization
+ * @nor should be normalized
+ * To fit the function sample_on_hemi,
+ * I swaped the position of bitangent and normal . 
+ * So actually this is a TNB matrix :-) .
+ * To transform a point to tangent space, you should mult the dir with mat . 
+ * Note: order does matter! 
+ * You can prove it by caculating dot(tans_dir,n)>0 .
+ */
+inline mat4 getTBN(const vec3 &nor) {
+  vec3 tmp = random_vec();
+  auto d = (dot(tmp, nor) * nor);
+  vec3 tangent = normalize(tmp - d);
+  vec3 biTangent = cross(nor, tangent);
+  return mat4(vec4(tangent, 0), vec4(nor, 0), vec4(0), vec4(biTangent, 0));
+}
+
 } // namespace mat
+
+//y - [0,1] , xz - [-1,1]
+inline vec3 sample_on_hemi() {
+  float y = rand_d();
+  float d = rand_d() * pi * 2;
+  float r = sqrt(1 - y * y);
+  return vec3(cos(d) * r, y, sin(d) * r);
+}
+
+inline vec3 sample_on_hemi(const vec3 &nor) {
+  return normalize(sample_on_hemi() * mat::getTBN(nor) );
+}
+
 #endif
