@@ -9,7 +9,7 @@
  */
 #ifndef _VECTOR_H_
 #define _VECTOR_H_
-#include "../tool/common.h"
+#include "tool/common.h"
 #include <cmath>
 #include <iostream>
 
