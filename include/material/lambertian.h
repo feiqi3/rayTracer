@@ -11,12 +11,16 @@
 #ifndef LAMBERTIAN_H_
 #define LAMBERTIAN_H_
 
+#include "math/baiscSampleFunctions.h"
 #include "hitableList.h"
 #include "material.h"
+#include "math/matrix.h"
 #include "math/vector.h"
+#include "object/hitable.h"
 #include "ray.h"
 #include "texture/constant_color.h"
 #include "texture/texture.h"
+#include "tool/common.h"
 #include <memory>
 
 class lambertian : public material {
@@ -33,8 +37,33 @@ class lambertian : public material {
 
 public:
   lambertian(const std::shared_ptr<texture> &_albedo) : albedo(_albedo) {}
-  lambertian(const vec3& color) : albedo(std::make_shared<constant_color>(color)) {}
+  lambertian(const vec3 &color)
+      : albedo(std::make_shared<constant_color>(color)) {}
+  float pdf(const vec3 &wi, const vec3& wh, const record &rec) const override;
+  vec3 f(const vec3 &w_o,const vec3& w_h,const vec3& w_i,
+                          record &hit_rec) const override;
+  vec3 sample_f(const vec3& wo,vec3* wh,record &hit_rec) const override;
 public:
   std::shared_ptr<texture> albedo;
 };
+
+//cos-weighted
+inline float lambertian::pdf(const vec3 &wi, const vec3& wh,
+                            const record &rec) const {
+  return absDot(wi,rec.normal) * inv_pi;
+}
+
+//cos-weighted
+inline vec3 lambertian::f(const vec3 &w_o,const vec3& w_h,const vec3& w_i,
+                          record &hit_rec) const {                          
+  return albedo->value(hit_rec.u, hit_rec.v, hit_rec.p) * inv_pi;
+}
+
+inline vec3 lambertian::sample_f(const vec3& wo,vec3* wh,record &hit_rec)const{
+  auto tbn = mat::getTBN(hit_rec.normal);
+  vec3 rVec = sampleCosWeighted() * tbn;
+  *wh = normalize(rVec - wo);
+  return rVec;
+}
+
 #endif
