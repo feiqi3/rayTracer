@@ -20,7 +20,7 @@ public:
   bool bounding_box(AABB &box_out) const override;
   bool hit(const ray &r, double t_min, double t_max,
            record &rec) const override;
-
+  
   shared_ptr<hitable> left;
   shared_ptr<hitable> right;
   AABB box;
