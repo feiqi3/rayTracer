@@ -94,8 +94,12 @@ inline vec3 cross(const vec3 &u, const vec3 &v) {
               u[0] * v[1] - u[1] * v[0]);
 }
 
-inline float dot(const vec3 &u, const vec3 &v) {
+inline double dot(const vec3 &u, const vec3 &v) {
   return u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
+}
+
+inline double absDot(const vec3 &u, const vec3 &v){
+  return abs(dot(u, v));
 }
 
 inline vec3 random_vec(double min, double max) {
