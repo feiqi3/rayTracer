@@ -18,6 +18,7 @@ public:
         lower(vec3(_x0, _k, _z1), vec3(_x0, _k, _z0), vec3(_x1, _k, _z0), mat),
         mp(mat){};
 
+  Htype getType() const  override { return Rect; }
   virtual bool hit(const ray &r, double t_min, double t_max,
                    record &rec) const override;
 
@@ -69,6 +70,8 @@ public:
     return true;
   }
 
+  Htype getType() const  override { return Rect; }
+
 public:
   shared_ptr<material> mp;
   double y0, y1, z0, z1, k;
@@ -100,13 +103,15 @@ public:
         lower(vec3(_x0, _y1, _k), vec3(_x0, _y0, _k), vec3(_x1, _y0, _k), mat),
         mp(mat){};
 
+  Htype getType() const override { return Rect; }
+
   virtual bool hit(const ray &r, double t_min, double t_max,
                    record &rec) const override;
 
   virtual bool bounding_box(AABB &output_box) const override {
     // The bounding box must have non-zero width in each dimension, so pad the X
     // dimension a small amount.
-    output_box = AABB(vec3( x0, y0,k - 0.0001), vec3(x1, y1,k + 0.0001));
+    output_box = AABB(vec3(x0, y0, k - 0.0001), vec3(x1, y1, k + 0.0001));
     return true;
   }
 

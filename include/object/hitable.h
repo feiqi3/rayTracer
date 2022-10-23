@@ -9,16 +9,29 @@
  */
 #ifndef _HITABLE_H_
 #define _HITABLE_H_
+#include "material/material.h"
 #include "math/vector.h"
 #include "ray.h"
 #include <memory>
 
 // Forward declear
 class hitable;
-class material;
 class AABB;
 
 typedef hitable object;
+
+struct record;
+
+class hitable {
+public:
+  enum Htype { Rect, Box, Sphere, Triangle, Other };
+
+  virtual bool hit(const ray &r, double t_min, double t_max,
+                   record &rec) const = 0;
+  virtual bool bounding_box(AABB &box_out) const = 0;
+
+  virtual Htype getType() const { return Other; }
+};
 
 struct record {
   vec3 p;
@@ -30,6 +43,7 @@ struct record {
   double u;
   double v;
   bool front_face;
+  hitable::Htype HitType;
 };
 
 inline void set_face_normal(const ray &r, const vec3 &v_out_normal,
@@ -41,12 +55,4 @@ inline void set_face_normal(const ray &r, const vec3 &v_out_normal,
     rec.normal = -rec.normal;
   }
 }
-
-class hitable {
-public:
-  virtual bool hit(const ray &r, double t_min, double t_max,
-                   record &rec) const = 0;
-  virtual bool bounding_box(AABB &box_out) const = 0;
-};
-
 #endif

@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <iostream>
 #include <memory>
-#include <vcruntime.h>
 #include <vector>
 class bvh_node : public hitable {
 public:
@@ -20,10 +19,12 @@ public:
   bool bounding_box(AABB &box_out) const override;
   bool hit(const ray &r, double t_min, double t_max,
            record &rec) const override;
-  
   shared_ptr<hitable> left;
   shared_ptr<hitable> right;
   AABB box;
+  Htype getType() const override {
+    return left != nullptr ? left->getType() : right->getType();
+  }
 };
 
 namespace BVH_CMP {
@@ -60,6 +61,8 @@ inline bool bvh_node::hit(const ray &r, double t_min, double t_max,
   bool hit_left = left->hit(r, t_min, t_max, rec);
   // if hit left then changing t_max to t to get the closest t.
   bool hit_right = right->hit(r, t_min, hit_left ? rec.t : t_max, rec);
+  if ((hit_left || hit_right) && left->getType() != Other)
+    rec.HitType = hit_left ? left->getType() : right->getType();
   return hit_left || hit_right;
 }
 inline bool bvh_node::bounding_box(AABB &box_out) const {
@@ -75,7 +78,7 @@ inline bvh_node::bvh_node(std::vector<shared_ptr<object>> &aabb_list,
   auto comparator = axis == 0 ? x_compare : axis == 1 ? y_compare : z_compare;
   size_t mInterval = end - start;
 
-//set up AABB recursively
+  // set up AABB recursively
   if (mInterval == 1) {
     left = objs[start];
     right = objs[start];
