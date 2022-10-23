@@ -2,7 +2,6 @@
 #define CHECKER_TEXTURE_H
 #include "math/vector.h"
 #include "texture.h"
-#include <cmath>
 #include <memory>
 
 class checker_texture : public texture {
