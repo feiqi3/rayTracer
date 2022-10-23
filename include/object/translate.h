@@ -12,7 +12,9 @@ public:
   bool bounding_box(AABB &box_out) const override;
   bool hit(const ray &r, double t_min, double t_max,
            record &rec) const override;
-
+  Htype getType() const override{
+    return tar->getType();
+  }
 private:
   std::shared_ptr<hitable> tar;
   vec3 offset;

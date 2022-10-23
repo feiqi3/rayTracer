@@ -28,7 +28,9 @@ public:
   bool hit(const ray &r, double t_min, double t_max,
            record &rec) const override;
   std::shared_ptr<material> mat_ptr;
-
+  Htype getType() const override{
+    return Htype::Triangle;
+  }
 protected:
   vec3 point[3];
   vec3 texcoord[3];

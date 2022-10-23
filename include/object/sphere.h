@@ -40,7 +40,9 @@ public:
            record &rec) const override;
 
   bool bounding_box(AABB &box_out) const override;
-
+  Htype getType() const override{
+    return Htype::Sphere;
+  }
 private:
   static void get_sphere_uv(const vec3 &p, double &u, double &v);
 };
@@ -86,7 +88,7 @@ inline void sphere::get_sphere_uv(const vec3 &p, double &u, double &v) {
   //precision problem
   double theta = acos(-p.y());
   double phi = atan2(p.z(), -p.x()) + pi;
-  u = phi * inv_pi2;
+  u = phi * inv_2pi;
   v = theta * inv_pi;
 }
 
