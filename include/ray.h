@@ -19,7 +19,7 @@ public:
 public:
     ray() {}
     ray(const vec3 &_orig, const vec3 &_dir)
-        : orig(_orig), dir(_dir)
+        : orig(_orig), dir(normalize(_dir))
     {
     }
 

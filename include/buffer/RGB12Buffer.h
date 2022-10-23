@@ -36,10 +36,12 @@ public:
   virtual void *getData() const override;
   virtual vec3 sampler(double u, double v) const override;
   void setInterpolation(bool flag) { linearInterpolation = flag; }
+
 protected:
   vec3 sampler(int u, int v) const override;
   unsigned char *_buffer_map;
-  vec3 BilinearSampler(float sampler_x,float sample_y)const;
+  vec3 BilinearSampler(float sampler_x, float sample_y) const;
+
 private:
   bool load_from_file;
   static constexpr double colorScale = 1. / 255;
@@ -84,20 +86,20 @@ inline void RGB12::writeBufferf(float _x, float _y, const vec3 _in) {
 #ifdef DEBUG
   std::cout << "Write in Buffer[" << pos << "]=" << _in << "\n";
 #endif
-  _buffer_map[pos] = static_cast<int>(_in.x());
-  _buffer_map[pos + 1] = static_cast<int>(_in.y());
-  _buffer_map[pos + 2] = static_cast<int>(_in.z());
+  _buffer_map[pos] = static_cast<unsigned char>(_in.x());
+  _buffer_map[pos + 1] = static_cast<unsigned char>(_in.y());
+  _buffer_map[pos + 2] = static_cast<unsigned char>(_in.z());
 }
 
 inline void RGB12::writeBuffer(int _x, int _y, const vec3 _in) {
   if (!init)
     return;
   int pos = _x * 3 + _y * x * 3;
-  _buffer_map[pos] = static_cast<int>(256 * clamp<double>(_in.x(), 0, 0.999));
+  _buffer_map[pos] = static_cast<unsigned char>(256 * clamp<double>(_in.x(), 0, 0.999));
   _buffer_map[pos + 1] =
-      static_cast<int>(256 * clamp<double>(_in.y(), 0, 0.999));
+      static_cast<unsigned char>(256 * clamp<double>(_in.y(), 0, 0.999));
   _buffer_map[pos + 2] =
-      static_cast<int>(256 * clamp<double>(_in.z(), 0, 0.999));
+      static_cast<unsigned char>(256 * clamp<double>(_in.z(), 0, 0.999));
 }
 
 inline void *RGB12::getData() const { return _buffer_map; }
@@ -124,15 +126,15 @@ inline vec3 RGB12::sampler(int u, int v) const {
          colorScale;
 }
 
-inline vec3 RGB12::BilinearSampler(float sample_x,float sample_y)const{
+inline vec3 RGB12::BilinearSampler(float sample_x, float sample_y) const {
   int floor_x = floor(sample_x);
-    int floor_y = floor(sample_y);
-    int ceil_x = ceil(sample_x);
-    int ceil_y = ceil(sample_y);
-    float pxf = sample_x - floor_x;
-    float pyf = sample_y - floor_y;
-        return lerp(lerp(sampler(floor_x, floor_y), sampler(ceil_x, floor_y), pxf),
-                lerp(sampler(floor_x, ceil_y), sampler(ceil_x, ceil_y), pxf),
-                pyf);
+  int floor_y = floor(sample_y);
+  int ceil_x = ceil(sample_x);
+  int ceil_y = ceil(sample_y);
+  float pxf = sample_x - floor_x;
+  float pyf = sample_y - floor_y;
+  return lerp(lerp(sampler(floor_x, floor_y), sampler(ceil_x, floor_y), pxf),
+              lerp(sampler(floor_x, ceil_y), sampler(ceil_x, ceil_y), pxf),
+              pyf);
 }
 #endif
