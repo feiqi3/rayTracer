@@ -15,16 +15,23 @@
 #include <limits>
 #include <memory>
 #include <stdlib.h>
+#include <cmath>
 
 using std::make_shared;
 using std::shared_ptr;
-
+using std::lerp;
 constexpr double pi = 3.14159265358979;
-constexpr double inv_pi4 = 1./(4*pi);
-constexpr double inv_pi2 = 1./(2*pi);
+constexpr double doublePi =2 * 3.14159265358979;
+constexpr double inv_4pi = 1./(4*pi);
+constexpr double inv_2pi = 1./(2*pi);
 constexpr double inv_pi = 1./(pi);
 
 const double Infinity = std::numeric_limits<double>::infinity();
+
+template<typename T>
+T pow2(T t){
+  return t*t;
+}
 
 inline float InvSqrt(float x) {
   float xhalf = 0.5f * x;
