@@ -7,13 +7,14 @@
  * @FilePath: \rayTracer\src\main.cpp
  * ->blog: feiqi3.cn <-
  */
+#include "Integrator/integrator.h"
 #include "Macro.h"
 #include "buffer/RGB12Buffer.h"
 #include "camera.h"
 #include "hitableList.h"
 #include "material/diffuse_light.h"
+#include "material/microfacet.h"
 #include "math/matrix.h"
-#include "Integrator/integrator.h"
 #include "object/box.h"
 #include "object/bvh_node.h"
 #include "object/hitable.h"
@@ -22,13 +23,16 @@
 #include "object/translate.h"
 #include "object/triangle.h"
 #include "texture/checker_texture.h"
+#include "texture/constant_color.h"
+#include "texture/constant_roughness.h"
 #include "texture/image_texture.h"
 #include "tool/picTool.h"
 #include <cstdlib>
 #include <memory>
 #include <stdlib.h>
 #include <time.h>
-constexpr int IMG_WIDTH = 1000;
+
+constexpr int IMG_WIDTH = 1920;
 constexpr double RATIO = 1.5;
 constexpr int SAMPLES = 300;
 #include "material/lambertian.h"
@@ -40,28 +44,8 @@ constexpr int SAMPLES = 300;
 
 const vec3 Back_Ground_Color(.0, .0, .0);
 
-color rayTrace(const ray &r, const vec3 &background, hitable *world,
-               int depth) {
-  record rec;
-  depth = depth - 1;
-  if (depth <= 0) {
-    return color(0, 0, 0);
-  }
-  if (!world->hit(r, 0.001, Infinity, rec))
-    return background;
-  ray scattered;
-  vec3 attenuaion;
-  vec3 emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.p);
-  // Only when ray hits a LIGHT, The function scatter will return false
-  if (!rec.mat_ptr->scatter(r, rec, attenuaion, scattered)) {
-    return emitted;
-  }
-  return emitted +
-         attenuaion * rayTrace(scattered, background, world, depth - 1);
-}
 
 int main() {
-  srand(time(0));
   constexpr auto IMG_HEIGHT = static_cast<int>(IMG_WIDTH / RATIO);
   hitable_list world;
 
@@ -69,25 +53,43 @@ int main() {
   auto white = make_shared<lambertian>(color(.73, .73, .73));
   auto green = make_shared<lambertian>(color(.12, .45, .15));
   auto greenLit = make_shared<lambertian>((color(168, 247, 218) / 255));
+  auto light = make_shared<diffuse_light>(color(1, 1, 1),white);
+  auto box_an = make_shared<microfacet>(make_shared<constant_color>(vec3(.77)),make_shared<cRough>(0.2),vec3(0.59));
+  auto box_in = make_shared<microfacet>(make_shared<constant_color>(.73),make_shared<cRough>(0.01,0.005),vec3(0.6));
 
-  auto light = make_shared<diffuse_light>(color(1.3, 1.3, 1.3),white);
-  auto earthTexture =
-      make_shared<image_texture>("resource/texture/earthmap.jpg", true);
-  auto earthMat = make_shared<lambertian>(earthTexture);
 
-  auto earth = make_shared<sphere>(vec3(-6, 17, 25), 5, earthMat);
-  auto plane_below = make_shared<sphere>(vec3(-6, -1000, 25),1006,white);
-  world.add(earth);
-  world.add(plane_below);
-  auto lightAbove = std::make_shared<sphere>(vec3(-6, 35, 25),10,light);
-  world.add(lightAbove);
-  vec3 cameraPos(0, 20, 0);
 
-  camera cam(55, RATIO, cameraPos, vec3(0, 1, 0), vec3(-5, 14, 25), 0,
+  world.add(make_shared<yz_rect>(0, 555, 0, 555, 555, green));
+  world.add(make_shared<yz_rect>(0, 555, 0, 555, 0, red));
+ // world.add(make_shared<xz_rect>(200, 343+13, 227-13, 332+13, 550, light));
+  world.add(make_shared<xz_rect>(0, 555, 0, 555, 0, white));
+  world.add(make_shared<xz_rect>(0, 555, 0, 555, 555, light));
+  world.add(make_shared<xy_rect>(0, 555, 0, 555, 555, white));
+  // world.add(make_shared<sphere>(vec3(278,100,200.5),100,glass));
+  shared_ptr<hitable> box1 =
+      make_shared<box>(vec3(0, 0, 0), vec3(165, 330, 165), box_in);
+  box1 = make_shared<rotate_y>(box1, 15);
+  box1 = make_shared<translate>(box1, vec3(265, 0, 295));
+  shared_ptr<hitable> box2 =
+      make_shared<box>(vec3(0, 0, 0), vec3(165, 165, 165), box_an);
+  box2 = make_shared<rotate_y>(box2, -18);
+  box2 = make_shared<translate>(box2, vec3(130, 0, 65));
+  world.add(box1);
+  world.add(box2);
+  /*  world.add(
+        make_shared<rectangle>(vec3(0, 555, 0), vec3(555, 555, 555), white));
+    world.add(make_shared<rectangle>(vec3(0, 0, 0), vec3(555, 0, 555), white));
+    world.add(
+        make_shared<rectangle>(vec3(0, 0, 555), vec3(555, 555, 555), white));
+      world.add(make_shared<rectangle>(vec3(555, 0, 0), vec3(555), green));
+    world.add(make_shared<rectangle>(vec3(0, 0, 0), vec3(0, 555, 555), red));
+    */
+  bvh_node bvh(world);
+  vec3 cameraPos(278, 278, -800);
+  camera cam(40., RATIO, cameraPos, vec3(0, 1, 0), vec3(278, 278, 0), 0,
              (vec3(0, 0, -1) - cameraPos).length());
 
-  bvh_node bvh(world);
-
-  baseIntegrator renderer(&bvh,IMG_HEIGHT,IMG_WIDTH,20,&cam,vec3(0,0.1,0.1));
+  baseIntegrator renderer(&bvh, IMG_HEIGHT, IMG_WIDTH, 200, &cam, vec3(0, 0, 0));
   renderer.Render();
+  //renderer.RenderPxl(111,IMG_HEIGHT -1- 101,16,max_dep);
 }
