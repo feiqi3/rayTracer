@@ -22,10 +22,12 @@ public:
   vec3 emitted(double u, double v, const vec3 &p) const override {
     return emit->value(u, v, p);
   }
-
+MType getType() const override{
+  return Light;
+}
   // ? ? ?
   vec3 f(const vec3 &w_o,const vec3& w_h,const vec3& w_i,
-                          record &hit_rec) const override {
+                          record &hit_rec)  override {
     return mat->f(w_o, w_h, w_i, hit_rec);
   }
   float pdf(const vec3 &wi, const vec3 &wh, const record &rec) const override {

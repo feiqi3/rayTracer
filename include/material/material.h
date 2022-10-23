@@ -15,19 +15,31 @@
 #include "ray.h"
 struct record;
 
+
 class material {
 public:
     //deprecated
   virtual bool scatter(const ray &_in, const record &hit_rec,
                        color &out_attenuation, ray &out_scattered) const = 0;
 
+  enum MType{
+  Lambertian,
+  Microfacet,
+  Light,
+  Other
+  };
+
   virtual vec3 emitted(double u, double v, const vec3 &p) const {
     return vec3(0);
   }
   virtual vec3 f(const vec3 &w_o,const vec3& w_h,const vec3& w_i,
-                          record &hit_rec) const = 0;
+                          record &hit_rec)  = 0;
   virtual float pdf(const vec3 &wi, const vec3& wh, const record &rec) const = 0;
   virtual vec3 sample_f(const vec3& wo,vec3* wh,record &hit_rec) const = 0;
+  virtual MType getType()const{
+    return Other;
+  }
+
 };
 
 #endif
