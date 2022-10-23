@@ -98,9 +98,7 @@ inline double dot(const vec3 &u, const vec3 &v) {
   return u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
 }
 
-inline double absDot(const vec3 &u, const vec3 &v){
-  return abs(dot(u, v));
-}
+inline double absDot(const vec3 &u, const vec3 &v) { return abs(dot(u, v)); }
 
 inline vec3 random_vec(double min, double max) {
   return vec3(rand_d(min, max), rand_d(min, max), rand_d(min, max));
@@ -145,15 +143,35 @@ inline vec3 refract(const vec3 &ray_in, const vec3 &ray_normal,
          etai_divide_etat * (ray_in + ray_normal * cos_theta);
 }
 
-inline double lerp(double a, double b, double t) { return a + (b - a) * t; }
+/* inline double lerp(double a, double b, double t) { return a + (b - a) * t; }
 
-inline float lerp(float a, float b, float t) { return a + (b - a) * t; }
+inline float lerp(float a, float b, float t) { return a + (b - a) * t; } */
 
 inline vec3 lerp(const vec3 &a, const vec3 &b, float i) {
   return vec3(lerp(a.x(), b.x(), i), lerp(a.y(), b.y(), i),
               lerp(a.z(), b.z(), i));
 }
 
+inline vec3 SphericalToXYZ(float sinTheta, float cosTheta, float phi) {
+  float sinPhi = sin(phi);
+  float cosPhi = cos(phi);
+  return vec3(sinTheta * cosPhi, cosTheta, sinTheta * sinPhi);
+}
+
+inline vec3 SphericalToXYZ(float theta, float phi) {
+  float sinTheta = sin(theta);
+  float cosTheta = cos(theta);
+  float sinPhi = sin(phi);
+  float cosPhi = cos(phi);
+  return vec3(sinTheta * cosPhi, cosTheta, sinTheta * sinPhi);
+}
+
+inline bool isSameHemiSphere(const vec3& wo,const vec3& wh)
+{
+  return dot(wo, wh) > 0;
+}
+
 typedef vec3 color;
+
 
 #endif
