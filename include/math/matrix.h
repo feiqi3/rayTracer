@@ -138,7 +138,7 @@ inline mat4 getTBN(const vec3 &t, const vec3 &n) {
   vec3 tmp_t = normalize(t);
   vec3 bi =normalize(cross(n, t));
   tmp_t = normalize(cross(bi,n));
-  return mat4(vec4(tmp_t, 0), vec4(n, 0), vec4(0), vec4(bi, 0));
+  return mat4(vec4(tmp_t, 0), vec4(n, 0), vec4(bi, 0), vec4(0));
 }
 
 /*
@@ -156,7 +156,15 @@ inline mat4 getTBN(const vec3 &nor) {
   auto d = (dot(tmp, nor) * nor);
   vec3 tangent = normalize(tmp - d);
   vec3 biTangent = cross(nor, tangent);
-  return mat4(vec4(tangent, 0), vec4(nor, 0), vec4(0), vec4(biTangent, 0));
+  return mat4(vec4(tangent, 0), vec4(nor, 0), vec4(biTangent, 0), vec4(0));
+}
+
+inline mat4 getTBNFromXY(const vec3 &nor){
+  vec3 tan = vec3(1,0,0);
+  if (absDot(tan,nor) >0.9f ) {
+    tan = vec3(0,1,0);
+  }
+  return getTBN(tan,nor);
 }
 
 } // namespace mat
