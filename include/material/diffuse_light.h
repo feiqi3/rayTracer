@@ -19,8 +19,8 @@ public:
                ray &out_scattered) const override {
     return false;
   }
-  vec3 emitted(double u, double v, const vec3 &p) const override {
-    return emit->value(u, v, p);
+  vec3 emitted(double u, double v, const vec3 &p_on_light,const vec3& p_on_pre_surf) const override {
+    return emit->value(u, v, p_on_light);
   }
 MType getType() const override{
   return Light;

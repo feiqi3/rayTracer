@@ -3,8 +3,12 @@
 
 #include "aabb.h"
 #include "material/material.h"
+#include "math/vector.h"
 #include "object/hitable.h"
 #include "object/triangle.h"
+#include "tool/common.h"
+#include <cmath>
+#include <cstdlib>
 
 class xz_rect : public hitable {
 public:
@@ -18,7 +22,8 @@ public:
         lower(vec3(_x0, _k, _z1), vec3(_x0, _k, _z0), vec3(_x1, _k, _z0), mat),
         mp(mat){};
 
-  Htype getType() const  override { return Rect; }
+  HType_t getType() const override { return Rect; }
+  material::MType getMType() const override { return upper.getMType(); }
   virtual bool hit(const ray &r, double t_min, double t_max,
                    record &rec) const override;
 
@@ -27,6 +32,22 @@ public:
     // dimension a small amount.
     output_box = AABB(vec3(x0, k - 0.0001, z0), vec3(x1, k + 0.0001, z1));
     return true;
+  }
+  vec3 getSample(record &rec, float *pdf, vec3 *emission) const override {
+    vec3 samplePoint = vec3(rand_d(x0, x1), k, rand_d(z0, z1));
+    float d2 = (samplePoint - rec.p).lengthSquare();
+    float area = abs((x1 - x0) * (z1 - z0));
+    double dd = absDot(normalize(samplePoint - rec.p), upper.normal);
+    double _pdf =  area * dd/d2;
+    *pdf = static_cast<float>(_pdf);
+    double uu, vv;
+    if (upper.is_in_tri(samplePoint)) {
+      upper.get_triangle_uv(samplePoint, uu, vv);
+    } else {
+      lower.get_triangle_uv(samplePoint, uu, vv);
+    }
+    *emission = mp->emitted(uu, vv, rec.p, samplePoint);
+    return samplePoint;
   }
 
 public:
@@ -41,8 +62,10 @@ private:
 inline bool xz_rect::hit(const ray &r, double t_min, double t_max,
                          record &rec) const {
   if (lower.hit(r, t_min, t_max, rec)) {
+  rec.HitType = this->getType();
     return true;
   } else if (upper.hit(r, t_min, t_max, rec)) {
+  rec.HitType = this->getType();
     return true;
   }
   return false;
@@ -69,8 +92,26 @@ public:
     output_box = AABB(vec3(k - 0.0001, y0, z0), vec3(k + 0.0001, y1, z1));
     return true;
   }
+  vec3 getSample(record &rec, float *pdf, vec3 *emission) const override {
+    vec3 samplePoint = vec3(k, rand_d(y0, y1), rand_d(z0, z1));
+    float d2 = (samplePoint - rec.p).lengthSquare();
+    float area = abs((y1 - y0) * (z1 - z0));
+    double dd = absDot(normalize(samplePoint - rec.p), upper.normal);
+    double _pdf =  area * dd/d2;
+    *pdf = static_cast<float>(_pdf);
+    double uu, vv;
+    if (upper.is_in_tri(samplePoint)) {
+      upper.get_triangle_uv(samplePoint, uu, vv);
+    } else {
+      lower.get_triangle_uv(samplePoint, uu, vv);
+    }
+    *emission = mp->emitted(uu, vv, rec.p, samplePoint);
+    return samplePoint;
+  }
 
-  Htype getType() const  override { return Rect; }
+  material::MType getMType() const override { return upper.getMType(); }
+
+  HType_t getType() const override { return Rect; }
 
 public:
   shared_ptr<material> mp;
@@ -84,8 +125,10 @@ private:
 inline bool yz_rect::hit(const ray &r, double t_min, double t_max,
                          record &rec) const {
   if (lower.hit(r, t_min, t_max, rec)) {
+  rec.HitType = this->getType();
     return true;
   } else if (upper.hit(r, t_min, t_max, rec)) {
+  rec.HitType = this->getType();
     return true;
   }
   return false;
@@ -103,8 +146,8 @@ public:
         lower(vec3(_x0, _y1, _k), vec3(_x0, _y0, _k), vec3(_x1, _y0, _k), mat),
         mp(mat){};
 
-  Htype getType() const override { return Rect; }
-
+  HType_t getType() const override { return Rect; }
+  material::MType getMType() const override { return upper.getMType(); }
   virtual bool hit(const ray &r, double t_min, double t_max,
                    record &rec) const override;
 
@@ -113,6 +156,23 @@ public:
     // dimension a small amount.
     output_box = AABB(vec3(x0, y0, k - 0.0001), vec3(x1, y1, k + 0.0001));
     return true;
+  }
+
+  vec3 getSample(record &rec, float *pdf, vec3 *emission) const override {
+    vec3 samplePoint = vec3(rand_d(x0, x1), rand_d(y0, y1), k);
+    float d2 = (samplePoint - rec.p).lengthSquare();
+    float area = abs((y1 - y0) * (x1 - x0));
+    double dd = absDot(normalize(samplePoint - rec.p), upper.normal);
+    double _pdf =  area * dd/d2;
+    *pdf = static_cast<float>(_pdf);
+    double uu, vv;
+    if (upper.is_in_tri(samplePoint)) {
+      upper.get_triangle_uv(samplePoint, uu, vv);
+    } else {
+      lower.get_triangle_uv(samplePoint, uu, vv);
+    }
+    *emission = mp->emitted(uu, vv, rec.p, samplePoint);
+    return samplePoint;
   }
 
 public:
@@ -127,8 +187,10 @@ private:
 inline bool xy_rect::hit(const ray &r, double t_min, double t_max,
                          record &rec) const {
   if (lower.hit(r, t_min, t_max, rec)) {
+  rec.HitType = this->getType();
     return true;
   } else if (upper.hit(r, t_min, t_max, rec)) {
+  rec.HitType = this->getType();
     return true;
   }
   return false;

@@ -5,6 +5,7 @@
 #include "math/vector.h"
 #include "object/aabb.h"
 #include "object/hitable.h"
+#include "tool/common.h"
 #include <algorithm>
 #include <cmath>
 #include <memory>
@@ -28,18 +29,26 @@ public:
   bool hit(const ray &r, double t_min, double t_max,
            record &rec) const override;
   std::shared_ptr<material> mat_ptr;
-  Htype getType() const override{
-    return Htype::Triangle;
+  HType_t getType() const override { return Htype::Triangle; }
+  material::MType getMType() const override{
+    return mat_ptr->getType();
   }
+  vec3 getSample(record &rec, float *pdf,vec3* emission) const override;
+  void get_triangle_uv(const vec3 &p, double &u, double &v) const;
+
+public:
+  vec3 normal;
+  float area;
+
 protected:
   vec3 point[3];
   vec3 texcoord[3];
   vec3 _v0, _v1;
   double _dot00, _dot01, _dot11;
-  vec3 normal;
-  float area;
+
+  float inv_area;
+  vec3 center;
   double getTriangleSize(const vec3 &p0, const vec3 &p1, const vec3 &p2) const;
-  void get_triangle_uv(const vec3 &p, double &u, double &v) const;
   void _data_caculate();
 };
 
@@ -51,6 +60,8 @@ inline double triangle::getTriangleSize(const vec3 &p0, const vec3 &p1,
 }
 
 inline void triangle::_data_caculate() {
+  center = point[1]+point[2]+point[0];
+  center =center/3;
   _v0 = point[2] - point[0];
   _v1 = point[1] - point[0];
   _dot00 = dot(_v0, _v0);
@@ -76,6 +87,7 @@ inline bool triangle::hit(const ray &r, double t_min, double t_max,
   rec.mat_ptr = mat_ptr;
   rec.normal = normal;
   set_face_normal(r, normal, rec);
+  rec.HitType = this->getType();
   return true;
 }
 
@@ -116,5 +128,20 @@ inline void triangle::get_triangle_uv(const vec3 &p, double &u,
   vec3 uv = alpha * texcoord[0] + beta * texcoord[1] + gamma * texcoord[2];
   u = uv.x();
   v = uv.y();
+}
+
+inline vec3 triangle::getSample(record &rec, float *pdf,vec3* emission) const {
+  float u = std::sqrt(rand_d());
+  float v = rand_d() * u;
+  u = 1 - u;
+  float w = 1 - u - v;
+  vec3 samplePoint = (point[0] * u + point[1] * v + point[2] * w);
+  vec3 sampleVec = samplePoint - rec.p;
+  float d2 = (sampleVec-rec.p).lengthSquare();
+  sampleVec = normalize(sampleVec);
+  *pdf =(area * absDot(sampleVec, normal))/d2; 
+  vec3 uv = u * texcoord[0] + v*texcoord[1] +w*texcoord[2];
+  *emission = mat_ptr->emitted(uv.x(), uv.y(), samplePoint, rec.p);
+  return samplePoint;
 }
 #endif

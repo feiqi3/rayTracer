@@ -2,6 +2,7 @@
 #define _AABB_H_
 #include "hitable.h"
 #include "math/vector.h"
+#include "object/hitable.h"
 #include <algorithm>
 #include <type_traits>
 
@@ -13,9 +14,14 @@ public:
                    record &rec) const override;
   vec3 min() const;
   vec3 max() const;
+  material::MType getMType() const override{
+    return hitable::getMType();
+  }
   virtual bool bounding_box(AABB &box_out) const override;
   static AABB surrounding_box(AABB &box_1, AABB &box_2);
-
+  vec3 getSample(record &rec,float *pdf,vec3*emission) const override{
+    return vec3(0);
+  }
 private:
   vec3 pMin;
   vec3 pMax;

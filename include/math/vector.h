@@ -47,11 +47,15 @@ public:
     return sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
   }
 
+  float lengthSquare() const {
+    return (vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
+  }
+
   float operator[](int i) const { return vec[i]; }
   float &operator[](int i) { return vec[i]; }
 
   bool is_close_to_zero() {
-    const auto bias = 1e-7;
+    const auto bias = 1e-6;
     return (fabs(vec[0]) < bias) && (fabs(vec[1]) < bias) &&
            (fabs(vec[2]) < bias);
   }
@@ -99,6 +103,13 @@ inline double dot(const vec3 &u, const vec3 &v) {
 }
 
 inline double absDot(const vec3 &u, const vec3 &v) { return abs(dot(u, v)); }
+
+inline vec3 abs(const vec3 &v) { return vec3(-v.x(), -v.y(), -v.z()); }
+
+inline bool Eps(const vec3 &_vec, const vec3 &_eps) {
+  vec3 _res = abs(_vec);
+  return _res.x() < _eps.x() && _res.y() < _eps.y() && _res.z() < _eps.z();
+}
 
 inline vec3 random_vec(double min, double max) {
   return vec3(rand_d(min, max), rand_d(min, max), rand_d(min, max));
@@ -166,12 +177,10 @@ inline vec3 SphericalToXYZ(float theta, float phi) {
   return vec3(sinTheta * cosPhi, cosTheta, sinTheta * sinPhi);
 }
 
-inline bool isSameHemiSphere(const vec3& wo,const vec3& wh)
-{
+inline bool isSameHemiSphere(const vec3 &wo, const vec3 &wh) {
   return dot(wo, wh) > 0;
 }
 
 typedef vec3 color;
-
 
 #endif

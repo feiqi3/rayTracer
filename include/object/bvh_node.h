@@ -2,6 +2,7 @@
 #define BVH_NODE_H
 
 #include "hitableList.h"
+#include "math/vector.h"
 #include "object/hitable.h"
 #include "tool/common.h"
 #include <algorithm>
@@ -11,7 +12,9 @@
 class bvh_node : public hitable {
 public:
   bvh_node() {}
-  bvh_node(hitable_list &list) : bvh_node(list.obj_list) {}
+  bvh_node(hitable_list &list) : bvh_node(list.obj_list) {
+    Lights = list.Lights;
+  }
   bvh_node(std::vector<shared_ptr<object>> &aabb_list)
       : bvh_node(aabb_list, 0, aabb_list.size()) {}
   bvh_node(std::vector<shared_ptr<object>> &aabb_list, size_t start,
@@ -19,12 +22,19 @@ public:
   bool bounding_box(AABB &box_out) const override;
   bool hit(const ray &r, double t_min, double t_max,
            record &rec) const override;
+  vec3 getSample(record &rec, float *pdf,vec3 *emission) const override {
+    return hitable::getSample(rec, pdf,emission);
+  }
+  HType_t getType() const override {
+    return left != nullptr ? left->getType() : right->getType();
+  }
+  material::MType getMType() const override { return hitable::getMType(); }
+
+public:
   shared_ptr<hitable> left;
   shared_ptr<hitable> right;
   AABB box;
-  Htype getType() const override {
-    return left != nullptr ? left->getType() : right->getType();
-  }
+  std::vector<std::shared_ptr<object>> Lights;
 };
 
 namespace BVH_CMP {
@@ -61,8 +71,6 @@ inline bool bvh_node::hit(const ray &r, double t_min, double t_max,
   bool hit_left = left->hit(r, t_min, t_max, rec);
   // if hit left then changing t_max to t to get the closest t.
   bool hit_right = right->hit(r, t_min, hit_left ? rec.t : t_max, rec);
-  if ((hit_left || hit_right) && left->getType() != Other)
-    rec.HitType = hit_left ? left->getType() : right->getType();
   return hit_left || hit_right;
 }
 inline bool bvh_node::bounding_box(AABB &box_out) const {
@@ -102,4 +110,16 @@ inline bvh_node::bvh_node(std::vector<shared_ptr<object>> &aabb_list,
   }
   box = AABB::surrounding_box(box_left, box_right);
 }
+
+inline bool shadowTester(const vec3 &origin, const vec3 &tar,
+                         const bvh_node &world) {
+  record rec;
+  ray tester(origin, tar-origin);
+  if (world.hit(tester, 0.001, 100000.0, rec) && Eps(rec.p - tar, vec3(0.01))) {
+    return true;
+  }
+  return false;
+}
+
+
 #endif
