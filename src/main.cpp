@@ -18,8 +18,6 @@
 #include "object/box.h"
 #include "object/bvh_node.h"
 #include "object/hitable.h"
-#include "object/rotate_y.h"
-#include "object/sphere.h"
 #include "object/translate.h"
 #include "object/triangle.h"
 #include "texture/checker_texture.h"
@@ -34,7 +32,7 @@
 
 constexpr int IMG_WIDTH = 1920;
 constexpr double RATIO = 1.5;
-constexpr int SAMPLES = 300;
+constexpr int SAMPLES = 30;
 #include "material/lambertian.h"
 #include "math/vector.h"
 #include "ray.h"
@@ -53,9 +51,9 @@ int main() {
   auto white = make_shared<lambertian>(color(.73, .73, .73));
   auto green = make_shared<lambertian>(color(.12, .45, .15));
   auto greenLit = make_shared<lambertian>((color(168, 247, 218) / 255));
-  auto light = make_shared<diffuse_light>(color(1, 1, 1),white);
-  auto box_an = make_shared<microfacet>(make_shared<constant_color>(vec3(.77)),make_shared<cRough>(0.2),vec3(0.59));
-  auto box_in = make_shared<microfacet>(make_shared<constant_color>(.73),make_shared<cRough>(0.01,0.005),vec3(0.6));
+  auto light = make_shared<diffuse_light>(color(18),white);
+  auto box_an = make_shared<microfacet>(make_shared<constant_color>(vec3(.77)),make_shared<cRough>(0.5,0.005),vec3(0.34));
+  auto box_in = make_shared<microfacet>(make_shared<constant_color>(.73),make_shared<cRough>(0.0001,0.005),vec3(0.6));
 
 
 
@@ -63,15 +61,16 @@ int main() {
   world.add(make_shared<yz_rect>(0, 555, 0, 555, 0, red));
  // world.add(make_shared<xz_rect>(200, 343+13, 227-13, 332+13, 550, light));
   world.add(make_shared<xz_rect>(0, 555, 0, 555, 0, white));
-  world.add(make_shared<xz_rect>(0, 555, 0, 555, 555, light));
+  world.add(make_shared<xz_rect>(170, 380, 170, 380, 555, light));
   world.add(make_shared<xy_rect>(0, 555, 0, 555, 555, white));
   // world.add(make_shared<sphere>(vec3(278,100,200.5),100,glass));
   shared_ptr<hitable> box1 =
-      make_shared<box>(vec3(0, 0, 0), vec3(165, 330, 165), box_in);
-  box1 = make_shared<rotate_y>(box1, 15);
+      make_shared<box>(vec3(0, 0, 0), vec3(165, 330, 165), box_an);
+  box1 = make_shared<rotate_y>(box1,15);
   box1 = make_shared<translate>(box1, vec3(265, 0, 295));
+
   shared_ptr<hitable> box2 =
-      make_shared<box>(vec3(0, 0, 0), vec3(165, 165, 165), box_an);
+      make_shared<box>(vec3(0, 0, 0), vec3(165, 165, 165), box_in);
   box2 = make_shared<rotate_y>(box2, -18);
   box2 = make_shared<translate>(box2, vec3(130, 0, 65));
   world.add(box1);

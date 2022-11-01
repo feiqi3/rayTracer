@@ -5,6 +5,7 @@
 #include "camera.h"
 #include "material/material.h"
 #include "math/vector.h"
+#include "math/vector4.h"
 #include "object/bvh_node.h"
 #include "object/hitable.h"
 #include "ray.h"
@@ -16,7 +17,7 @@
 
 const float TMIN = 0.001;
 const float TMAX = 10000.;
-const float max_dep = 15;
+const float max_dep = 8;
 
 class integrator {
 public:
@@ -42,7 +43,7 @@ public:
   vec3 backgroundColor;
 
 public:
-  void Render() override {
+  virtual void Render() override {
     srand(time(0));
     RGB12 mainBuffer(width, height);
     float inv_samples = 1. / samples;
@@ -74,16 +75,18 @@ public:
     fPic::jpgWriter(&mainBuffer);
     std::cout << "Done!";
   }
-  vec3 Li(ray r, record &rec, int depth) const override {
+  virtual vec3 Li(ray r, record &rec, int depth) const override {
     if (depth <= 0)
       return 0;
+
+    vec3 pre_p = rec.p;
     if (!integrator::world->hit(r, TMIN, TMAX, rec)) {
       return backgroundColor;
     }
     if (depth == max_dep && rec.mat_ptr->getType() == material::Light) {
       ++Light_hit;
     }
-    vec3 emission = rec.mat_ptr->emitted(rec.u, rec.v, rec.p);
+    vec3 emission = rec.mat_ptr->emitted(rec.u, rec.v, rec.p, pre_p);
     vec3 wh;
     vec3 next_dir = rec.mat_ptr->sample_f(r.direction(), &wh, rec);
 
@@ -140,6 +143,74 @@ public:
     }
     pxl = pxl * inv_samples;
     std::cout << "Target pixel color is " << pxl * 256 << "\n";
+  }
+
+private:
+  mutable int Light_hit;
+};
+
+/*************/
+
+// Sample to the Light directly//
+
+/*************/
+class directLightIntegrator : public baseIntegrator {
+public:
+  directLightIntegrator(bvh_node *h, int img_height, int img_width,
+                        int sample_nums, camera *_cam, const vec3 &_background)
+      : baseIntegrator(h, img_height, img_width, sample_nums, _cam,
+                       backgroundColor),
+        backgroundColor(_background) {}
+  vec3 backgroundColor;
+
+  void Render() override { baseIntegrator::Render(); }
+
+  vec3 Li(ray r, record &rec, int depth) const override {
+
+    vec3 pre_p = cam->origin;
+
+    if (!integrator::world->hit(r, TMIN, TMAX, rec)) {
+      return backgroundColor;
+    }
+    vec3 emission = rec.mat_ptr->emitted(rec.u, rec.v, rec.p, pre_p);
+    if (emission.is_close_to_zero()) {
+      int x = 0;
+    }
+    // dw = dA/r^2 = cosTheta_o*dA/r^2
+    // dw/pdf = dw/(1/area)=dw*area
+
+    float dWidvdPdf;
+    vec3 _li;
+    vec3 sampleP = randomSampleOne(rec, &dWidvdPdf, &_li);
+    vec3 next_dir = normalize(sampleP - rec.p);
+    if (dot(next_dir, rec.normal) < 0) {
+      return emission;
+    }
+    // If ray didn't hit target then the _li = 0;
+    if (!shadowTester(rec.p, sampleP, *world)) {
+
+      _li = vec3(0);
+    }
+    if (rec.HitType & hitable::Box) {
+      int x = 0;
+    }
+
+    if (rec.mat_ptr->getType() == material::Microfacet) {
+      int x = 0;
+    }
+    vec3 wh = normalize(-r.direction() + next_dir);
+    vec3 tmp;
+    rec.mat_ptr->sample_f(vec3(), &tmp, rec);
+    vec3 f = rec.mat_ptr->f(r.direction(), wh, next_dir, rec);
+    float cosTheta = absDot(next_dir, rec.normal);
+    return emission + cosTheta * _li * f * dWidvdPdf;
+  }
+
+protected:
+  vec3 randomSampleOne(record &rec, float *pdf, vec3 *emission) const {
+    int t = rand_d(0, world->Lights.size() - 0.001);
+    vec3 sample_p = world->Lights[t]->getSample(rec, pdf, emission);
+    return sample_p;
   }
 
 private:
