@@ -117,8 +117,11 @@ inline vec3 microfacet::f(const vec3 &w_o, const vec3 &w_h, const vec3 &w_i,
   sinTheta2PHIh = sinThetaPHIh * sinThetaPHIh;
   float dotA = absDot(hit_rec.normal, w_o);
   float dotB = dot(hit_rec.normal, w_i);
+  vec3 fel = Fresnel(F0);
+  float g2 = G2(-1 * w_o, w_i);
+  float ndf = NDF(w_h, w_i, hit_rec);
   vec3 res = _mat->value(hit_rec.u, hit_rec.v, hit_rec.p) * inv_pi +
-             NDF(w_h, w_i, hit_rec) * shlick(F0) * G2(-1 * w_o, w_i) * 0.25f /
+             ndf * fel * g2 * 0.25f /
                  (dotA * dotB);
   return res;
 }
@@ -130,6 +133,7 @@ inline float microfacet::pdf(const vec3 &wi, const vec3 &wh,
 }
 
 // https://agraphicsguynotes.com/posts/sample_anisotropic_microfacet_brdf/
+//Sample_f must run before f to initialize tbn.
 inline vec3 microfacet::sample_f(const vec3 &wo, vec3 *wh,
                                  record &hit_rec) const {
   tbn = mat::getTBNFromXY(hit_rec.normal);
