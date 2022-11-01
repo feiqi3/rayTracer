@@ -4,7 +4,6 @@
 #include "math/vector.h"
 #include "tool/common.h"
 #include <cmath>
-#include <corecrt_math.h>
 
 class perlin3D {
 public:
