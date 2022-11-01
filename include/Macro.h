@@ -10,6 +10,7 @@
 #ifndef MACRO_H_
 #define MACRO_H_
 
+#define BIT(x) 1<<(x)
 //#define DEBUG
 
 #endif
