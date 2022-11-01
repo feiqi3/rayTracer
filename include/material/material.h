@@ -29,7 +29,10 @@ public:
   Other
   };
 
-  virtual vec3 emitted(double u, double v, const vec3 &p) const {
+//u v is the texcoords on the Light,
+//p_on_light is the point ray hit on light, and p_on_pre_surf is the point on the previous surface.  
+//Some kind of Light source may need those information  
+    virtual vec3 emitted(double u, double v, const vec3 &p_on_light,const vec3&p_on_pre_surf) const {
     return vec3(0);
   }
   virtual vec3 f(const vec3 &w_o,const vec3& w_h,const vec3& w_i,
