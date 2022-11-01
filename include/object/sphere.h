@@ -14,6 +14,7 @@
 #include "aabb.h"
 #include "hitable.h"
 #include "math/vector.h"
+#include "object/hitable.h"
 #include "tool/common.h"
 #include <cmath>
 #include <memory>
@@ -40,8 +41,11 @@ public:
            record &rec) const override;
 
   bool bounding_box(AABB &box_out) const override;
-  Htype getType() const override{
+  HType_t getType() const override{
     return Htype::Sphere;
+  }
+  material::MType getMType() const override{
+    return mat_ptr->getType();
   }
 private:
   static void get_sphere_uv(const vec3 &p, double &u, double &v);
