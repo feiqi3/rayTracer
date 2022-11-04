@@ -30,8 +30,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-constexpr int IMG_WIDTH = 1920;
-constexpr double RATIO = 1.5;
+constexpr int IMG_WIDTH = 1000;
+constexpr double RATIO = 1;
 constexpr int SAMPLES = 30;
 #include "material/lambertian.h"
 #include "math/vector.h"
@@ -52,8 +52,8 @@ int main() {
   auto green = make_shared<lambertian>(color(.12, .45, .15));
   auto greenLit = make_shared<lambertian>((color(168, 247, 218) / 255));
   auto light = make_shared<diffuse_light>(color(18),white);
-  auto box_an = make_shared<microfacet>(make_shared<constant_color>(vec3(.77)),make_shared<cRough>(0.5,0.005),vec3(0.34));
-  auto box_in = make_shared<microfacet>(make_shared<constant_color>(.73),make_shared<cRough>(0.0001,0.005),vec3(0.6));
+  auto box_an = make_shared<microfacet>(make_shared<constant_color>(vec3(.77)),make_shared<cRough>(0.005,0.1),vec3(0.34));
+  auto box_in = make_shared<microfacet>(make_shared<constant_color>(.73),make_shared<cRough>(0.02,0.005),vec3(0.6));
 
 
 
@@ -88,7 +88,7 @@ int main() {
   camera cam(40., RATIO, cameraPos, vec3(0, 1, 0), vec3(278, 278, 0), 0,
              (vec3(0, 0, -1) - cameraPos).length());
 
-  baseIntegrator renderer(&bvh, IMG_HEIGHT, IMG_WIDTH, 200, &cam, vec3(0, 0, 0));
+  NEEIntegrator renderer(&bvh, IMG_HEIGHT, IMG_WIDTH, 300, &cam, vec3(0, 0, 0));
   renderer.Render();
   //renderer.RenderPxl(111,IMG_HEIGHT -1- 101,16,max_dep);
 }
