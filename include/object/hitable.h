@@ -54,7 +54,7 @@ inline material::MType hitable::getMType()const{
 }
 
 
-inline vec3 hitable::getSample(record &rec, float *pdf,vec3 *emission) const { return 0; }
+inline vec3 hitable::getSample(record &rec, float *invpdf,vec3 *emission) const { return 0; }
 
 struct record {
   vec3 p;
