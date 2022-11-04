@@ -11,13 +11,18 @@
 #include "ray.h"
 #include "tool/common.h"
 #include "tool/picTool.h"
+#include <cmath>
+#include <cstdlib>
 #include <iostream>
 #include <memory>
 #include <stdlib.h>
+#include <time.h>
 
 const float TMIN = 0.001;
 const float TMAX = 10000.;
 const float max_dep = 8;
+
+vec3 randomSampleOne(bvh_node *world, record &rec, float *pdf, vec3 *emission);
 
 class integrator {
 public:
@@ -45,6 +50,7 @@ public:
 public:
   virtual void Render() override {
     srand(time(0));
+    std::srand(time(0));
     RGB12 mainBuffer(width, height);
     float inv_samples = 1. / samples;
     float division_x = 1. / width;
@@ -77,7 +83,7 @@ public:
   }
   virtual vec3 Li(ray r, record &rec, int depth) const override {
     if (depth <= 0)
-      return 0;
+      return vec3(0);
 
     vec3 pre_p = rec.p;
     if (!integrator::world->hit(r, TMIN, TMAX, rec)) {
@@ -86,20 +92,21 @@ public:
     if (depth == max_dep && rec.mat_ptr->getType() == material::Light) {
       ++Light_hit;
     }
+  retry:
     vec3 emission = rec.mat_ptr->emitted(rec.u, rec.v, rec.p, pre_p);
     vec3 wh;
     vec3 next_dir = rec.mat_ptr->sample_f(r.direction(), &wh, rec);
-
     vec3 f = rec.mat_ptr->f(r.dir, wh, next_dir, rec);
-    if (f.x() == 0 && f.y() == 0 && f.z() == 0)
-      return vec3(0);
-    float cosTheta = absDot(rec.normal, next_dir);
     float pdf_ = rec.mat_ptr->pdf(next_dir, wh, rec);
-    if (abs(pdf_ - 0) < 0.0001)
-      return vec3(0);
+    if (pdf_ < 0.07) {
+      goto retry;
+    }
     ray nx(rec.p, next_dir);
 
+    float cosTheta = absDot(rec.normal, next_dir);
     vec3 res = emission + f * cosTheta * Li(nx, rec, depth - 1) / pdf_;
+    assert(!hasnanV(res));
+    assert(!hasinfV(res));
     return res;
   }
 
@@ -145,6 +152,29 @@ public:
     std::cout << "Target pixel color is " << pxl * 256 << "\n";
   }
 
+  void DirectRenderPxl(int x, int y, int nsamples, int depth) {
+    RGB12 mainBuffer(width, height);
+    float inv_samples = 1. / nsamples;
+    float division_x = 1. / width;
+    float division_y = 1. / height;
+    color pxl(0, 0, 0);
+    for (std::size_t sample_times = 0; sample_times < nsamples;
+         sample_times++) {
+      Light_hit = 0;
+      // transform to NDC(?)
+      auto u = (x + rand_d()) * division_x;
+      auto v = (y + rand_d()) * division_y;
+      ray tmp_ray = cam->get_ray(u, v);
+      record rec;
+      vec3 LI_ = Li(tmp_ray, rec, depth);
+      std::cout << "sample:" << sample_times << "-->Target pixel color is "
+                << LI_ << "\n";
+      pxl += LI_;
+    }
+    pxl = pxl * inv_samples;
+    std::cout << "Target pixel color is " << pxl * 256 << "\n";
+  }
+
 private:
   mutable int Light_hit;
 };
@@ -181,14 +211,13 @@ public:
 
     float dWidvdPdf;
     vec3 _li;
-    vec3 sampleP = randomSampleOne(rec, &dWidvdPdf, &_li);
+    vec3 sampleP = randomSampleOne(world, rec, &dWidvdPdf, &_li);
     vec3 next_dir = normalize(sampleP - rec.p);
     if (dot(next_dir, rec.normal) < 0) {
       return emission;
     }
     // If ray didn't hit target then the _li = 0;
     if (!shadowTester(rec.p, sampleP, *world)) {
-
       _li = vec3(0);
     }
     if (rec.HitType & hitable::Box) {
@@ -207,14 +236,91 @@ public:
   }
 
 protected:
-  vec3 randomSampleOne(record &rec, float *pdf, vec3 *emission) const {
-    int t = rand_d(0, world->Lights.size() - 0.001);
-    vec3 sample_p = world->Lights[t]->getSample(rec, pdf, emission);
-    return sample_p;
-  }
-
 private:
   mutable int Light_hit;
 };
+
+class NEEIntegrator : public baseIntegrator {
+public:
+  NEEIntegrator(bvh_node *h, int img_height, int img_width, int sample_nums,
+                camera *_cam, const vec3 &_background)
+      : baseIntegrator(h, img_height, img_width, sample_nums, _cam,
+                       backgroundColor),
+        backgroundColor(_background) {}
+  vec3 backgroundColor;
+
+  vec3 Li(ray r, record &rec, int depth) const override {
+
+    if (depth <= 0) {
+      return vec3(0);
+    }
+
+    vec3 pre_p = rec.p;
+    if (!integrator::world->hit(r, TMIN, TMAX, rec)) {
+      return backgroundColor;
+    }
+    vec3 emission(0);
+    if (depth == max_dep) {
+      if (rec.HitType == material::Microfacet) {
+        int x = 0;
+      }
+      emission = rec.mat_ptr->emitted(rec.u, rec.v, rec.p, cam->origin);
+    }
+
+    // sampling the light
+    float lightPDF;
+    vec3 lightLi;
+    vec3 lightSamplePoint = randomSampleOne(world, rec, &lightPDF, &lightLi);
+    lightPDF = lightPDF == 0 ? 999 : 1. / lightPDF;
+    vec3 lightSampleDir = normalize(lightSamplePoint - rec.p);
+    vec3 lightWh = normalize(-r.dir + lightSampleDir);
+    if (!shadowTester(rec.p, lightSamplePoint, *world)) {
+      lightLi = vec3(0);
+      if (depth == max_dep && rec.mat_ptr->getType() == material::Microfacet) {
+        int x = 0;
+      }
+    }
+
+    vec3 wh;
+  retry:
+    // sampling brdf
+    vec3 nextDir = rec.mat_ptr->sample_f(r.direction(), &wh, rec);
+    vec3 pointF = rec.mat_ptr->f(r.dir, wh, nextDir, rec);
+    float pointPDF = rec.mat_ptr->pdf(nextDir, wh, rec);
+    if (pointPDF < 0.05) {
+      goto retry;
+    }
+    vec3 lightF = rec.mat_ptr->f(r.dir, lightWh, lightSampleDir, rec);
+    float cosThetaL, cosThetaP;
+    cosThetaL = dot(rec.normal, lightSampleDir);
+    cosThetaP = dot(rec.normal, nextDir);
+    vec3 fLight = lightF * cosThetaL * lightLi;
+    ray nextRay(rec.p, nextDir);
+    vec3 gPoint = pointF * cosThetaP * Li(nextRay, rec, depth - 1);
+    float phf = powerHeuristic(1, lightPDF, 1, pointPDF, 2);
+    float phg = powerHeuristic(1, pointPDF, 1, lightPDF, 2);
+    ;
+    // When light's pdf = 0 then the light's f must be 0
+    // so arbitrary value can be set to lightpdf
+    vec3 res = fLight * phf / lightPDF + gPoint * phg / pointPDF;
+    return emission + res;
+  }
+
+protected:
+  float powerHeuristic(int nf, float f_pdf, int ng, float g_pdf,
+                       int power) const {
+    assert(power >= 1);
+    float fx = nf * f_pdf;
+    float gx = ng * g_pdf;
+    return pow(fx, power) / (pow(fx, power) + pow(gx, power));
+  }
+};
+
+inline vec3 randomSampleOne(bvh_node *world, record &rec, float *invpdf,
+                            vec3 *emission) {
+  int t = rand_d(0, world->Lights.size() - 0.001);
+  vec3 sample_p = world->Lights[t]->getSample(rec, invpdf, emission);
+  return sample_p;
+}
 
 #endif
