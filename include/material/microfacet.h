@@ -6,7 +6,7 @@
 #include "tool/common.h"
 #include <algorithm>
 #include <cmath>
-
+#include <assert.h>
 #ifndef MICROFACET_H_
 #define MICROFACET_H_
 
@@ -44,7 +44,7 @@ protected:
   float G1(const vec3 &w) { return 1. / (1 + GGX_G_lambda(w)); }
 
 private:
-  vec3 shlick(const vec3 &F0) { return F0 + (1 - F0) * pow(1 - CosTheta, 5); }
+  vec3 shlick(const vec3 &F0) { return F0 + (vec3(1) - F0) * pow(1 - CosTheta, 5); }
   float GGX(const vec3 &wh, const vec3 &wi, const record &rec) const {
     float cos2 = Cos2Theta;
     auto kk = cosTheta2PHIh / (r.x() * r.x()) + sinTheta2PHIh / (r.y() * r.y());
@@ -77,7 +77,7 @@ private:
       float sint = sqrt(std::max(0.f,1-cost));
       res = SphericalToXYZ(sint, cost, phi);
     }
-    {
+    else{
       r = _rough->value(hit_rec.u, hit_rec.v, hit_rec.p);
       // sample phi
       // phi is in [-1/2 pi,3/2 pi] , but we will "cos" it then
@@ -101,9 +101,9 @@ private:
 inline vec3 microfacet::f(const vec3 &w_o, const vec3 &w_h, const vec3 &w_i,
                           record &hit_rec) {
   if (dot(hit_rec.normal, w_i) < 0)
-    return 0;
+    return vec3(0);
   r = _rough->value(hit_rec.u, hit_rec.v, hit_rec.p);
-  CosTheta = dot(w_h, hit_rec.normal);
+  CosTheta = absDot(w_h, hit_rec.normal);
   Cos2Theta = CosTheta * CosTheta;
   SinTheta = cross(w_h, hit_rec.normal).length();
   Sin2Theta = SinTheta * SinTheta;
@@ -115,8 +115,8 @@ inline vec3 microfacet::f(const vec3 &w_o, const vec3 &w_h, const vec3 &w_i,
                                 : clamp(dot(w_h, tbn[2].xyz()) / SinTheta, -1.,
                                         1.); // w.z / sinTheta
   sinTheta2PHIh = sinThetaPHIh * sinThetaPHIh;
-  float dotA = absDot(hit_rec.normal, w_o);
-  float dotB = dot(hit_rec.normal, w_i);
+  float dotA = std::max(absDot(hit_rec.normal, w_o),0.001);
+  float dotB =std::max(absDot(hit_rec.normal, w_i),0.001);
   vec3 fel = Fresnel(F0);
   float g2 = G2(-1 * w_o, w_i);
   float ndf = NDF(w_h, w_i, hit_rec);
@@ -129,7 +129,7 @@ inline vec3 microfacet::f(const vec3 &w_o, const vec3 &w_h, const vec3 &w_i,
 inline float microfacet::pdf(const vec3 &wi, const vec3 &wh,
                              const record &rec) const {
   // Transfrorm pdf from wh to wi
-  return NDF(wh, wi, rec) * CosTheta * 0.25f / dot(wi, wh);
+  return NDF(wh, wi, rec) * CosTheta * 0.25f / absDot(wi, wh);
 }
 
 // https://agraphicsguynotes.com/posts/sample_anisotropic_microfacet_brdf/

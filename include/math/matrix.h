@@ -162,7 +162,7 @@ inline mat4 getTBN(const vec3 &nor) {
 inline mat4 getTBNFromXY(const vec3 &nor){
   vec3 tan = vec3(1,0,0);
   if (absDot(tan,nor) >0.9f ) {
-    tan = vec3(0,1,0);
+    tan = vec3(0,0,1);
   }
   return getTBN(tan,nor);
 }
