@@ -194,9 +194,7 @@ inline vec3 microfacet::sampleP11(const vec3 &wo_nor, record &hit_rec) const {
   const float slope_x_1 = B * tmp - D;
   const float slope_x_2 = B * tmp + D;
   slope_x = (A < 0 || slope_x_2 > 1.0 / tanThetaO) ? slope_x_1 : slope_x_2;
-  if(isnan(slope_x)){
-    int x =0;
-  }
+
   assert(!isnan(slope_x));
   // sample slope_y
   float S;
