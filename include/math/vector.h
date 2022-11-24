@@ -20,7 +20,7 @@ public:
 public:
   vec3() : vec{0, 0, 0} {}
   vec3(float x, float y, float z) : vec{x, y, z} {};
- vec3(float x) : vec{x, x, x} {}
+  vec3(float x) : vec{x, x, x} {}
   float x() const { return vec[0]; }
   float y() const { return vec[1]; }
   float z() const { return vec[2]; }
@@ -118,7 +118,14 @@ inline vec3 random_vec(double min, double max) {
 // from(-1 to 1)
 inline vec3 random_vec() { return random_vec(-1, 1); }
 
-inline vec3 normalize(const vec3 &v) { return (v / v.length()); }
+inline vec3 normalize(const vec3 &v) {
+  float normalized = (v.length());
+  if (normalized == 0) {
+    return vec3(0);
+  } else {
+    return v / normalized;
+  }
+}
 
 inline vec3 rand_in_unit_sphere() {
   while (true) {
@@ -181,14 +188,13 @@ inline bool isSameHemiSphere(const vec3 &wo, const vec3 &wh) {
   return dot(wo, wh) > 0;
 }
 
-
-inline bool hasnanV(vec3& xx) throw(){
-  auto res = std::isnan(xx.x())||std::isnan(xx.y())||std::isnan(xx.z());
+inline bool hasnanV(vec3 &xx) throw() {
+  auto res = std::isnan(xx.x()) || std::isnan(xx.y()) || std::isnan(xx.z());
   return res;
 }
 
-inline bool hasinfV(vec3& xx) throw(){
-  auto res = std::isinf(xx.x())||std::isinf(xx.y())||std::isinf(xx.z());
+inline bool hasinfV(vec3 &xx) throw() {
+  auto res = std::isinf(xx.x()) || std::isinf(xx.y()) || std::isinf(xx.z());
   return res;
 }
 typedef vec3 color;

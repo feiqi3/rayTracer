@@ -96,7 +96,9 @@ public:
     vec3 emission = rec.mat_ptr->emitted(rec.u, rec.v, rec.p, pre_p);
     vec3 wh;
     vec3 next_dir = rec.mat_ptr->sample_f(r.direction(), &wh, rec);
+
     vec3 f = rec.mat_ptr->f(r.dir, wh, next_dir, rec);
+    
     float pdf_ = rec.mat_ptr->pdf(next_dir, wh, rec);
     if (pdf_ < 0.07) {
       goto retry;
@@ -105,8 +107,7 @@ public:
 
     float cosTheta = absDot(rec.normal, next_dir);
     vec3 res = emission + f * cosTheta * Li(nx, rec, depth - 1) / pdf_;
-    assert(!hasnanV(res));
-    assert(!hasinfV(res));
+
     return res;
   }
 
@@ -287,9 +288,9 @@ public:
     vec3 nextDir = rec.mat_ptr->sample_f(r.direction(), &wh, rec);
     vec3 pointF = rec.mat_ptr->f(r.dir, wh, nextDir, rec);
     float pointPDF = rec.mat_ptr->pdf(nextDir, wh, rec);
-    if (pointPDF < 0.05) {
+/*     if (pointPDF < 0.05) {
       goto retry;
-    }
+    } */
     vec3 lightF = rec.mat_ptr->f(r.dir, lightWh, lightSampleDir, rec);
     float cosThetaL, cosThetaP;
     cosThetaL = dot(rec.normal, lightSampleDir);

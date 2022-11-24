@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-constexpr int IMG_WIDTH = 1000;
+constexpr int IMG_WIDTH = 600;
 constexpr double RATIO = 1;
 constexpr int SAMPLES = 30;
 #include "material/lambertian.h"
@@ -46,7 +46,6 @@ const vec3 Back_Ground_Color(.0, .0, .0);
 int main() {
   constexpr auto IMG_HEIGHT = static_cast<int>(IMG_WIDTH / RATIO);
   hitable_list world;
-
   auto red = make_shared<lambertian>(color(.65, .05, .05));
   auto white = make_shared<lambertian>(color(.73, .73, .73));
   auto green = make_shared<lambertian>(color(.12, .45, .15));
@@ -88,7 +87,7 @@ int main() {
   camera cam(40., RATIO, cameraPos, vec3(0, 1, 0), vec3(278, 278, 0), 0,
              (vec3(0, 0, -1) - cameraPos).length());
 
-  NEEIntegrator renderer(&bvh, IMG_HEIGHT, IMG_WIDTH, 300, &cam, vec3(0, 0, 0));
+  NEEIntegrator renderer(&bvh, IMG_HEIGHT, IMG_WIDTH, 40, &cam, vec3(0, 0, 0));
   renderer.Render();
   //renderer.RenderPxl(111,IMG_HEIGHT -1- 101,16,max_dep);
 }

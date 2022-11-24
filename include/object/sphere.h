@@ -47,6 +47,7 @@ public:
   material::MType getMType() const override{
     return mat_ptr->getType();
   }
+  vec3 getSample(record &rec, float *pdf, vec3 *emission) const override;
 private:
   static void get_sphere_uv(const vec3 &p, double &u, double &v);
 };
@@ -94,6 +95,10 @@ inline void sphere::get_sphere_uv(const vec3 &p, double &u, double &v) {
   double phi = atan2(p.z(), -p.x()) + pi;
   u = phi * inv_2pi;
   v = theta * inv_pi;
+}
+
+inline vec3 sphere::getSample(record &rec, float *pdf, vec3 *emission)const{
+
 }
 
 #endif
