@@ -85,7 +85,7 @@ inline vec4 operator*(const vec4 &vec,const mat4 &mat) {
   double a = __cmp_wise_mul_then_add(__getCol(mat, 0), vec);
   double b = __cmp_wise_mul_then_add(__getCol(mat, 1), vec);
   double c = __cmp_wise_mul_then_add(__getCol(mat, 2), vec);
-  double d = __cmp_wise_mul_then_add(__getCol(mat, 4), vec);
+  double d = __cmp_wise_mul_then_add(__getCol(mat, 3), vec);
   return vec4(a, b, c, d);
 }
 
@@ -147,7 +147,7 @@ inline mat4 getTBN(const vec3 &t, const vec3 &n) {
  * To fit the function sample_on_hemi,
  * I swaped the position of bitangent and normal . 
  * So actually this is a TNB matrix :-) .
- * To transform a point to tangent space, you should mult the dir with mat . 
+ * To transform a point to tangent space, you should mult the mat with dir. 
  * Note: order does matter! 
  * You can prove it by caculating dot(tans_dir,n)>0 .
  */
